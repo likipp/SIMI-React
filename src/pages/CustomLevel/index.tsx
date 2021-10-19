@@ -3,6 +3,7 @@ import { EllipsisOutlined, QuestionCircleOutlined, SearchOutlined } from '@ant-d
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
 import { PageContainer } from '@ant-design/pro-layout';
+import { getCustomLevelList } from '@/pages/CustomLevel/services';
 
 export type TableListItem = {
   key: number;
@@ -94,7 +95,11 @@ const menu = (
 );
 
 export default () => {
-
+  // useEffect(() => {
+  //   getCustomLevelList().then((res) => {
+  //     console.log(res, '接收数据');
+  //   });
+  // });
   return (
     <PageContainer>
       <ProTable<TableListItem>
@@ -102,10 +107,14 @@ export default () => {
         request={(params, sorter, filter) => {
           // 表单搜索项会从 params 传入，传递给后端接口。
           console.log(params, sorter, filter);
-          return Promise.resolve({
-            data: tableListDataSource,
-            success: true,
-          });
+          return Promise.resolve(getCustomLevelList({ sorter, filter }))
+            .then((res) => {
+              console.log(res, '结果');
+              return res;
+            })
+            .catch((err) => {
+              alert(err);
+            });
         }}
         rowKey="key"
         pagination={{

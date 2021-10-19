@@ -56,14 +56,17 @@
       {
         path: '/base/custom',
         name: '客户',
-        icon: 'smile',
         component: './Custom',
       },
       {
         path: '/base/supplier',
         name: '供应商',
-        icon: 'smile',
         component: './Supplier',
+      },
+      {
+        path: '/base/custom-level',
+        name: '客户等级',
+        component: './CustomLevel',
       },
     ],
   },

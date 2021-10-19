@@ -5,7 +5,8 @@ import ProTable, { TableDropdown } from '@ant-design/pro-table';
 import { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 
-import CreateCustom from './CreateCustom'
+import CreateCustom from './CreateCustom';
+import { getCustomList } from '@/pages/Custom/services';
 
 const valueEnum = {
   0: 'close',
@@ -54,7 +55,7 @@ const columns: ProColumns<TableListItem>[] = [
   },
   {
     title: '客户名称',
-    dataIndex: 'name',
+    dataIndex: 'c_name',
     width: 200,
     render: (_) => <a>{_}</a>,
     // 自定义筛选项功能具体实现请参考 https://ant.design/components/table-cn/#components-table-demo-custom-filter-panel
@@ -81,7 +82,7 @@ const columns: ProColumns<TableListItem>[] = [
   // },
   {
     title: '等级',
-    dataIndex: 'status',
+    dataIndex: 'level',
     initialValue: 'all',
     filters: true,
     onFilter: true,
@@ -111,11 +112,7 @@ const columns: ProColumns<TableListItem>[] = [
     sorter: (a, b) => a.createdAt - b.createdAt,
   },
   {
-    title: (
-      <>
-        最近购买时间
-      </>
-    ),
+    title: <>最近购买时间</>,
     width: 140,
     key: 'since',
     dataIndex: 'boughtAt',
@@ -157,11 +154,11 @@ const menu = (
 );
 
 export default () => {
-  const [createModalVisible, setCreateModalVisible] = useState(false)
+  const [createModalVisible, setCreateModalVisible] = useState(false);
 
   const handleCancel = () => {
-    setCreateModalVisible(false)
-  }
+    setCreateModalVisible(false);
+  };
 
   return (
     <PageContainer>
@@ -170,10 +167,14 @@ export default () => {
         request={(params, sorter, filter) => {
           // 表单搜索项会从 params 传入，传递给后端接口。
           console.log(params, sorter, filter);
-          return Promise.resolve({
-            data: tableListDataSource,
-            success: true,
-          });
+          return Promise.resolve(getCustomList({ sorter, filter }))
+            .then((res) => {
+              console.log(res, '结果');
+              return res;
+            })
+            .catch((err) => {
+              alert(err);
+            });
         }}
         rowKey="key"
         pagination={{
@@ -189,7 +190,13 @@ export default () => {
           tooltip: '这是一个标题提示',
         }}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={() => {setCreateModalVisible(true)}}>
+          <Button
+            type="primary"
+            key="primary"
+            onClick={() => {
+              setCreateModalVisible(true);
+            }}
+          >
             新建
           </Button>,
           <Dropdown key="menu" overlay={menu}>
@@ -199,7 +206,7 @@ export default () => {
           </Dropdown>,
         ]}
       />
-      <CreateCustom createModalVisible={createModalVisible} onCancel={handleCancel}/>
+      <CreateCustom createModalVisible={createModalVisible} onCancel={handleCancel} />
     </PageContainer>
   );
 };
