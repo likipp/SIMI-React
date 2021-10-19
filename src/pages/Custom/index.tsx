@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 
 import CreateCustom from './CreateCustom';
+import CreateOrder from './CreateOrder';
 import { getCustomList } from '@/pages/Custom/services';
 
 const valueEnum = {
@@ -155,9 +156,14 @@ const menu = (
 
 export default () => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [createOrderVisible, setCreateOrderVisible] = useState(false);
 
   const handleCancel = () => {
     setCreateModalVisible(false);
+  };
+
+  const handleOrderCancel = () => {
+    setCreateOrderVisible(false);
   };
 
   return (
@@ -169,11 +175,11 @@ export default () => {
           console.log(params, sorter, filter);
           return Promise.resolve(getCustomList({ sorter, filter }))
             .then((res) => {
-              console.log(res, '结果');
               return res;
             })
             .catch((err) => {
-              alert(err);
+              console.log(err)
+              alert("加载失败");
             });
         }}
         rowKey="key"
@@ -199,6 +205,15 @@ export default () => {
           >
             新建
           </Button>,
+          <Button
+            type="primary"
+            key="primary"
+            onClick={() => {
+              setCreateOrderVisible(true);
+            }}
+          >
+            新建订单
+          </Button>,
           <Dropdown key="menu" overlay={menu}>
             <Button>
               <EllipsisOutlined />
@@ -207,6 +222,7 @@ export default () => {
         ]}
       />
       <CreateCustom createModalVisible={createModalVisible} onCancel={handleCancel} />
+      <CreateOrder createOrderVisible={createOrderVisible} onCancel={handleOrderCancel} />
     </PageContainer>
   );
 };
