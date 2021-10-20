@@ -57,6 +57,7 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '客户名称',
     dataIndex: 'c_name',
+    align: 'center',
     width: 200,
     render: (_) => <a>{_}</a>,
     // 自定义筛选项功能具体实现请参考 https://ant.design/components/table-cn/#components-table-demo-custom-filter-panel
@@ -83,19 +84,20 @@ const columns: ProColumns<TableListItem>[] = [
   // },
   {
     title: '等级',
-    dataIndex: 'level',
+    dataIndex: 'level_name',
+    align: 'center',
     initialValue: 'all',
     filters: true,
     onFilter: true,
-    width: 140,
-    valueEnum: {
-      all: { text: '全部', status: 'Default' },
-      close: { text: '零售客户', status: 'Default' },
-      running: { text: 'VIP代理', status: 'Processing' },
-      online: { text: '区域代理', status: 'Success' },
-      error: { text: '特约代理', status: 'Error' },
-      total: { text: '总代理', status: 'Error' },
-    },
+    // width: 140,
+    // valueEnum: {
+    //   all: { text: '全部', status: 'Default' },
+    //   close: { text: '零售客户', status: 'Default' },
+    //   running: { text: 'VIP代理', status: 'Processing' },
+    //   online: { text: '区域代理', status: 'Success' },
+    //   error: { text: '特约代理', status: 'Error' },
+    //   total: { text: '总代理', status: 'Error' },
+    // },
   },
   {
     title: (
@@ -106,7 +108,8 @@ const columns: ProColumns<TableListItem>[] = [
         </Tooltip>
       </>
     ),
-    width: 140,
+    // width: 140,
+    align: 'center',
     key: 'since',
     dataIndex: 'createdAt',
     valueType: 'date',
@@ -114,7 +117,8 @@ const columns: ProColumns<TableListItem>[] = [
   },
   {
     title: <>最近购买时间</>,
-    width: 140,
+    // width: 140,
+    align: 'center',
     key: 'since',
     dataIndex: 'boughtAt',
     valueType: 'date',
@@ -122,6 +126,7 @@ const columns: ProColumns<TableListItem>[] = [
   },
   {
     title: '备注',
+    align: 'center',
     dataIndex: 'memo',
     ellipsis: true,
     copyable: true,
@@ -178,8 +183,8 @@ export default () => {
               return res;
             })
             .catch((err) => {
-              console.log(err)
-              alert("加载失败");
+              console.log(err);
+              alert('加载失败');
             });
         }}
         rowKey="key"

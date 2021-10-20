@@ -1,4 +1,4 @@
-import { Button, Tooltip, Dropdown, Menu, Input } from 'antd';
+import { Button, Tooltip, Dropdown, Menu, Input, Space } from 'antd';
 import { EllipsisOutlined, QuestionCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
@@ -33,7 +33,8 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '客户等级',
     dataIndex: 'name',
-    width: 200,
+    align: 'center',
+    // width: 200,
     render: (_) => <a>{_}</a>,
     // 自定义筛选项功能具体实现请参考 https://ant.design/components/table-cn/#components-table-demo-custom-filter-panel
     filterDropdown: () => (
@@ -54,7 +55,8 @@ const columns: ProColumns<TableListItem>[] = [
         </Tooltip>
       </>
     ),
-    width: 140,
+    align: 'center',
+    // width: 140,
     key: 'since',
     dataIndex: 'createdAt',
     valueType: 'date',
@@ -62,12 +64,14 @@ const columns: ProColumns<TableListItem>[] = [
   },
   {
     title: '折扣',
+    align: 'center',
     dataIndex: 'discount',
     ellipsis: true,
-    copyable: true,
+    render: (_, record) => <Space>{record.discount + '%'}</Space>,
   },
   {
     title: '操作',
+    align: 'center',
     width: 180,
     key: 'option',
     valueType: 'option',
