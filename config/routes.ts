@@ -49,6 +49,28 @@
     component: './TableList',
   },
   {
+    path: 'manager',
+    name: '供应管理',
+    icon: 'crown',
+    routes: [
+      {
+        path: '/manager/exbill',
+        name: '新增出库单',
+        component: './ExBill',
+      },
+      {
+        path: '/manager/ex',
+        name: '出库明细',
+        component: './ExList',
+      },
+      {
+        path: '/manager/in',
+        name: '入库明细',
+        component: './InList',
+      },
+    ]
+  },
+  {
     path: '/base',
     name: '基础设置',
     icon: 'crown',

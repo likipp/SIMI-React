@@ -26,29 +26,22 @@ type DataSourceType = {
   children?: DataSourceType[];
 };
 
-const defaultData: DataSourceType[] = [
-  {
-    id: 624748504,
-    name: '酵素',
-    price: 100,
-    discount: 0.3,
-    number: 2,
-    created_at: '2020-05-26T09:42:56Z',
-  },
-  {
-    id: 624691229,
-    name: '鸡蛋',
-    price: 5,
-    discount: 0.8,
-    number: 20,
-    created_at: '2020-05-26T08:19:22Z',
-  },
-];
+const defaultData: DataSourceType[] = [];
 
 const columns: ProColumns<DataSourceType>[] = [
   {
+    title: '产品代码',
+    dataIndex: 'p_number',
+    width: '30%',
+    formItemProps: () => {
+      return {
+        rules: [{required: true, message: "产品名称必填"}]
+      }
+    }
+  },
+  {
     title: '产品名称',
-    dataIndex: 'name',
+    dataIndex: 'p_name',
     width: '30%',
     formItemProps: () => {
       return {
@@ -58,7 +51,13 @@ const columns: ProColumns<DataSourceType>[] = [
   },
   {
     title: '单价',
-    dataIndex: 'price',
+    dataIndex: 'unit_price',
+    valueType: 'money',
+    formItemProps: () => {
+      return {
+        rules: [{required: true, message: "单价必填"}]
+      }
+    }
   },
   {
     title: '折扣',
@@ -67,12 +66,23 @@ const columns: ProColumns<DataSourceType>[] = [
   {
     title: '数量',
     // valueType: 'option',
-    dataIndex: 'number',
+    dataIndex: 'qty',
+    valueType: 'digit',
+    formItemProps: () => {
+      return {
+        rules: [{required: true, message: "数量必填"}]
+      }
+    }
   },
   {
     title: '总价',
-    // valueType: 'option',
     dataIndex: 'total',
+    valueType: 'money',
+    formItemProps: () => {
+      return {
+        rules: [{required: true, message: "总价必填"}]
+      }
+    },
     renderFormItem: (_, {isEditable,record}) => (isEditable ? <TagList /> : <Input />),
       // if (record?.price && record?.number && record?.discount) {
       //   const total = record.price * record.number * record.discount
@@ -109,10 +119,12 @@ const createOrder: React.FC<CreateFormProps> = (props) => {
       name: string;
       company: string;
     }>
+      width={1000}
       visible={props.createOrderVisible}
       modalProps={{
         // onCancel: () => console.log('run'),
-        onCancel: () => props.onCancel()
+        onCancel: () => props.onCancel(),
+        maskClosable: false
       }}
     >
       <ProForm<{
