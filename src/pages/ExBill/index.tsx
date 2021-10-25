@@ -1,8 +1,11 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import ProForm, { ProFormText, ProFormDigit } from '@ant-design/pro-form';
-import { EditableProTable, ProColumns } from '@ant-design/pro-table';
-import React from 'react';
-import { AutoComplete, message } from 'antd';
+import ProForm, { ProFormText, ProFormDigit, ProFormSelect } from '@ant-design/pro-form';
+import type { ProColumns } from '@ant-design/pro-table';
+import { EditableProTable } from '@ant-design/pro-table';
+import React, { useEffect, useState } from 'react';
+import {  message } from 'antd';
+import DebounceSelect from '@/pages/ExBill/DebountceSelect';
+import { getProductList } from '@/pages/Product/services';
 // import TagList from '@/pages/Custom/CreateOrder/tagList';
 
 const waitTime1 = (time: number = 100) => {
@@ -62,6 +65,19 @@ const columns: ProColumns<DataSourceType>[] = [
     title: '折扣',
     dataIndex: 'discount',
     valueType: 'percent',
+    renderFormItem:() => {
+      return  <ProFormDigit
+        label="折扣"
+        name="input-number"
+        min={1}
+        max={100}
+        fieldProps={{
+          precision: 2,
+          formatter: (value: number) => `${value}%`,
+          parser: (value: string) => value.replace('%', '')
+        }}
+      />
+    }
   },
   {
     title: '数量',
@@ -83,7 +99,7 @@ const columns: ProColumns<DataSourceType>[] = [
         rules: [{required: true, message: "总价必填"}]
       }
     },
-    renderFormItem: (_, {isEditable,record}) => {
+    renderFormItem: (_, {record}) => {
       let total: number
       if (record && record.discount > 0) {
         total = record.unit_price * record.qty * (record.discount / 100)
@@ -101,13 +117,19 @@ const columns: ProColumns<DataSourceType>[] = [
         total = row.qty * row.unit_price * row.discount
         return <span>{total.toFixed(2)}</span>;
       }
-      return <span />
-
+      return null
     }
   }
 ];
 
 export default () => {
+  const [, setData] = useState([])
+  const [value, setValue] = React.useState([]);
+  useEffect(() => {
+    getProductList().then((res) => {
+      setData(res.data)
+    })
+  }, [])
   return <PageContainer>
     <ProForm<{
       name: string;
@@ -123,15 +145,29 @@ export default () => {
         useMode: 'chapter',
       }}
     >
-
       <ProForm.Group>
         <ProFormText width="sm" name="id" label="单据编号" />
-        <AutoComplete
-          // options={options}
-          style={{ width: 200 }}
-          // onSelect={onSelect}
-          // onSearch={onSearch}
-          placeholder="input here"
+        <DebounceSelect mode="multiple"
+                        value={value}
+                        placeholder="Select users"
+                        style={{ width: '100%' }}
+                        fetchOptions={getProductList}
+                        onChange={newValue => {
+                          setValue(newValue);
+                        }}
+        />
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormSelect
+          width="sm"
+          options={[
+            {
+              value: 'time',
+              label: '履行完终止',
+            },
+          ]}
+          name="unusedMode"
+          label="客户代码"
         />
         <ProFormText
           width="md"
@@ -158,7 +194,7 @@ export default () => {
         label="订单明细"
         name="dataSource"
         initialValue={defaultData}
-        trigger="onValuesChange"
+        // trigger="onValuesChange"
       >
         <EditableProTable<DataSourceType>
           rowKey="id"
