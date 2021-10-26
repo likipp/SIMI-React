@@ -24,12 +24,12 @@ function DebounceSelect<
       setFetching(true);
 
       fetchOptions(value).then(newOptions => {
+        console.log(newOptions.data, "value", fetchRef.current, fetchId)
         if (fetchId !== fetchRef.current) {
           // for fetch callback order
           return;
         }
-
-        setOptions(newOptions);
+        setOptions(newOptions.data);
         setFetching(false);
       });
     };
