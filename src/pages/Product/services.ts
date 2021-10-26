@@ -1,8 +1,9 @@
 import { request } from 'umi';
 
 export async function getProductList(params?: any) {
+  console.log(params.keyWords, "params")
   return request('/api/v1/base/product/', {
-    params: {param: params}
+    params: {param: params.keyWords}
   });
 }
 
