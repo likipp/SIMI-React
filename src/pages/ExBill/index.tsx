@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { message } from 'antd';
-import ProForm, { ProFormDigit, ProFormInstance, ProFormSelect, ProFormText } from '@ant-design/pro-form';
+import { Form, message } from 'antd';
+import type { ProFormInstance} from '@ant-design/pro-form';
+import ProForm, { ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-form';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import { getProductList, getCustomList } from '@/pages/Product/services';
@@ -74,11 +75,11 @@ const columns: ProColumns<DataSourceType>[] = [
         rules: [{required: true, message: "产品名称必填"}]
       }
     },
-    renderFormItem: (_, {record})  => {
-      if (record?.p_number != null) {
-        record.p_name = record?.p_number;
+    fieldProps: (form, {rowKey}) => {
+      const p_number = form.getFieldValue([rowKey || '', 'p_number'])
+      if (p_number != "") {
+        form.setFieldsValue({[rowKey]: {p_name: p_number}})
       }
-      return record?.p_name
     }
   },
   {
@@ -130,22 +131,23 @@ const columns: ProColumns<DataSourceType>[] = [
         rules: [{required: true, message: "总价必填"}]
       }
     },
-    renderFormItem: (_, {record}) => {
-      // if (record && record.discount > 0) {
-      //   record.total = record.unit_price * record.qty * (record.discount / 100)
-      //   return record?.total
-      // } else if (record && record.discount == null){
-      //   record.total = record.unit_price * record.qty
-      //   return record?.total
-      // }
-      console.log(record, "record")
-      if (record) {
-        record.total = record.unit_price * record.qty * (record.discount / 100)
-        return record.total
+    fieldProps: (form, {rowKey}) => {
+      if (form) {
+        // console.log(form.getFieldValue([rowKey || '', 'discount']), "折扣")
+        const discount = form.getFieldValue([rowKey || '', 'discount'])
+        const qty = form.getFieldValue([rowKey || '', 'qty'])
+        const unit_price = form.getFieldValue([rowKey || '', 'unit_price'])
+
+        if (form && discount > 0 && qty > 0 && unit_price > 0) {
+          form.setFieldsValue({[rowKey]: {total: discount * qty * unit_price}})
+          console.log("折扣成功了")
+        }
+        if (discount <= 0 && qty > 0 && unit_price > 0) {
+          form.setFieldsValue({[rowKey]: {total: qty * unit_price}})
+        }
       }
-      return
-      // return record.unit_price * record.qty * (record.discount / 100)
-    },
+
+    }
   },
   {
     title: '操作',
@@ -157,26 +159,28 @@ export default () => {
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     defaultData.map((item) => item.id),
   );
+  const [form] = Form.useForm();
   const formRef = useRef<ProFormInstance>();
+  const [dataSource, setDataSource] = useState<DataSourceType[]>([]);
+  const [formData, setFormData] = useState<DataSourceType[]>([])
 
   return (
-    <ProForm<{
-      name: string;
-      company: string;
-    }>
+    <ProForm
       formRef={formRef}
       onFinish={async (values) => {
     await waitTime(2000);
+    // console.log(formRef.current?.getFieldsValue(true), "formRef")
     console.log(values, "提交事件");
+    console.log(formData, "formData")
     message.success('提交成功');
   }}
-  initialValues={{
-      useMode: 'chapter',
-  }}
+  // initialValues={{
+  //     useMode: 'chapter',
+  // }}
 >
       <ProForm.Group>
         <ProFormText width="sm" name="id" label="单据编号" />
-        <div style={{display: 'none'}}></div>
+        <div style={{display: 'none'}} />
       </ProForm.Group>
       <ProForm.Group>
         <ProFormSelect
@@ -227,27 +231,37 @@ export default () => {
   <ProForm.Item
     label="数组数据"
   name="body"
-  initialValue={defaultData}
-  trigger="onValuesChange"
+  // initialValue={defaultData}
+  // trigger="onValuesChange"
   >
   <EditableProTable<DataSourceType>
     rowKey="id"
     toolBarRender={false}
+    bordered={true}
     columns={columns}
+    value={dataSource}
+    onChange={setDataSource}
     recordCreatorProps={{
       newRecordType: 'dataSource',
-        position: 'top',
-        record: () => ({
-          id: Date.now(),
+      position: 'top',
+      record: () => ({
+        id: Date.now(),
       }),
     }}
   editable={{
       type: 'multiple',
       editableKeys,
       onChange: setEditableRowKeys,
+      form,
+      onValuesChange: (record, recordList) => {
+        console.log(form.getFieldsValue(true), "form")
+        // console.log(recordList, "recordList")
+        // Object.values(form.getFieldsValue(true))
+        setDataSource(recordList);
+        // setFormData(form.getFieldsValue(true))
+      },
       actionRender: (row, _, dom) => {
-      console.log(row, "行数据")
-      return [dom.save, dom.delete];
+      return [dom.delete];
     },
   }}
   />
