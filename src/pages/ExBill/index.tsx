@@ -30,18 +30,20 @@ type DataSourceType = {
 const defaultData: DataSourceType[] = [];
 
 const request = async (keyWords: any) => {
-  console.log(keyWords, "params")
   return Promise.resolve(getProductList(keyWords)).then((res => {
-              console.log(res.data, "产品信息");
       return res.data
     })).catch((err) => {
       console.log(err)
     })
 }
 
-let p_number = ''
-
 const columns: ProColumns<DataSourceType>[] = [
+  {
+    title: '排序',
+    dataIndex: 'index',
+    valueType: 'indexBorder',
+    width: 48,
+  },
   {
     title: '产品代码',
     dataIndex: 'p_number',
@@ -59,11 +61,6 @@ const columns: ProColumns<DataSourceType>[] = [
       },
       showArrow: false,
       showSearch: true,
-      onChange: (value, item) => {
-        console.log(item)
-        // p_number = item.label;
-        // console.log(p_number, "p_number")
-      }
     },
     request: request,
 
@@ -78,26 +75,21 @@ const columns: ProColumns<DataSourceType>[] = [
       }
     },
     renderFormItem: (_, {record})  => {
-      return <span>{record?.p_number}</span>
+      if (record?.p_number != null) {
+        record.p_name = record?.p_number;
+      }
+      return record?.p_name
     }
   },
-  // {
-  //   title: '产品',
-  //   dataIndex: 'p_number',
-  //   formItemProps: () => {
-  //     return {
-  //       rules: [{required: true, message: "产品代码必填"}]
-  //     }
-  //   },
-  //   renderFormItem: (_, {record})  => {
-  //     return <span>{p_number}</span>
-  //   },
-  //   hideInTable: true
-  // },
   {
     title: '单价',
     dataIndex: 'unit_price',
     valueType: 'money',
+    fieldProps: {
+      precision: 2,
+      min: 0,
+      max: 9999
+    },
     formItemProps: () => {
       return {
         rules: [{required: true, message: "单价必填"}]
@@ -113,6 +105,11 @@ const columns: ProColumns<DataSourceType>[] = [
     title: '数量',
     dataIndex: 'qty',
     valueType: 'digit',
+    fieldProps: {
+      precision: 0,
+      min: 1,
+      max: 9999
+    },
     formItemProps: () => {
       return {
         rules: [{required: true, message: "数量必填"}]
@@ -123,30 +120,32 @@ const columns: ProColumns<DataSourceType>[] = [
     title: '总价',
     dataIndex: 'total',
     valueType: 'money',
+    fieldProps: {
+      precision: 2,
+      min: 0,
+      max: 9999
+    },
     formItemProps: () => {
       return {
         rules: [{required: true, message: "总价必填"}]
       }
     },
-    renderFormItem: (_, { record}) => {
-      let total: number
-      if (record && record.discount > 0) {
-        total = record.unit_price * record.qty * (record.discount / 100)
-        return <span>{total.toFixed(2)}</span>
-      } else if (record && record.discount == null) {
-        total = record.unit_price * record.qty
-        return <span>{total.toFixed(2)}</span>
+    renderFormItem: (_, {record}) => {
+      // if (record && record.discount > 0) {
+      //   record.total = record.unit_price * record.qty * (record.discount / 100)
+      //   return record?.total
+      // } else if (record && record.discount == null){
+      //   record.total = record.unit_price * record.qty
+      //   return record?.total
+      // }
+      console.log(record, "record")
+      if (record) {
+        record.total = record.unit_price * record.qty * (record.discount / 100)
+        return record.total
       }
-      return null
+      return
+      // return record.unit_price * record.qty * (record.discount / 100)
     },
-    render: (_, row) => {
-      let total: number
-      if (row.qty !== undefined && row.unit_price !== undefined && row.discount !== undefined) {
-        total = row.qty * row.unit_price * row.discount
-        return <span>{total.toFixed(2)}</span>;
-      }
-      return null
-    }
   },
   {
     title: '操作',
@@ -168,7 +167,7 @@ export default () => {
       formRef={formRef}
       onFinish={async (values) => {
     await waitTime(2000);
-    console.log(values);
+    console.log(values, "提交事件");
     message.success('提交成功');
   }}
   initialValues={{
@@ -177,7 +176,7 @@ export default () => {
 >
       <ProForm.Group>
         <ProFormText width="sm" name="id" label="单据编号" />
-        <div style={{display: 'none'}}><ProFormText width="sm" name="custom" label="客户ID"/></div>
+        <div style={{display: 'none'}}></div>
       </ProForm.Group>
       <ProForm.Group>
         <ProFormSelect
@@ -187,7 +186,6 @@ export default () => {
           width={'sm'}
           request={async (keyWords) => {
             return Promise.resolve(getCustomList(keyWords)).then((res => {
-              console.log(res, "res")
               return res.data
             })).catch((err) => {
               console.log(err)
@@ -248,7 +246,8 @@ export default () => {
       editableKeys,
       onChange: setEditableRowKeys,
       actionRender: (row, _, dom) => {
-      return [dom.delete];
+      console.log(row, "行数据")
+      return [dom.save, dom.delete];
     },
   }}
   />
