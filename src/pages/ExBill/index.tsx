@@ -1,9 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { message } from 'antd';
+import { message, Typography } from 'antd';
 import ProForm, { ProFormDigit, ProFormInstance, ProFormSelect, ProFormText } from '@ant-design/pro-form';
 import type { ProColumns } from '@ant-design/pro-table';
-import { EditableProTable } from '@ant-design/pro-table';
+import ProTable, { EditableProTable } from '@ant-design/pro-table';
 import { getProductList, getCustomList } from '@/pages/Product/services';
+
+const { Text } = Typography;
 
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
@@ -35,6 +37,30 @@ const request = async (keyWords: any) => {
     })).catch((err) => {
       console.log(err)
     })
+}
+
+const calcAmount = ({ unit_price, from, qty, discount, rowKey }: any) => {
+  if (typeof qty === "number" && typeof unit_price === "number" && typeof discount === "number") {
+    if (discount > 0) {
+      console.log(discount, "if 中的discount")
+      from.setFields([
+        {
+          name: [`${rowKey}`, "total"],
+          value: qty * unit_price * discount / 100
+        }
+      ]);
+      return
+      // from.setFieldsValue({total: qty * unit_price * discount / 100})
+    }
+    console.log("到了此处")
+    from.setFields([
+      {
+        name: [`${rowKey}`, "total"],
+        value: qty * unit_price
+      }
+    ]);
+    // from.setFieldsValue({total: qty * unit_price})
+  }
 }
 
 const columns: ProColumns<DataSourceType>[] = [
@@ -74,12 +100,29 @@ const columns: ProColumns<DataSourceType>[] = [
         rules: [{required: true, message: "产品名称必填"}]
       }
     },
-    renderFormItem: (_, {record})  => {
-      if (record?.p_number != null) {
-        record.p_name = record?.p_number;
+    fieldProps: (from, {rowKey}) => {
+      if (from) {
+        const p_number = from.getFieldValue([rowKey || '', 'p_number'])
+        from.setFields([
+          {
+            name: [`${rowKey}`, "p_name"],
+            value: p_number
+          }
+        ]);
+
       }
-      return record?.p_name
-    }
+      return {
+        precision: 2,
+        min: 0,
+        max: 9999,
+      }
+    },
+    // renderFormItem: (_, {record})  => {
+    //   if (record?.p_number != null) {
+    //     record.p_name = record?.p_number;
+    //   }
+    //   return record?.p_name
+    // }
   },
   {
     title: '单价',
@@ -97,11 +140,6 @@ const columns: ProColumns<DataSourceType>[] = [
     }
   },
   {
-    title: '折扣',
-    dataIndex: 'discount',
-    valueType: 'percent',
-  },
-  {
     title: '数量',
     dataIndex: 'qty',
     valueType: 'digit',
@@ -117,35 +155,32 @@ const columns: ProColumns<DataSourceType>[] = [
     }
   },
   {
+    title: '折扣',
+    dataIndex: 'discount',
+    valueType: 'percent',
+  },
+  {
     title: '总价',
     dataIndex: 'total',
     valueType: 'money',
-    fieldProps: {
-      precision: 2,
-      min: 0,
-      max: 9999
+    fieldProps: (from, {rowKey}) => {
+      if (from) {
+        const unit_price = from.getFieldValue([rowKey || '', 'unit_price'])
+        const qty = from.getFieldValue([rowKey || '', 'qty'])
+        const discount = from.getFieldValue([rowKey || '', 'discount'])
+        calcAmount({unit_price, from, qty, discount, rowKey})
+      }
+      return {
+        precision: 2,
+        min: 0,
+        max: 9999,
+      }
     },
     formItemProps: () => {
       return {
         rules: [{required: true, message: "总价必填"}]
       }
-    },
-    renderFormItem: (_, {record}) => {
-      // if (record && record.discount > 0) {
-      //   record.total = record.unit_price * record.qty * (record.discount / 100)
-      //   return record?.total
-      // } else if (record && record.discount == null){
-      //   record.total = record.unit_price * record.qty
-      //   return record?.total
-      // }
-      console.log(record, "record")
-      if (record) {
-        record.total = record.unit_price * record.qty * (record.discount / 100)
-        return record.total
-      }
-      return
-      // return record.unit_price * record.qty * (record.discount / 100)
-    },
+    }
   },
   {
     title: '操作',
@@ -158,6 +193,9 @@ export default () => {
     defaultData.map((item) => item.id),
   );
   const formRef = useRef<ProFormInstance>();
+  const [dataSource, setDataSource] = useState<DataSourceType[]>(
+    () => defaultData
+  );
 
   return (
     <ProForm<{
@@ -234,6 +272,8 @@ export default () => {
     rowKey="id"
     toolBarRender={false}
     columns={columns}
+    value={dataSource}
+    onChange={setDataSource}
     recordCreatorProps={{
       newRecordType: 'dataSource',
         position: 'top',
@@ -241,15 +281,51 @@ export default () => {
           id: Date.now(),
       }),
     }}
+
   editable={{
       type: 'multiple',
       editableKeys,
       onChange: setEditableRowKeys,
       actionRender: (row, _, dom) => {
-      console.log(row, "行数据")
+      // console.log(row, "行数据")
       return [dom.save, dom.delete];
     },
+
+    onValuesChange: (record, recordList) => {
+      // if (record) {
+      //   const unit_price = record.unit_price
+      //     const qty = record.qty
+      //     const discount = record.discount
+      //     record.total = unit_price * qty * discount
+      // }
+      setDataSource(recordList);
+    },
   }}
+    summary={(pageData) => {
+      let totalNum = 0;
+      let totalSum = 0;
+
+      pageData.forEach(({ total, qty }) => {
+        if (qty) totalNum += qty;
+        if (total) totalSum += total;
+      });
+
+      return (
+        <>
+          <ProTable.Summary.Row>
+            <ProTable.Summary.Cell index={3} colSpan={2}>
+              <Text strong style={{fontSize: '20px'}}>合计:</Text>
+            </ProTable.Summary.Cell>
+            <ProTable.Summary.Cell align={'right'} index={1} colSpan={3}>
+              <Text strong style={{fontSize: '20px'}}>总数：{totalNum}</Text>
+            </ProTable.Summary.Cell>
+            <ProTable.Summary.Cell index={2} align={'right'} colSpan={2}>
+              <Text strong style={{fontSize: '20px'}}>总额：{totalSum}</Text>
+            </ProTable.Summary.Cell>
+          </ProTable.Summary.Row>
+        </>
+      );
+    }}
   />
   </ProForm.Item>
   </ProForm>
