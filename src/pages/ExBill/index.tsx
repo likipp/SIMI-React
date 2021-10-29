@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { Form, message, Typography } from 'antd';
-import type {
-  ProFormInstance} from '@ant-design/pro-form';
+import { Button, Form, message, Typography } from 'antd';
+import {
+  ProFormInstance, ProFormRadio} from '@ant-design/pro-form';
 import ProForm, {
   ProFormDigit,
   ProFormSelect,
@@ -9,8 +9,7 @@ import ProForm, {
 } from '@ant-design/pro-form';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable, { EditableProTable } from '@ant-design/pro-table';
-import { getProductList, getCustomList } from '@/pages/Product/services';
-import { forEach } from 'lodash';
+import { getProductList, getCustomList, getWareHouseList, createExBill } from '@/pages/Product/services';
 
 const { Text } = Typography;
 
@@ -22,18 +21,19 @@ const waitTime = (time: number = 100) => {
   });
 };
 
-let p_number11: string
-
 type DataSourceType = {
   id: React.Key;
   custom: number;
+  type: string;
   c_number: number;
+  pay_method: string;
   p_number: string;
   p_number2: string;
   p_name: string;
   unit_price: number;
+  ware_house: number,
   discount: number;
-  qty: number;
+  ex_qty: number;
   total: number;
   created_at?: string;
   children?: DataSourceType[];
@@ -41,7 +41,7 @@ type DataSourceType = {
 
 const defaultData: DataSourceType[] = [];
 
-const request = async (keyWords: any) => {
+const requestProduct = async (keyWords: any) => {
   return Promise.resolve(getProductList(keyWords))
     .then((res) => {
       return res.data;
@@ -51,13 +51,23 @@ const request = async (keyWords: any) => {
     });
 };
 
-const calcAmount = ({ unit_price, from, qty, discount, rowKey }: any) => {
-  if (typeof qty === 'number' && typeof unit_price === 'number' && typeof discount === 'number') {
+const requestWareHouse = async (keyWords: any) => {
+  return Promise.resolve(getWareHouseList(keyWords))
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const calcAmount = ({ unit_price, from, ex_qty, discount, rowKey }: any) => {
+  if (typeof ex_qty === 'number' && typeof unit_price === 'number' && typeof discount === 'number') {
     if (discount > 0) {
       from.setFields([
         {
           name: [`${rowKey}`, 'total'],
-          value: (qty * unit_price * discount) / 100,
+          value: (ex_qty * unit_price * discount) / 100,
         },
       ]);
       return;
@@ -65,7 +75,7 @@ const calcAmount = ({ unit_price, from, qty, discount, rowKey }: any) => {
     from.setFields([
       {
         name: [`${rowKey}`, 'total'],
-        value: qty * unit_price,
+        value: ex_qty * unit_price,
       },
     ]);
   }
@@ -73,7 +83,7 @@ const calcAmount = ({ unit_price, from, qty, discount, rowKey }: any) => {
 
 const columns: ProColumns<DataSourceType>[] = [
   {
-    title: '排序',
+    title: '序号',
     dataIndex: 'index',
     valueType: 'indexBorder',
     width: 48,
@@ -82,7 +92,7 @@ const columns: ProColumns<DataSourceType>[] = [
     title: '产品代码',
     dataIndex: 'p_number',
     key: 'p_number',
-    width: '30%',
+    width: '10%',
     valueType: 'select',
     formItemProps: () => {
       return {
@@ -99,17 +109,17 @@ const columns: ProColumns<DataSourceType>[] = [
           onChange: (value: any, item: any) => {
             if (typeof rowKey === 'number') {
               form.setFieldsValue({[rowKey]: {p_number2: item.label}})
-              console.log(form.getFieldValue([rowKey || '', 'p_number2']))
+              // console.log(form.getFieldValue([rowKey || '', 'p_number2']))
             }
           }
         }
       },
-    request: request,
+    request: requestProduct,
   },
   {
     title: '产品名称',
     dataIndex: 'p_name',
-    width: '30%',
+    width: '20%',
     formItemProps: () => {
       return {
         rules: [{ required: true, message: '产品名称必填' }],
@@ -148,8 +158,24 @@ const columns: ProColumns<DataSourceType>[] = [
     },
   },
   {
+    title: '仓库',
+    dataIndex: 'ware_house',
+    valueType: 'select',
+    formItemProps: () => {
+      return {
+        rules: [{ required: true, message: '仓库必填' }],
+      };
+    },
+    fieldProps:{
+      showArrow: false,
+      showSearch: true
+
+    },
+    request: requestWareHouse,
+  },
+  {
     title: '数量',
-    dataIndex: 'qty',
+    dataIndex: 'ex_qty',
     valueType: 'digit',
     fieldProps: {
       precision: 0,
@@ -165,44 +191,39 @@ const columns: ProColumns<DataSourceType>[] = [
   {
     title: '产品代码',
     dataIndex: 'p_number2',
-    // hideInTable: true,
+    hideInTable: true,
   },
   {
     title: '折扣',
     dataIndex: 'discount',
     valueType: 'percent',
+    fieldProps: {
+      precision: 2,
+      min: 0,
+      max: 100,
+    }
   },
   {
     title: '总价',
     dataIndex: 'total',
     valueType: 'money',
-    // fieldProps: (from, { rowKey }) => {
-    //   if (from) {
-    //     const unit_price = from.getFieldValue([rowKey || '', 'unit_price']);
-    //     const qty = from.getFieldValue([rowKey || '', 'qty']);
-    //     const discount = from.getFieldValue([rowKey || '', 'discount']);
-    //     calcAmount({ unit_price, from, qty, discount, rowKey });
-    //   }
-    //   return {
-    //     precision: 2,
-    //     min: 0,
-    //     max: 9999,
-    //   };
-    // },
     formItemProps: () => {
       return {
         rules: [{ required: true, message: '总价必填' }],
       };
     },
     renderFormItem: (_, {record})  => {
-      let t: number
+      // let t: number
       if (record) {
-        if (record.discount > 0) {
-          t = record.qty * record.unit_price * record.discount / 100
-          return t
+        if (record.unit_price === undefined || record.ex_qty === undefined) {
+          return 0
         }
-        t = record.qty * record.unit_price
-        return t
+        if (record.discount > 0) {
+          record.total = record.ex_qty * record.unit_price * record.discount / 100
+          return record.total
+        }
+        record.total = record.ex_qty * record.unit_price
+        return record.total
       }
       return 0
     }
@@ -228,13 +249,46 @@ export default () => {
     }>
       formRef={formRef}
       onFinish={async (values) => {
-        await waitTime(2000);
-        console.log(values, '提交事件');
-        message.success('提交成功');
+        const result: DataSourceType = values
+        result.type = '出库单'
+        // delete result.c_name
+        delete result.c_number
+        for (const i of result.body) {
+          i.p_number = i.p_number2
+          delete i.p_number2
+          delete i.id
+          i.ware_house = parseInt(i.ware_house)
+        }
+        console.log(values, "values")
+        // createExBill(result).then(() => {
+        //   message.success("单据创建成功")
+        //   form.resetFields()
+        // })
       }}
-      initialValues={{
-        useMode: 'chapter',
+      submitter={{
+        searchConfig: {
+          resetText: '重置',
+          submitText: '保存'
+        },
+        render:(props) => {
+          return [
+            <Button type="dashed" key="rest" danger onClick={() => {
+              props.form?.resetFields()
+              // console.log(form.getFieldsValue(true), "重置")
+              // form.resetFields([1635485311159])
+              form.resetFields();
+            }}>
+              重置
+            </Button>,
+            <Button type="primary" key="submit" onClick={() => props.form?.submit?.()}>
+              提交
+            </Button>,
+          ]
+        }
       }}
+      // initialValues={{
+      //   useMode: 'chapter',
+      // }}
     >
       <ProForm.Group>
         <ProFormText width="sm" name="id" label="单据编号" />
@@ -276,6 +330,15 @@ export default () => {
           placeholder="请输入名称"
           disabled={true}
         />
+        <ProFormText
+          width="md"
+          name="custom"
+          label="客户名称"
+          tooltip="最长为 24 位"
+          placeholder="请输入名称"
+          disabled={true}
+          hidden={true}
+        />
         <ProFormDigit
           label="折扣"
           name="discount"
@@ -287,13 +350,29 @@ export default () => {
             parser: (value: string) => value.replace('%', ''),
           }}
         />
+        <ProFormRadio.Group
+          name="pay_method"
+          label="付款方式"
+          options={[
+            {
+              label: '支付宝',
+              value: '支付宝',
+            },
+            {
+              label: '微信',
+              value: '微信',
+            }
+          ]}
+          rules={[{ required: true, message: '付款方式必填' }]}
+        />
       </ProForm.Group>
       <ProForm.Item
-        label="数组数据"
+        // label="数组数据"
         name="body"
         initialValue={defaultData}
         trigger="onValuesChange"
       >
+
         <EditableProTable<DataSourceType>
           rowKey="id"
           toolBarRender={false}
@@ -302,7 +381,7 @@ export default () => {
           onChange={setDataSource}
           recordCreatorProps={{
             newRecordType: 'dataSource',
-            position: 'top',
+            position: 'bottom',
             record: () => ({
               id: Date.now(),
             }),
@@ -314,13 +393,10 @@ export default () => {
             form,
             onChange: setEditableRowKeys,
             actionRender: (row, _, dom) => {
-              return [dom.save, dom.delete];
+              return [dom.delete];
             },
             onValuesChange: (record, recordList) => {
               const list = form.getFieldsValue(true)
-              // console.log(record, "record")
-
-
               if (record) {
                 for (const listKey in list) {
                   if (list[listKey].p_name === record.p_name) {
@@ -328,29 +404,25 @@ export default () => {
                   }
                 }
                   const unit_price = record.unit_price
-                  const qty = record.qty
+                  const ex_qty = record.ex_qty
                   const discount = record.discount
                   record.p_name = record.p_number
-                // if (form.getFieldsValue(true)[0].p_number2) {
-                //   record.p_number2 = form.getFieldsValue(true)[0].p_number2
-                // }
-                //
-                // console.log(record.p_number2, "number2")
+                  record.total = record.ex_qty * record.unit_price * record.discount
                 if (discount > 0) {
-                  record.total = unit_price * qty * discount / 100
+                  record.total = unit_price * ex_qty * discount / 100
                 } else {
-                  record.total = unit_price * qty
+                  record.total = unit_price * ex_qty
                 }
               }
-              console.log(record)
+              console.log(recordList, "onValuesChange record")
               setDataSource(recordList);
             },
           }}
           summary={(pageData) => {
             let totalNum = 0;
             let totalSum = 0;
-            pageData.forEach(({ total, qty }) => {
-              if (qty) totalNum += qty;
+            pageData.forEach(({ total, ex_qty }) => {
+              if (ex_qty) totalNum += ex_qty;
               if (total) totalSum += total;
             });
 
