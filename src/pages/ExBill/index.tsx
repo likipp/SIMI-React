@@ -397,24 +397,32 @@ export default () => {
             },
             onValuesChange: (record, recordList) => {
               const list = form.getFieldsValue(true)
+              // console.log(formRef.current?.getFieldsValue(true), "总表")
               if (record) {
+                const unit_price = record.unit_price
+                const ex_qty = record.ex_qty
+                const discount = record.discount
                 for (const listKey in list) {
                   if (list[listKey].p_name === record.p_name) {
                     record.p_number2 = list[listKey].p_number2
+                    // record.total = unit_price * ex_qty * discount / 100
+                    if (discount > 0) {
+                      form.setFieldsValue({[listKey]: {total: unit_price * ex_qty * discount / 100}})
+                      record.total = unit_price * ex_qty * discount / 100
+                    } else {
+                      form.setFieldsValue({[listKey]: {total: unit_price * ex_qty}})
+                      record.total = unit_price * ex_qty
+                    }
                   }
                 }
-                  const unit_price = record.unit_price
-                  const ex_qty = record.ex_qty
-                  const discount = record.discount
                   record.p_name = record.p_number
-                  record.total = record.ex_qty * record.unit_price * record.discount
-                if (discount > 0) {
-                  record.total = unit_price * ex_qty * discount / 100
-                } else {
-                  record.total = unit_price * ex_qty
-                }
+                  // record.total = record.ex_qty * record.unit_price * record.discount
+                // if (discount > 0) {
+                //   record.total = unit_price * ex_qty * discount / 100
+                // } else {
+                //   record.total = unit_price * ex_qty
+                // }
               }
-              console.log(recordList, "onValuesChange record")
               setDataSource(recordList);
             },
           }}
