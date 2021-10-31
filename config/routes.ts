@@ -25,6 +25,14 @@
     component: './Welcome',
   },
   {
+    path: '/exbilldetail/:number',
+    component: '@/pages/ExBillDetail',
+  },
+  {
+    path: '/inbilldetail/:number',
+    component: '@/pages/InBillDetail',
+  },
+  {
     path: '/admin',
     name: 'admin',
     icon: 'crown',
@@ -68,7 +76,7 @@
         name: '入库明细',
         component: './InList',
       },
-    ]
+    ],
   },
   {
     path: '/base',
