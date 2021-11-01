@@ -1,20 +1,40 @@
 import type React from 'react';
 
-export interface DataSourceType {
+interface BaseBodyType {
   id: React.Key;
-  number: string;
-  custom: number;
-  type: string;
-  c_number: number;
-  pay_method: string;
   p_number: string;
   p_number2: string;
   p_name: string;
   unit_price: number;
   ware_house: number;
   discount: number;
-  ex_qty: number;
   total: number;
+  crated_at: string;
+}
+
+interface BaseSourceType {
+  id: React.Key;
+  bill_number: string;
+  bill_type: string;
+  pay_method: string;
   created_at?: string;
-  body: DataSourceType[];
+  body: BaseBodyType[];
+}
+
+interface ExBodyType extends BaseBodyType {
+  ex_qty: number
+}
+
+interface InBodyType extends BaseBodyType {
+  in_qty: number
+}
+
+export interface ExHeaderType extends BaseSourceType, ExBodyType{
+  custom: number;
+  c_number: number;
+}
+
+
+export interface InSourceType extends BaseSourceType, InBodyType{
+
 }

@@ -23,6 +23,10 @@ const summary = (pageData: any) => {
     if (item.ex_qty) {
       totalNum += item.ex_qty;
     }
+
+    if (item.in_qty) {
+      totalNum += item.in_qty;
+    }
     if (item.total) {
       totalSum += item.total;
     }

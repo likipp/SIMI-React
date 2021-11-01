@@ -33,38 +33,19 @@
     component: '@/pages/InBillDetail',
   },
   {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    component: './Admin',
-    routes: [
-      {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
-      },
-      {
-        component: './404',
-      },
-    ],
-  },
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
-  },
-  {
     path: 'manager',
     name: '供应管理',
-    icon: 'crown',
+    icon: 'moneyCollect',
     routes: [
       {
         path: '/manager/exbill',
         name: '新增出库单',
         component: './ExBill',
+      },
+      {
+        path: '/manager/inbill',
+        name: '新增入库单',
+        component: './InBill',
       },
       {
         path: '/manager/ex',
@@ -81,7 +62,7 @@
   {
     path: '/base',
     name: '基础设置',
-    icon: 'crown',
+    icon: 'setting',
     routes: [
       {
         path: '/base/custom',

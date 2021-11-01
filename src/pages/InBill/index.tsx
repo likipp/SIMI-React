@@ -47,9 +47,6 @@ const columns: ProColumns<InSourceType>[] = [
         showSearch: true,
         onChange: (value: any, item: any) => {
           form.setFieldsValue({ [rowKey as any]: { p_number2: item.label } });
-          // if (typeof rowKey === 'number') {
-          //   // console.log(form.getFieldValue([rowKey || '', 'p_number2']))
-          // }
         },
       };
     },
@@ -117,7 +114,7 @@ const columns: ProColumns<InSourceType>[] = [
   {
     title: '数量',
     align: 'right',
-    dataIndex: 'ex_qty',
+    dataIndex: 'in_qty',
     valueType: 'digit',
     fieldProps: {
       precision: 0,
@@ -137,17 +134,6 @@ const columns: ProColumns<InSourceType>[] = [
     hideInTable: true,
   },
   {
-    title: '折扣',
-    align: 'right',
-    dataIndex: 'discount',
-    valueType: 'percent',
-    fieldProps: {
-      precision: 2,
-      min: 0,
-      max: 100,
-    },
-  },
-  {
     title: '总价',
     align: 'right',
     dataIndex: 'total',
@@ -157,21 +143,6 @@ const columns: ProColumns<InSourceType>[] = [
         rules: [{ required: true, message: '总价必填' }],
       };
     },
-    // renderFormItem: (_, {record})  => {
-    //   // let t: number
-    //   if (record) {
-    //     if (record.unit_price === undefined || record.ex_qty === undefined) {
-    //       return 0
-    //     }
-    //     if (record.discount > 0) {
-    //       record.total = record.ex_qty * record.unit_price * record.discount / 100
-    //       return record.total
-    //     }
-    //     record.total = record.ex_qty * record.unit_price
-    //     return record.total
-    //   }
-    //   return 0
-    // }
   },
   {
     title: '操作',
@@ -180,10 +151,9 @@ const columns: ProColumns<InSourceType>[] = [
 ];
 
 export default () => {
-
   return (
-    <PageContainer>
-      <BaseBill bill={'出库单'} columns={columns}/>
-    </PageContainer>
+   <PageContainer>
+     <BaseBill bill={'入库单'} columns={columns}/>
+   </PageContainer>
   );
 };
