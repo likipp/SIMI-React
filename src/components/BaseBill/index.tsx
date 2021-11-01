@@ -1,6 +1,6 @@
-import type { MutableRefObject} from 'react';
+import type { MutableRefObject } from 'react';
 import React, { useRef, useState } from 'react';
-import type { ProFormInstance} from '@ant-design/pro-form';
+import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm, { ProFormDatePicker, ProFormRadio, ProFormText } from '@ant-design/pro-form';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
 import { Button, Form, message } from 'antd';
@@ -14,25 +14,25 @@ import { getBillNumber } from '@/pages/InBill/services';
 interface BillProps {
   bill: string;
   // num: string;
-  columns: ProColumns<InSourceType>[]
+  columns: ProColumns<InSourceType>[];
 }
 
 const defaultData: InSourceType[] = [];
 
 const BaseBill: React.FC<BillProps> = (prop) => {
-  const {bill, columns} = prop
+  const { bill, columns } = prop;
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     defaultData.map((item) => item.id),
   );
   const formRef = useRef<ProFormInstance>();
   const [dataSource, setDataSource] = useState<InSourceType[]>(() => defaultData);
   const [form] = Form.useForm();
-  const [billNumber, setBillNumber] = useState('')
+  const [billNumber, setBillNumber] = useState('');
 
   const requestBillNumber = async () => {
-    return Promise.resolve(getBillNumber({type: bill})).then((res) => {
-      setBillNumber(res.data)
-      return {bill_number: res.data}
+    return Promise.resolve(getBillNumber({ type: bill })).then((res) => {
+      setBillNumber(res.data);
+      return { bill_number: res.data };
     });
   };
 
@@ -43,7 +43,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
         onFinish={async (values) => {
           const result: InSourceType = values;
           result.bill_type = bill;
-          result.bill_number = billNumber
+          result.bill_number = billNumber;
           // delete result.c_name
           for (const i of result.body) {
             i.p_number = i.p_number2;
@@ -55,7 +55,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
           createExBill(result).then(() => {
             message.success('单据创建成功');
             form.resetFields();
-            setDataSource([])
+            setDataSource([]);
           });
         }}
         submitter={{
@@ -83,14 +83,10 @@ const BaseBill: React.FC<BillProps> = (prop) => {
             ];
           },
         }}
-        initialValues={{
-          'bill_number': billNumber
-        }}
         request={requestBillNumber}
       >
         <ProForm.Group>
-          <ProFormText width="sm" name="bill_number" label="单据编号"
-                       initialValue={billNumber} disabled={true}/>
+          <ProFormText width="sm" name="bill_number" label="单据编号" disabled={true} />
           <ProFormDatePicker
             name="created_at"
             label="单据日期"
@@ -174,7 +170,6 @@ const BaseBill: React.FC<BillProps> = (prop) => {
       </ProForm>
     </div>
   );
-}
+};
 
-
-export default BaseBill
+export default BaseBill;

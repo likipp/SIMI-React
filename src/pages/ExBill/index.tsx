@@ -1,23 +1,8 @@
 import type { ProColumns } from '@ant-design/pro-table';
-import {
-  getProductList,
-  getWareHouseList,
-} from '@/pages/Product/services';
 import { PageContainer } from '@ant-design/pro-layout';
 import BaseBill from '@/components/BaseBill';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
-
-const requestProduct = async (keyWords: any) => {
-  return Promise.resolve(getProductList(keyWords)).then((res) => {
-    return res.data;
-  });
-};
-
-const requestWareHouse = async (keyWords: any) => {
-  return Promise.resolve(getWareHouseList(keyWords)).then((res) => {
-    return res.data;
-  });
-};
+import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
 
 const columns: ProColumns<InSourceType>[] = [
   {
@@ -180,10 +165,9 @@ const columns: ProColumns<InSourceType>[] = [
 ];
 
 export default () => {
-
   return (
     <PageContainer>
-      <BaseBill bill={'出库单'} columns={columns}/>
+      <BaseBill bill={'出库单'} columns={columns} />
     </PageContainer>
   );
 };
