@@ -4,6 +4,7 @@
 declare namespace API {
   type CurrentUser = {
     name?: string;
+    nickname?: string;
     avatar?: string;
     userid?: string;
     email?: string;
@@ -25,6 +26,7 @@ declare namespace API {
 
   type LoginResult = {
     status?: string;
+    success?: boolean;
     type?: string;
     currentAuthority?: string;
   };

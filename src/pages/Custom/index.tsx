@@ -8,44 +8,20 @@ import { PageContainer } from '@ant-design/pro-layout';
 import CreateCustom from './CreateCustom';
 import CreateOrder from './CreateOrder';
 import { getCustomList } from '@/pages/Custom/services';
-
-const valueEnum = {
-  0: 'close',
-  1: 'running',
-  2: 'online',
-  3: 'error',
-};
+import UpdateForm from '@/pages/TableList/components/UpdateForm';
 
 export type TableListItem = {
   key: number;
-  name: string;
-  containers: number;
-  creator: string;
-  status: string;
+  c_name: string;
+  c_number: string;
   createdAt: number;
   boughtAt: number;
-  progress: number;
-  money: number;
-  memo: string;
+  level: number;
+  mark: string;
+  phone: string;
+  address: string;
 };
-const tableListDataSource: TableListItem[] = [];
-
-const creators = ['付小小', '曲丽丽', '林东东', '陈帅帅', '兼某某'];
-
-for (let i = 0; i < 5; i += 1) {
-  tableListDataSource.push({
-    key: i,
-    name: 'AppName',
-    containers: Math.floor(Math.random() * 20),
-    creator: creators[Math.floor(Math.random() * creators.length)],
-    status: valueEnum[Math.floor(Math.random() * 10) % 4],
-    createdAt: Date.now() - Math.floor(Math.random() * 2000),
-    boughtAt: Date.now() - Math.floor(Math.random() * 2000),
-    money: Math.floor(Math.random() * 2000) * i,
-    progress: Math.ceil(Math.random() * 100) + 1,
-    memo: i % 2 === 1 ? '很长很长很长很长很长很长很长的文字要展示但是要留下尾巴' : '简短备注文案',
-  });
-}
+// const tableListDataSource: TableListItem[] = [];
 
 const columns: ProColumns<TableListItem>[] = [
   {
@@ -70,18 +46,6 @@ const columns: ProColumns<TableListItem>[] = [
       <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
   },
-  // {
-  //   title: '创建者',
-  //   dataIndex: 'creator',
-  //   valueEnum: {
-  //     all: { text: '全部' },
-  //     付小小: { text: '付小小' },
-  //     曲丽丽: { text: '曲丽丽' },
-  //     林东东: { text: '林东东' },
-  //     陈帅帅: { text: '陈帅帅' },
-  //     兼某某: { text: '兼某某' },
-  //   },
-  // },
   {
     title: '等级',
     dataIndex: 'level_name',
@@ -127,7 +91,7 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '备注',
     align: 'center',
-    dataIndex: 'memo',
+    dataIndex: 'mark',
     ellipsis: true,
     copyable: true,
   },
@@ -162,6 +126,7 @@ const menu = (
 export default () => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [createOrderVisible, setCreateOrderVisible] = useState(false);
+  const [updateModalVisible, setUpdateModalVisible] = useState(false)
 
   const handleCancel = () => {
     setCreateModalVisible(false);
@@ -180,6 +145,7 @@ export default () => {
           console.log(params, sorter, filter);
           return Promise.resolve(getCustomList({ sorter, filter }))
             .then((res) => {
+              console.log(res, "res")
               return res;
             })
             .catch((err) => {
@@ -227,6 +193,7 @@ export default () => {
         ]}
       />
       <CreateCustom createModalVisible={createModalVisible} onCancel={handleCancel} />
+      {/*<UpdateForm onCancel={handleCancel} updateModalVisible={updateModalVisible} />*/}
       <CreateOrder createOrderVisible={createOrderVisible} onCancel={handleOrderCancel} />
     </PageContainer>
   );

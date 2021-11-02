@@ -6,35 +6,28 @@ import ProForm, {
   ProFormSelect,
   ProFormTextArea
 } from '@ant-design/pro-form';
-import { addCustom } from '@/pages/Custom/services';
 import { TableListItem } from '@/pages/Custom';
 
 export type CreateFormProps = {
   onCancel: (flag?: boolean) => void;
   // onSubmit: (values: FormValueType) => Promise<void>;
-  createModalVisible: boolean;
+  updateModalVisible: boolean;
   // values: Partial<API.RuleListItem>;
 };
 
-const createCustom: React.FC<CreateFormProps> = (props) => {
+const updateCustom: React.FC<CreateFormProps> = (props) => {
   return (
     <ModalForm<
-      TableListItem
-    >
-      visible={props.createModalVisible}
+        TableListItem
+      >
+      visible={props.updateModalVisible}
       modalProps={{
         // onCancel: () => console.log('run'),
         onCancel: () => props.onCancel()
       }}
       onFinish={async (values) => {
         // await waitTime(2000);
-        const res = values
-        res.level = parseInt(String(res.level))
-        console.log(res);
-        addCustom(res).then(() => {
-          message.success('提交成功');
-          return true;
-        })
+        console.log(values);
         return false
       }}
     >
@@ -99,4 +92,4 @@ const createCustom: React.FC<CreateFormProps> = (props) => {
   );
 };
 
-export default createCustom
+export default updateCustom
