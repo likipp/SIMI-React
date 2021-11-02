@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { message } from 'antd';
 import ProForm, {
   ModalForm,
@@ -6,24 +6,38 @@ import ProForm, {
   ProFormSelect,
   ProFormTextArea
 } from '@ant-design/pro-form';
-import { TableListItem } from '@/pages/Custom';
+import type { TableListItem } from '@/pages/Custom';
+import { getCustomList } from '@/pages/Custom/services';
 
-export type CreateFormProps = {
+export type UpdateFormProps = {
   onCancel: (flag?: boolean) => void;
   // onSubmit: (values: FormValueType) => Promise<void>;
   updateModalVisible: boolean;
+  id: number
   // values: Partial<API.RuleListItem>;
 };
 
-const updateCustom: React.FC<CreateFormProps> = (props) => {
+const UpdateCustom: React.FC<UpdateFormProps> = (props) => {
+  const {onCancel, updateModalVisible, id} = props
+  const [initialValue, SetInitialValue] = useState<TableListItem>()
+
+  // const requestCustom = async () => {
+  //   return Promise.resolve(getCustomList({ id: id })).then((res) => {
+  //     SetInitialValue(res.data);
+  //   });
+  // };
+  useEffect(() => {
+    getCustomList({id: id}).then((res) => {
+      SetInitialValue(res.data)
+    })
+  }, [id])
   return (
     <ModalForm<
         TableListItem
       >
-      visible={props.updateModalVisible}
+      visible={updateModalVisible}
       modalProps={{
-        // onCancel: () => console.log('run'),
-        onCancel: () => props.onCancel()
+        onCancel: () => onCancel()
       }}
       onFinish={async (values) => {
         // await waitTime(2000);
@@ -46,6 +60,7 @@ const updateCustom: React.FC<CreateFormProps> = (props) => {
           label="客户名称"
           tooltip="最长为 24 位"
           placeholder="请输入名称"
+          initialValue={initialValue?.c_name}
           rules={[{ required: true, message: '请输入客户名称' }]}
         />
         <ProFormSelect
@@ -92,4 +107,4 @@ const updateCustom: React.FC<CreateFormProps> = (props) => {
   );
 };
 
-export default updateCustom
+export default UpdateCustom

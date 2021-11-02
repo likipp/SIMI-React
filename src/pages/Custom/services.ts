@@ -2,10 +2,12 @@ import { request } from 'umi';
 import { TableListItem } from '@/pages/Custom/index';
 
 export async function getCustomList(params?: any) {
+  console.log(params, "params")
   return request('/api/v1/base/custom/', {
     params,
   });
 }
+
 export async function addCustom(params: TableListItem) {
   return request('/api/v1/base/custom', {
     method: 'POST',
