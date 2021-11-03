@@ -5,6 +5,8 @@ import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import { notification } from 'antd';
+import { RequestConfig } from '@@/plugin-request/request';
 
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -45,6 +47,34 @@ export async function getInitialState(): Promise<{
     settings: {},
   };
 }
+
+// 验证Header传递的token
+const authHeaderInterceptor = (url: string, options: any) => {
+  const authHeader = { Authorization: `Bearer ${localStorage.getItem('token')}` };
+  return {
+    url: `${url}`,
+    options: { ...options, interceptors: true, headers: authHeader },
+  };
+};
+
+// const demoResponseInterceptors = (response: Response) => {
+//   response.headers.append('interceptors', 'yes yo');
+//   return response;
+// };
+
+export const request: RequestConfig = {
+  errorHandler: (error: any) => {
+    const { response } = error;
+    if (!response) {
+      notification.error({
+        description: '您的网络发生异常，无法连接服务器',
+        message: '网络异常',
+      });
+    }
+    throw error;
+  },
+  requestInterceptors: [authHeaderInterceptor],
+};
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
