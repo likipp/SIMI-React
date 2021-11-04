@@ -29,7 +29,7 @@ interface InBodyType extends BaseBodyType {
   in_qty: number
 }
 
-export interface ExHeaderType extends BaseSourceType, ExBodyType{
+export interface ExSourceType extends BaseSourceType, ExBodyType{
   custom: number;
   c_number: number;
 }

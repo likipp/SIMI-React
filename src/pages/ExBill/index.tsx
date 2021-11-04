@@ -1,10 +1,10 @@
 import type { ProColumns } from '@ant-design/pro-table';
 import { PageContainer } from '@ant-design/pro-layout';
 import BaseBill from '@/components/BaseBill';
-import type { InSourceType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
+import {ExSourceType} from "@/pages/ExBillDetail/data";
 
-const columns: ProColumns<InSourceType>[] = [
+const columns: ProColumns<ExSourceType>[] = [
   {
     title: '序号',
     dataIndex: 'index',
@@ -143,7 +143,7 @@ const columns: ProColumns<InSourceType>[] = [
       };
     },
     // renderFormItem: (_, {record})  => {
-    //   // let t: number
+    //   let t: number
     //   if (record) {
     //     if (record.unit_price === undefined || record.ex_qty === undefined) {
     //       return 0
