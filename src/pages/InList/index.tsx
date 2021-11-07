@@ -46,7 +46,7 @@ const columns: ProColumns<TableListItem>[] = [
     valueType: 'dateRange',
     render: (value, row) => {
       return {
-        children: moment(value as MomentInput).format('YYYY-MM-DD HH:mm'),
+        children: moment(row.created_at as MomentInput).format('YYYY-MM-DD HH:mm'),
         props: {
           rowSpan: row.rowSpan,
         },
@@ -121,9 +121,7 @@ export default () => {
             });
         }}
         rowKey="key"
-        pagination={{
-          showQuickJumper: true,
-        }}
+        pagination={false}
         search={{
           layout: 'vertical',
           defaultCollapsed: false,

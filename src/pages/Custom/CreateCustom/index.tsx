@@ -7,7 +7,7 @@ import ProForm, {
   ProFormTextArea
 } from '@ant-design/pro-form';
 import { addCustom } from '@/pages/Custom/services';
-import { TableListItem } from '@/pages/Custom';
+import type { TableListItem } from '@/pages/Custom';
 
 export type CreateFormProps = {
   onCancel: (flag?: boolean) => void;

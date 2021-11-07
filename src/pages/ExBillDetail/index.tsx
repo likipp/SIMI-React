@@ -4,24 +4,22 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProForm, {
   ProFormDatePicker,
-  ProFormDigit,
   ProFormRadio,
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-form';
 import { useState } from 'react';
 import moment from 'moment';
-// import { getCustomList, getProductList, getWareHouseList } from '@/pages/Product/services';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import { getExBillDetail } from '@/pages/ExBillDetail/services';
 import { getCustomList } from '@/pages/Product/services';
 import summary from '@/utils/summary';
-import type { DataSourceType } from '@/pages/ExBillDetail/data';
+import type { ExSourceType } from '@/pages/ExBillDetail/data';
 
-const defaultData: DataSourceType[] = [];
+const defaultData: ExSourceType[] = [];
 
-const columns: ProColumns<DataSourceType>[] = [
+const columns: ProColumns<ExSourceType>[] = [
   {
     title: '序号',
     dataIndex: 'index',
@@ -76,15 +74,33 @@ const columns: ProColumns<DataSourceType>[] = [
     hideInTable: true,
   },
   {
-    title: '折扣',
+    title: '会员折扣',
     align: 'right',
-    dataIndex: 'discount',
+    dataIndex: 'ex_discount',
     valueType: 'percent',
   },
   {
-    title: '总价',
+    title: '金额',
     align: 'right',
     dataIndex: 'total',
+    valueType: 'money',
+  },
+  {
+    title: '进货折扣',
+    align: 'right',
+    dataIndex: 'in_discount',
+    valueType: 'percent',
+  },
+  {
+    title: '成本',
+    align: 'right',
+    dataIndex: 'cost',
+    valueType: 'money',
+  },
+  {
+    title: '利润',
+    align: 'right',
+    dataIndex: 'profit',
     valueType: 'money',
   },
 ];
@@ -108,7 +124,7 @@ export default () => {
       >
         返回
       </Button>
-      <ProForm<DataSourceType>
+      <ProForm<ExSourceType>
         submitter={{
           // searchConfig: {
           //   resetText: '重置',
@@ -132,12 +148,28 @@ export default () => {
         }}
       >
         <ProForm.Group>
-          <ProFormText width="sm" name="number" label="单据编号" disabled={disabled} />
+          <ProFormText width="sm" name="bill_number" label="单据编号" disabled={disabled} />
           <ProFormDatePicker
             name="created_at"
             label="单据日期"
             initialValue={moment(new Date().getTime()).format('YYYY-MM-DD')}
             disabled={disabled}
+          />
+
+          <ProFormRadio.Group
+            name="pay_method"
+            label="付款方式"
+            disabled={disabled}
+            options={[
+              {
+                label: '支付宝',
+                value: 'ali',
+              },
+              {
+                label: '微信',
+                value: 'wechat',
+              },
+            ]}
           />
         </ProForm.Group>
         <ProForm.Group>
@@ -163,47 +195,19 @@ export default () => {
             disabled={true}
             hidden={true}
           />
-          <ProFormDigit
-            label="折扣"
-            name="discount"
-            min={1}
-            max={100}
-            disabled={disabled}
-            fieldProps={{
-              precision: 2,
-              formatter: (value: any) => `${value}%`,
-              parser: (value: any) => value.replace('%', ''),
-            }}
-          />
-          <ProFormRadio.Group
-            name="pay_method"
-            label="付款方式"
-            disabled={disabled}
-            options={[
-              {
-                label: '支付宝',
-                value: 'ali',
-              },
-              {
-                label: '微信',
-                value: 'wechat',
-              },
-            ]}
-          />
         </ProForm.Group>
         <ProForm.Item
           name="body"
           initialValue={defaultData}
-          // trigger="onValuesChange"
         >
-          <EditableProTable<DataSourceType>
+          <EditableProTable<ExSourceType>
             rowKey="id"
             toolBarRender={false}
             columns={columns}
             value={data}
             controlled
             recordCreatorProps={false}
-            summary={(pageData) => summary(pageData)}
+            summary={(pageData) => summary(pageData, "出库")}
           />
         </ProForm.Item>
       </ProForm>

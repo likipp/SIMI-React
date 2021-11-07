@@ -18,8 +18,10 @@ export type TableListItem = {
   unit_price: number;
   total: number;
   rowSpan: number;
-  h_discount: number;
-  b_discount: number;
+  in_discount: number;
+  ex_discount: number;
+  cost: number;
+  profit: number;
 };
 
 const valueEnum = {
@@ -100,12 +102,6 @@ const columns: ProColumns<TableListItem>[] = [
     align: 'center',
   },
   {
-    title: '客户折扣',
-    dataIndex: 'h_discount',
-    align: 'center',
-    valueType: 'percent',
-  },
-  {
     title: '单价',
     dataIndex: 'ex_qty',
     align: 'center',
@@ -119,15 +115,22 @@ const columns: ProColumns<TableListItem>[] = [
     valueType: 'digit',
   },
   {
-    title: '折上折',
-    dataIndex: 'b_discount',
-    align: 'center',
-    valueType: 'percent',
-    fieldProps: { precision: 0 },
-  },
-  {
     title: '金额',
     dataIndex: 'total',
+    align: 'center',
+    search: false,
+    valueType: 'money',
+  },
+  {
+    title: '成本',
+    dataIndex: 'cost',
+    align: 'center',
+    search: false,
+    valueType: 'money',
+  },
+  {
+    title: '利润',
+    dataIndex: 'profit',
     align: 'center',
     search: false,
     valueType: 'money',
@@ -139,22 +142,21 @@ export default () => {
     <PageContainer>
       <ProTable<TableListItem>
         columns={columns}
-        request={(params, sorter, filter) => {
+        request={async (params, sorter, filter) => {
           // 表单搜索项会从 params 传入，传递给后端接口。
-          return Promise.resolve(getExStockList({ sorter, filter }))
-            .then((res) => {
-              res.data = mergeCells(res.data);
-              return res;
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          params.pageSize = 9999
+          params.current = 1
+          try {
+            const res = await Promise.resolve(getExStockList({params, sorter, filter }));
+            res.data = mergeCells(res.data);
+            return res;
+          } catch (err) {
+            console.log(err);
+          }
         }}
         bordered={true}
         rowKey="key"
-        pagination={{
-          showQuickJumper: true,
-        }}
+        pagination={false}
         search={{
           layout: 'vertical',
           defaultCollapsed: false,

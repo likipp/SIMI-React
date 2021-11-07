@@ -10,6 +10,7 @@ import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import summary from '@/utils/summary';
 import { getBillNumber } from '@/pages/InBill/services';
+import toDecimal2 from '@/utils/toDecimal2';
 
 interface BillProps {
   bill: string;
@@ -27,7 +28,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
   const formRef = useRef<ProFormInstance>();
   const [dataSource, setDataSource] = useState<InSourceType[]>(() => defaultData);
   const [form] = Form.useForm();
-  const [billNumber, setBillNumber] = useState('');
+  const [billNumber, setBillNumber] = useState("");
 
   const requestBillNumber = async () => {
     return Promise.resolve(getBillNumber({ type: bill })).then((res) => {
@@ -42,30 +43,36 @@ const discountChange = (record: any, recordList: any, type: string) => {
     if (record) {
       if (type == '出库单') {
         qty = record.ex_qty;
+        const unit_price = record.unit_price;
+        const in_discount = record.in_discount;
+        const ex_discount = record.ex_discount;
+        for (const listKey in list) {
+          if (list[listKey].p_name === record.p_name) {
+            record.p_number2 = list[listKey].p_number2;
+            const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
+            const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
+            const profit = toDecimal2(total - cost)
+            form.setFieldsValue({
+              [listKey]: { total: total },
+            });
+            form.setFieldsValue({
+              [listKey]: { cost: cost },
+            });
+            form.setFieldsValue({
+              [listKey]: { profit: profit },
+            });
+          }
+        }
       } else {
         qty = record.in_qty;
-      }
-      const unit_price = record.unit_price;
-      const discount = record.discount;
-      const c_discount = formRef.current?.getFieldsValue(true).discount;
-      for (const listKey in list) {
-        if (list[listKey].p_name === record.p_name) {
-          record.p_number2 = list[listKey].p_number2;
-          if (c_discount > 0) {
-            const total = (unit_price * qty * c_discount) / 100;
-            if (discount > 0) {
-              form.setFieldsValue({ [listKey]: { total: (total * discount) / 100 } });
-            } else {
-              form.setFieldsValue({ [listKey]: { total: total } });
-            }
-          } else {
-            if (discount > 0) {
-              form.setFieldsValue({
-                [listKey]: { total: (unit_price * qty * discount) / 100 },
-              });
-            } else {
-              form.setFieldsValue({ [listKey]: { total: unit_price * qty } });
-            }
+        for (const listKey in list) {
+          const unit_price = record.unit_price;
+          if (list[listKey].p_name === record.p_name) {
+            record.p_number2 = list[listKey].p_number2;
+            const total: number = toDecimal2(unit_price * qty);
+            form.setFieldsValue({
+              [listKey]: { total: total },
+            });
           }
         }
       }
@@ -75,10 +82,10 @@ const discountChange = (record: any, recordList: any, type: string) => {
 
   return (
     <div>
-      <ProForm<InSourceType>
+      <ProForm<InSourceType | ExSourceType>
         formRef={formRef as MutableRefObject<any>}
         onFinish={async (values) => {
-          const result: InSourceType = values;
+          const result: InSourceType | ExSourceType = values;
           result.bill_type = bill;
           result.bill_number = billNumber;
           // delete result.c_name
@@ -88,8 +95,8 @@ const discountChange = (record: any, recordList: any, type: string) => {
             i.id = 0;
             i.ware_house = parseInt(String(i.ware_house));
           }
-          console.log(values, 'values');
           createExBill(result).then(() => {
+            console.log(result, "数据")
             message.success('单据创建成功');
             form.resetFields();
             setDataSource([]);
@@ -144,19 +151,7 @@ const discountChange = (record: any, recordList: any, type: string) => {
             ]}
             rules={[{ required: true, message: '付款方式必填' }]}
           />
-          <ProFormDigit
-            label="折扣"
-            name="discount"
-            min={1}
-            max={100}
-            fieldProps={{
-              precision: 2,
-              formatter: (value: any) => `${value}%`,
-              parser: (value: any) => value.replace('%', ''),
-            }}
-          />
         </ProForm.Group>
-
         {
           bill == '出库单' ? <ProForm.Group>
             <ProFormSelect
@@ -174,7 +169,6 @@ const discountChange = (record: any, recordList: any, type: string) => {
               onChange={(value: string, label: any) => {
                 formRef?.current?.setFieldsValue({ custom: label.id });
                 formRef?.current?.setFieldsValue({ c_name: label.value });
-                formRef?.current?.setFieldsValue({ discount: label.discount });
               }}
               fieldProps={{
                 optionItemRender(item) {
@@ -231,7 +225,7 @@ const discountChange = (record: any, recordList: any, type: string) => {
                 setDataSource(recordList);
               },
             }}
-            summary={(pageData) => summary(pageData)}
+            summary={(pageData) => summary(pageData, bill)}
           />
         </ProForm.Item>
       </ProForm>

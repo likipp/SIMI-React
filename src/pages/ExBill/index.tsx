@@ -2,7 +2,8 @@ import type { ProColumns } from '@ant-design/pro-table';
 import { PageContainer } from '@ant-design/pro-layout';
 import BaseBill from '@/components/BaseBill';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
-import {ExSourceType} from "@/pages/ExBillDetail/data";
+import type {ExSourceType} from "@/pages/ExBillDetail/data";
+import toDecimal2 from '@/utils/toDecimal2';
 
 const columns: ProColumns<ExSourceType>[] = [
   {
@@ -32,9 +33,8 @@ const columns: ProColumns<ExSourceType>[] = [
         showSearch: true,
         onChange: (value: any, item: any) => {
           form.setFieldsValue({ [rowKey as any]: { p_number2: item.label } });
-          // if (typeof rowKey === 'number') {
-          //   // console.log(form.getFieldValue([rowKey || '', 'p_number2']))
-          // }
+          form.setFieldsValue({[rowKey as any]: {unit_price: item.price}})
+          form.setFieldsValue({[rowKey as any]: {ware_house: item.ware_house}})
         },
       };
     },
@@ -68,22 +68,6 @@ const columns: ProColumns<ExSourceType>[] = [
     },
   },
   {
-    title: '单价',
-    align: 'right',
-    dataIndex: 'unit_price',
-    valueType: 'money',
-    fieldProps: {
-      precision: 2,
-      min: 0,
-      max: 9999,
-    },
-    formItemProps: () => {
-      return {
-        rules: [{ required: true, message: '单价必填' }],
-      };
-    },
-  },
-  {
     title: '仓库',
     align: 'right',
     dataIndex: 'ware_house',
@@ -98,6 +82,22 @@ const columns: ProColumns<ExSourceType>[] = [
       showSearch: true,
     },
     request: requestWareHouse,
+  },
+  {
+    title: '单价',
+    align: 'right',
+    dataIndex: 'unit_price',
+    valueType: 'money',
+    fieldProps: {
+      precision: 2,
+      min: 0,
+      max: 9999,
+    },
+    formItemProps: () => {
+      return {
+        rules: [{ required: true, message: '单价必填' }],
+      };
+    },
   },
   {
     title: '数量',
@@ -122,45 +122,94 @@ const columns: ProColumns<ExSourceType>[] = [
     hideInTable: true,
   },
   {
-    title: '折扣',
+    title: '会员折扣',
     align: 'right',
-    dataIndex: 'discount',
+    dataIndex: 'ex_discount',
+    valueType: 'percent',
+    fieldProps: {
+      precision: 3,
+      min: 0,
+      max: 100,
+    },
+    formItemProps: () => {
+      return {
+        rules: [{ required: true, message: '会员折扣必填' }],
+      };
+    },
+  },
+  {
+    title: '金额',
+    align: 'right',
+    dataIndex: 'total',
+    valueType: 'money',
+    fieldProps: (form, { rowKey }) => {
+      const unit_price = form.getFieldValue([rowKey || '', 'unit_price'])
+      const ex_qty = form.getFieldValue([rowKey || '', 'ex_qty'])
+      return {
+        rules: [{ required: true, message: '金额必填' }],
+        onChange: (item: any) => {
+          form.setFieldsValue({[rowKey as any]: {ex_discount: item / ex_qty / unit_price * 100}})
+        },
+      };
+    },
+  },
+  {
+    title: '进货折扣',
+    align: 'right',
+    dataIndex: 'in_discount',
     valueType: 'percent',
     fieldProps: {
       precision: 2,
       min: 0,
       max: 100,
     },
+    formItemProps: () => {
+      return {
+        rules: [{ required: true, message: '进货折扣必填' }],
+      };
+    },
   },
   {
-    title: '总价',
+    title: '成本',
     align: 'right',
-    dataIndex: 'total',
+    dataIndex: 'cost',
+    valueType: 'money',
+    fieldProps: (form, { rowKey }) => {
+      const unit_price = form.getFieldValue([rowKey || '', 'unit_price'])
+      const ex_qty = form.getFieldValue([rowKey || '', 'ex_qty'])
+
+      return {
+        rules: [{ required: true, message: '成本必填' }],
+        onChange: (item: any) => {
+          const in_discount = Math.floor(item / ex_qty / unit_price * 100 * 1000) / 1000
+          form.setFieldsValue({[rowKey as any]: {in_discount: in_discount}})
+        },
+      };
+    },
+  },
+
+
+  {
+    title: '利润',
+    align: 'right',
+    dataIndex: 'profit',
     valueType: 'money',
     formItemProps: () => {
       return {
-        rules: [{ required: true, message: '总价必填' }],
+        rules: [{ required: true, message: '利润必填' }],
       };
     },
-    // renderFormItem: (_, {record})  => {
-    //   let t: number
-    //   if (record) {
-    //     if (record.unit_price === undefined || record.ex_qty === undefined) {
-    //       return 0
-    //     }
-    //     if (record.discount > 0) {
-    //       record.total = record.ex_qty * record.unit_price * record.discount / 100
-    //       return record.total
-    //     }
-    //     record.total = record.ex_qty * record.unit_price
-    //     return record.total
-    //   }
-    //   return 0
-    // }
+    renderFormItem: (_, {record})  => {
+      if (record?.total === undefined || record?.cost === undefined) {
+        return 0
+      }
+      return toDecimal2(record.total - record.cost)
+    }
   },
   {
     title: '操作',
     valueType: 'option',
+    align: 'right',
   },
 ];
 

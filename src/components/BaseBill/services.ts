@@ -1,7 +1,12 @@
-import { getProductList, getWareHouseList } from '@/pages/Product/services';
+import {
+  getBrandSelectList,
+  getProductSelectList,
+  getUnitSelectList,
+  getWareHouseList,
+} from '@/pages/Product/services';
 
 const requestProduct = async (keyWords: any) => {
-  return Promise.resolve(getProductList(keyWords)).then((res) => {
+  return Promise.resolve(getProductSelectList(keyWords)).then((res) => {
     return res.data;
   });
 };
@@ -12,4 +17,16 @@ const requestWareHouse = async (keyWords: any) => {
   });
 };
 
-export { requestProduct, requestWareHouse };
+const requestUnitSelectList = async (keyWords: any) => {
+  return Promise.resolve(getUnitSelectList(keyWords)).then((res) => {
+    return res.data;
+  });
+};
+
+const requestBrandSelectList  = async (keyWords: any) => {
+  return Promise.resolve(getBrandSelectList(keyWords)).then((res) => {
+    return res.data;
+  });
+};
+
+export { requestProduct, requestWareHouse, requestUnitSelectList, requestBrandSelectList };

@@ -23,6 +23,10 @@ interface BaseSourceType {
 
 interface ExBodyType extends BaseBodyType {
   ex_qty: number
+  cost: number
+  profit: number
+  ex_discount: number
+  in_discount: number
 }
 
 interface InBodyType extends BaseBodyType {
