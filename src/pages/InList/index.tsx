@@ -197,7 +197,7 @@ export default () => {
           </Button>
         ]}
         rowSelection={{
-          type: "checkbox",
+          type: 'radio',
           // 自定义选择项参考: https://ant.design/components/table-cn/#components-table-demo-row-selection-custom
           // 注释该行则默认不显示下拉选项
           // selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE,],
