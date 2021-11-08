@@ -19,6 +19,7 @@ export async function updatePayDiscount(params: PayItem) {
 }
 
 export async function getPayList(params: any) {
+  console.log(params, 'params');
   return request('/api/v1/base/payable/', {
     params,
   });
