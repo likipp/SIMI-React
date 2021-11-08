@@ -1,4 +1,4 @@
-import { Button, Input } from 'antd';
+import { Button, Input, Table } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -35,7 +35,7 @@ export default () => {
   const columns: ProColumns<TableListItem>[] = [
     {
       title: '排序',
-      dataIndex: 'index',
+      dataIndex: 'key',
       valueType: 'indexBorder',
       width: 48,
     },
@@ -136,6 +136,11 @@ export default () => {
           // 表单搜索项会从 params 传入，传递给后端接口。
           return Promise.resolve(getCustomList({ sorter, filter }))
             .then((res) => {
+              const result = res
+              for (let i = 0; i < result.data.length; i++) {
+                result.data[i].key = result.data[i].id
+              }
+              console.log(result.data, result.data)
               return res;
             })
             .catch((err) => {
@@ -175,6 +180,11 @@ export default () => {
             新建订单
           </Button>
         ]}
+        rowSelection={{
+          // 自定义选择项参考: https://ant.design/components/table-cn/#components-table-demo-row-selection-custom
+          // 注释该行则默认不显示下拉选项
+          selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE,],
+        }}
       />
       <CreateCustom createModalVisible={createModalVisible} onCancel={handleCancel} />
       {
