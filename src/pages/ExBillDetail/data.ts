@@ -1,6 +1,7 @@
 import type React from 'react';
 
 interface BaseBodyType {
+  key: string;
   id: React.Key;
   p_number: string;
   p_number2: string;
@@ -37,7 +38,6 @@ export interface ExSourceType extends BaseSourceType, ExBodyType{
   custom: number;
   c_number: number;
 }
-
 
 export interface InSourceType extends BaseSourceType, InBodyType{
 

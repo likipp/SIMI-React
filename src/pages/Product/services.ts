@@ -26,7 +26,6 @@ export async function getWareHouseList(params?: any) {
 }
 
 export async function createExBill(params: any) {
-  console.log(params, 'params');
   return request('/api/v1/base/stock/', {
     method: 'POST',
     body: JSON.stringify(params),

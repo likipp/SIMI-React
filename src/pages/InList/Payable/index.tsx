@@ -25,7 +25,6 @@ const CreatePayable: React.FC<CreateFormProps> = (props) => {
 
   const renderTime = (arr: any[]) =>
     arr.map((item, i) => {
-      console.log(item, 'item');
       const len = arr.length;
       if (len === i + 1) {
         if (item.pay_method == 'ali') {
@@ -73,7 +72,6 @@ const CreatePayable: React.FC<CreateFormProps> = (props) => {
 
   useEffect(() => {
     getPayList({ bill: defaultPay.source_bill }).then((res) => {
-      console.log(res, 'res');
       setTimeLine(res.data);
     });
     if (defaultPay.status) {
@@ -92,10 +90,13 @@ const CreatePayable: React.FC<CreateFormProps> = (props) => {
           destroyOnClose: true,
         }}
         onFinish={async (values) => {
-          updatePayDiscount(values as PayItem).then(() => {
-            message.success('提交成功');
-            return true;
-          });
+          message
+            .loading("创建订单中")
+            .then(() => updatePayDiscount(values as PayItem).then(() => {
+              message.success('提交成功');
+              return true;
+            }))
+          return true
         }}
       >
         <ProForm.Group>

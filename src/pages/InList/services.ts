@@ -1,5 +1,5 @@
 import { request } from 'umi';
-import { PayItem } from '@/pages/InList/index';
+import type { PayItem } from '@/pages/InList/index';
 
 export async function getInStockList(params?: any) {
   return request('/api/v1/base/stock/in/', {
@@ -19,7 +19,6 @@ export async function updatePayDiscount(params: PayItem) {
 }
 
 export async function getPayList(params: any) {
-  console.log(params, 'params');
   return request('/api/v1/base/payable/', {
     params,
   });

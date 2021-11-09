@@ -113,7 +113,6 @@ const createOrder: React.FC<CreateFormProps> = (props) => {
   // const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
   //   defaultData.map((item) => item.id),
   // );
-  console.log(props, "props")
   return (
     <ModalForm<{
       name: string;

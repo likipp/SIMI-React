@@ -13,11 +13,9 @@ import moment from 'moment';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import { getExBillDetail } from '@/pages/ExBillDetail/services';
-import { getCustomList } from '@/pages/Product/services';
 import summary from '@/utils/summary';
 import type { ExSourceType } from '@/pages/ExBillDetail/data';
-
-const defaultData: ExSourceType[] = [];
+import { requestWareHouse } from '@/components/BaseBill/services';
 
 const columns: ProColumns<ExSourceType>[] = [
   {
@@ -60,6 +58,7 @@ const columns: ProColumns<ExSourceType>[] = [
     align: 'right',
     dataIndex: 'ware_house',
     valueType: 'select',
+    request: requestWareHouse,
   },
   {
     title: '数量',
@@ -113,7 +112,7 @@ export default () => {
   return (
     <PageContainer
       header={{
-        title: '订单详情',
+        title: '出库单详情',
       }}
     >
       <Button
@@ -126,10 +125,6 @@ export default () => {
       </Button>
       <ProForm<ExSourceType>
         submitter={{
-          // searchConfig: {
-          //   resetText: '重置',
-          //   submitText: '保存'
-          // },
           render: () => {
             return [];
           },
@@ -138,6 +133,9 @@ export default () => {
           return Promise.resolve(
             getExBillDetail(number)
               .then((res) => {
+                for (let i = 0; i < res.data.length; i++) {
+                  res.data[i].key = res.data[i].number + res.data[i].p_number + res.data[i].id;
+                }
                 setDate(res.data.body);
                 return res.data;
               })
@@ -179,11 +177,11 @@ export default () => {
             showSearch
             width={'sm'}
             disabled={disabled}
-            request={async (keyWords) => {
-              return Promise.resolve(getCustomList(keyWords)).then((res) => {
-                return res.data;
-              });
-            }}
+            // request={async (keyWords) => {
+            //   return Promise.resolve(getCustomList(keyWords)).then((res) => {
+            //     return res.data;
+            //   });
+            // }}
           />
           <ProFormText width="md" name="c_name" label="客户名称" disabled={disabled} />
           <ProFormText
@@ -198,7 +196,6 @@ export default () => {
         </ProForm.Group>
         <ProForm.Item
           name="body"
-          initialValue={defaultData}
         >
           <EditableProTable<ExSourceType>
             rowKey="id"

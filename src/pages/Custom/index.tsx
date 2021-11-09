@@ -140,7 +140,6 @@ export default () => {
               for (let i = 0; i < result.data.length; i++) {
                 result.data[i].key = result.data[i].id
               }
-              console.log(result.data, result.data)
               return res;
             })
             .catch((err) => {

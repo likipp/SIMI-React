@@ -93,10 +93,7 @@ export default () => {
         columns={columns}
         actionRef={actionRef}
         editable={{
-          type: 'multiple',
-          onSave: () => {
-            console.log("点击了保存")
-          }
+          type: 'multiple'
         }}
         rowKey="id"
         request={(params, sorter, filter) => {

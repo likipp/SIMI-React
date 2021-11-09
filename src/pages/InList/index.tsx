@@ -1,4 +1,4 @@
-import type { ProColumns } from '@ant-design/pro-table';
+import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { MomentInput } from 'moment';
@@ -6,11 +6,12 @@ import moment from 'moment';
 import { getInStockList } from '@/pages/InList/services';
 import mergeCells from '@/utils/mergeCells';
 import { Link } from 'umi';
-import { Button, Tag } from 'antd';
-import { useState } from 'react';
+import { Tag } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import Payable from './Payable';
 
 export type TableListItem = {
+  id: number;
   number: string;
   created_at: number;
   pay_method: string;
@@ -32,28 +33,17 @@ export type PayItem = {
   status: number;
 };
 
-// const valueEnum = {
-//   all: { text: '全部', status: 'Default' },
-//   ali: { text: '支付宝', status: 'Processing' },
-//   wechat: { text: '微信', status: 'Success' },
-// };
-
 const valueStatusEnum = {
   0: { text: '欠款中', status: 'Processing' },
   1: { text: '结清', status: 'Success' },
 };
 
 const columns: ProColumns<TableListItem>[] = [
-  // {
-  //   title: '序号',
-  //   dataIndex: 'key',
-  //   // valueType: 'indexBorder',
-  //   width: 48,
-  // },
   {
     title: '单号',
     dataIndex: 'number',
     align: 'center',
+    width: '15px',
     render: (value, row) => {
       return {
         children: <Link to={`/inbilldetail/${value}`}>{value}</Link>,
@@ -108,7 +98,7 @@ const columns: ProColumns<TableListItem>[] = [
     valueType: 'money',
     render: (value, row) => {
       return {
-        children: <Tag color="magenta">{row.bill_amount}</Tag>,
+        children: <span>{row.bill_amount}</span>,
         props: {
           rowSpan: row.rowSpan,
         },
@@ -123,7 +113,7 @@ const columns: ProColumns<TableListItem>[] = [
     valueType: 'money',
     render: (value, row) => {
       return {
-        children: <Tag color="green">{row.remain_amount}</Tag>,
+        children: <span>{row.remain_amount}</span>,
         props: {
           rowSpan: row.rowSpan,
         },
@@ -136,31 +126,25 @@ const columns: ProColumns<TableListItem>[] = [
     align: 'center',
     valueType: 'radio',
     valueEnum: valueStatusEnum,
+    render: (value, row) => {
+      return {
+        children: row.status == 1 ? <Tag color="green">已结清</Tag> : <Tag color="red">欠款中</Tag>,
+        props: {
+          rowSpan: row.rowSpan,
+        },
+      };
+    },
   },
 ];
 
 export default () => {
   const [drawerVisit, setDrawerVisit] = useState(false);
-  const [selectRowKeys, setSelectRowKeys] = useState([]);
   const [defaultPay, setPay] = useState<PayItem>();
-  // const [displayButton, setDisplayButton] = useState(true)
+  const ref = useRef<ActionType>();
 
-  const handleOnSelectChange = (selectedRowKeys: any, selectedRows: any) => {
-    // console.log(selectedRowKeys, "selectedRowKeys")
-    console.log(selectedRows[0]?.bill_amount, 'status', selectedRows[0]?.number);
-    setPay({
-      source_bill: selectedRows[0]?.id,
-      number: selectedRows[0]?.number,
-      bill_amount: selectedRows[0]?.bill_amount,
-      remain_amount: selectedRows[0]?.remain_amount,
-      status: selectedRows[0]?.status,
-    });
-    setSelectRowKeys(selectedRowKeys);
-    if (selectedRows[0]?.status || selectedRows[0]?.status == undefined) {
-      return;
-    }
-    // setDisplayButton(false)
-  };
+  useEffect(() => {
+    ref.current?.reload()
+  }, [drawerVisit])
 
   return (
     <PageContainer>
@@ -171,10 +155,9 @@ export default () => {
           return Promise.resolve(getInStockList({ sorter, filter }))
             .then((res) => {
               for (let i = 0; i < res.data.length; i++) {
-                res.data[i].key = res.data[i].number + res.data[i].p_number + res.data[i].in_qty;
+                res.data[i].key = res.data[i].number + res.data[i].p_number + res.data[i].id;
               }
               res.data = mergeCells(res.data);
-
               return res;
             })
             .catch((err) => {
@@ -182,31 +165,35 @@ export default () => {
             });
         }}
         rowKey="key"
+        actionRef={ref}
         pagination={false}
         search={{
           layout: 'vertical',
           defaultCollapsed: false,
         }}
         dateFormatter="string"
-        toolBarRender={() => [
-          <Button
-            key="danger"
-            danger
-            // hidden={displayButton}
-            onClick={() => {
-              setDrawerVisit(true);
-            }}
-          >
-            应付单
-          </Button>,
-        ]}
-        rowSelection={{
-          type: 'radio',
-          // 自定义选择项参考: https://ant.design/components/table-cn/#components-table-demo-row-selection-custom
-          // 注释该行则默认不显示下拉选项
-          // selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE,],
-          selectedRowKeys: selectRowKeys,
-          onChange: handleOnSelectChange,
+        // rowSelection={{
+        //   type: 'radio',
+        //   // 自定义选择项参考: https://ant.design/components/table-cn/#components-table-demo-row-selection-custom
+        //   // 注释该行则默认不显示下拉选项
+        //   // selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE,],
+        //   selectedRowKeys: selectRowKeys,
+        //   onChange: handleOnSelectChange,
+        // }}
+        onRow={record => {
+          return {
+            // onClick: event => {}, // 点击行
+            onDoubleClick: () => {
+              setPay({
+                source_bill: record?.id,
+                number: record?.number,
+                bill_amount: record?.bill_amount,
+                remain_amount: record?.remain_amount,
+                status: record?.status,
+              });
+              setDrawerVisit(true)
+            },
+          };
         }}
       />
       {defaultPay?.source_bill ? (

@@ -1,9 +1,9 @@
 import type { MutableRefObject } from 'react';
 import React, { useRef, useState } from 'react';
 import type { ProFormInstance } from '@ant-design/pro-form';
-import ProForm, {ProFormDatePicker, ProFormDigit, ProFormRadio, ProFormSelect, ProFormText} from '@ant-design/pro-form';
+import ProForm, {ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText} from '@ant-design/pro-form';
 import type {ExSourceType, InSourceType} from '@/pages/ExBillDetail/data';
-import { Button, Form, message } from 'antd';
+import { Button, Form, message, Tooltip } from 'antd';
 import {createExBill, getCustomQueryList} from '@/pages/Product/services';
 import moment from 'moment';
 import type { ProColumns } from '@ant-design/pro-table';
@@ -11,17 +11,18 @@ import { EditableProTable } from '@ant-design/pro-table';
 import summary from '@/utils/summary';
 import { getBillNumber } from '@/pages/InBill/services';
 import toDecimal2 from '@/utils/toDecimal2';
+import CopyButton from '@/components/CopyButton';
 
 interface BillProps {
   bill: string;
-  // num: string;
+  realDiscount: number
   columns: ProColumns<InSourceType | ExSourceType>[];
 }
 
 const defaultData: InSourceType[] = [];
 
 const BaseBill: React.FC<BillProps> = (prop) => {
-  const { bill, columns } = prop;
+  const { bill, columns, realDiscount } = prop;
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     defaultData.map((item) => item.id),
   );
@@ -96,7 +97,6 @@ const discountChange = (record: any, recordList: any, type: string) => {
             i.ware_house = parseInt(String(i.ware_house));
           }
           createExBill(result).then(() => {
-            console.log(result, "数据")
             message.success('单据创建成功');
             form.resetFields();
             setDataSource([]);
@@ -136,21 +136,24 @@ const discountChange = (record: any, recordList: any, type: string) => {
             label="单据日期"
             initialValue={moment(new Date().getTime()).format('YYYY-MM-DD')}
           />
-          <ProFormRadio.Group
-            name="pay_method"
-            label="付款方式"
-            options={[
-              {
-                label: '支付宝',
-                value: 'ali',
-              },
-              {
-                label: '微信',
-                value: 'wechat',
-              },
-            ]}
-            rules={[{ required: true, message: '付款方式必填' }]}
-          />
+          {
+            bill == '出库单' ? <ProFormRadio.Group
+              name="pay_method"
+              label="付款方式"
+              options={[
+                {
+                  label: '支付宝',
+                  value: 'ali',
+                },
+                {
+                  label: '微信',
+                  value: 'wechat',
+                },
+              ]}
+              rules={[{ required: true, message: '付款方式必填' }]} />
+              : <></>
+
+          }
         </ProForm.Group>
         {
           bill == '出库单' ? <ProForm.Group>
@@ -194,6 +197,9 @@ const discountChange = (record: any, recordList: any, type: string) => {
               disabled={true}
               hidden={true}
             />
+            {
+              realDiscount ? <CopyButton realDiscount={realDiscount}/> : <></>
+            }
           </ProForm.Group>
             : <></>}
 

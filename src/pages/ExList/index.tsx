@@ -6,6 +6,7 @@ import type { MomentInput } from 'moment';
 import moment from 'moment';
 import mergeCells from '@/utils/mergeCells';
 import { Link } from 'umi';
+import { AlipayCircleOutlined, WechatOutlined } from '@ant-design/icons';
 
 export type TableListItem = {
   // 'key': number;
@@ -35,6 +36,7 @@ const columns: ProColumns<TableListItem>[] = [
     title: '单号',
     dataIndex: 'number',
     align: 'center',
+    width: '15px',
     render: (value, row) => {
       return {
         children: <Link to={`/exbilldetail/${value}`}>{value}</Link>,
@@ -83,8 +85,7 @@ const columns: ProColumns<TableListItem>[] = [
     valueEnum,
     render: (value, row) => {
       return {
-        // children: value === "支付宝" ? <Tag color="#2db7f5">{value}</Tag> : <Tag color="#87d068">{value}</Tag>,
-        children: value,
+        children: row.pay_method == "ali" ? <AlipayCircleOutlined style={{color: '#1890ff', fontSize: '20px'}}/> : <WechatOutlined style={{color: '#52c41a', fontSize: '20px'}}/>,
         props: {
           rowSpan: row.rowSpan,
         },
@@ -120,6 +121,14 @@ const columns: ProColumns<TableListItem>[] = [
     align: 'center',
     search: false,
     valueType: 'money',
+    render: (value, row) => {
+      return {
+        children: <span>{row.total}</span>,
+        props: {
+          rowSpan: row.rowSpan,
+        },
+      };
+    },
   },
   {
     title: '成本',
@@ -127,6 +136,14 @@ const columns: ProColumns<TableListItem>[] = [
     align: 'center',
     search: false,
     valueType: 'money',
+    render: (value, row) => {
+      return {
+        children: <span>{row.cost}</span>,
+        props: {
+          rowSpan: row.rowSpan,
+        },
+      };
+    },
   },
   {
     title: '利润',
@@ -134,6 +151,14 @@ const columns: ProColumns<TableListItem>[] = [
     align: 'center',
     search: false,
     valueType: 'money',
+    render: (value, row) => {
+      return {
+        children: <span>{row.profit}</span>,
+        props: {
+          rowSpan: row.rowSpan,
+        },
+      };
+    },
   },
 ];
 
@@ -148,6 +173,9 @@ export default () => {
           params.current = 1
           try {
             const res = await Promise.resolve(getExStockList({params, sorter, filter }));
+            for (let i = 0; i < res.data.length; i++) {
+              res.data[i].key = res.data[i].number + res.data[i].p_number + res.data[i].id;
+            }
             res.data = mergeCells(res.data);
             return res;
           } catch (err) {

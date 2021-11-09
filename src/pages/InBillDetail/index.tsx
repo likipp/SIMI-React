@@ -13,8 +13,9 @@ import { EditableProTable } from '@ant-design/pro-table';
 import { getInBillDetail } from '@/pages/InBillDetail/services';
 import summary from '@/utils/summary';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
+import { requestWareHouse } from '@/components/BaseBill/services';
 
-const defaultData: InSourceType[] = [];
+// const defaultData: InSourceType[] = [];
 
 const columns: ProColumns<InSourceType>[] = [
   {
@@ -57,6 +58,7 @@ const columns: ProColumns<InSourceType>[] = [
     align: 'right',
     dataIndex: 'ware_house',
     valueType: 'select',
+    request: requestWareHouse,
   },
   {
     title: '数量',
@@ -86,7 +88,7 @@ export default () => {
   return (
     <PageContainer
       header={{
-        title: '订单详情',
+        title: '入库单详情',
       }}
     >
       <Button
@@ -99,10 +101,6 @@ export default () => {
       </Button>
       <ProForm<InSourceType>
         submitter={{
-          // searchConfig: {
-          //   resetText: '重置',
-          //   submitText: '保存'
-          // },
           render: () => {
             return [];
           },
@@ -128,26 +126,9 @@ export default () => {
             initialValue={moment(new Date().getTime()).format('YYYY-MM-DD')}
             disabled={disabled}
           />
-
-          {/*<ProFormRadio.Group*/}
-          {/*  name="pay_method"*/}
-          {/*  label="付款方式"*/}
-          {/*  disabled={disabled}*/}
-          {/*  options={[*/}
-          {/*    {*/}
-          {/*      label: '支付宝',*/}
-          {/*      value: 'ali',*/}
-          {/*    },*/}
-          {/*    {*/}
-          {/*      label: '微信',*/}
-          {/*      value: 'wechat',*/}
-          {/*    },*/}
-          {/*  ]}*/}
-          {/*/>*/}
         </ProForm.Group>
         <ProForm.Item
           name="body"
-          initialValue={defaultData}
         >
           <EditableProTable<InSourceType>
             rowKey="id"
