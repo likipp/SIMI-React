@@ -53,6 +53,12 @@ export async function getBrandSelectList(params: any) {
   });
 }
 
+export async function getCustomLevelList(params: any) {
+  return request('/api/v1/base/custom-level-select/', {
+    params,
+  });
+}
+
 export async function addProduct(params: ProductListItem) {
   return request('/api/v1/base/product/', {
     method: 'POST',

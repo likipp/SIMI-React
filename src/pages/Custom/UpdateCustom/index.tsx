@@ -7,6 +7,9 @@ import ProForm, {
   ProFormTextArea
 } from '@ant-design/pro-form';
 import type { TableListItem } from '@/pages/Custom';
+import { requestCustomLevelSelectList } from '@/components/BaseBill/services';
+import { updatesCustom } from '@/pages/Custom/services';
+import { message } from 'antd';
 
 export type UpdateFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -23,7 +26,7 @@ const UpdateCustom: React.FC<UpdateFormProps> = (props) => {
       id: data.id,
       c_name: data.c_name,
       c_number: data.c_number,
-      level: String(data.level),
+      level: String(data.level_id),
       mark: data.mark,
       phone: data.phone,
       address: data.address
@@ -44,11 +47,15 @@ const UpdateCustom: React.FC<UpdateFormProps> = (props) => {
         onCancel: () => onCancel()
       }}
       onFinish={async (values) => {
-        // await waitTime(2000);
-        console.log(values);
-        onCancel()
-        reload?.()
-        return true
+        values.level = parseInt(String(values.level))
+        values.id = data.id
+        updatesCustom(values).then(() => {
+          onCancel()
+          reload?.()
+          message.success("更新成功")
+          return true
+        })
+        return false
       }}
     >
       <ProForm.Group>
@@ -69,28 +76,7 @@ const UpdateCustom: React.FC<UpdateFormProps> = (props) => {
           rules={[{ required: true, message: '请输入客户名称' }]}
         />
         <ProFormSelect
-          options={[
-            {
-              value: '1',
-              label: '零售客户',
-            },
-            {
-              value: '2',
-              label: 'VIP代理',
-            },
-            {
-              value: '3',
-              label: '区域代理',
-            },
-            {
-              value: '4 ',
-              label: '特约代理',
-            },
-            {
-              value: '5 ',
-              label: '总代理',
-            },
-          ]}
+          request={requestCustomLevelSelectList}
           width="xs"
           name="level"
           label="客户等级"

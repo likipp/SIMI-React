@@ -20,7 +20,7 @@ export default [
   },
   {
     path: '/welcome',
-    name: 'welcome',
+    name: '欢迎',
     icon: 'smile',
     component: './Welcome',
   },
@@ -74,11 +74,11 @@ export default [
         name: '客户',
         component: './Custom',
       },
-      {
-        path: '/base/supplier',
-        name: '供应商',
-        component: './Supplier',
-      },
+      // {
+      //   path: '/base/supplier',
+      //   name: '供应商',
+      //   component: './Supplier',
+      // },
       {
         path: '/base/custom-level',
         name: '客户等级',

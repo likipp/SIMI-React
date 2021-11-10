@@ -28,25 +28,21 @@ export default () => {
       title: '产品代码',
       dataIndex: 'p_number',
       align: 'center',
-      width: 200,
     },
     {
       title: '产品名称',
       dataIndex: 'p_name',
       align: 'center',
-      width: 200,
     },
     {
       title: '规格',
       dataIndex: 'p_spec',
       align: 'center',
-      width: 300,
     },
     {
       title: '仓库',
       dataIndex: 'ware_house',
       align: 'center',
-      width: 100,
       valueType: 'select',
       hideInSearch: true,
       request: requestWareHouse
@@ -55,7 +51,6 @@ export default () => {
       title: '品牌',
       dataIndex: 'brand',
       align: 'center',
-      width: 100,
       valueType: 'select',
       request: requestBrandSelectList
     },
@@ -63,7 +58,6 @@ export default () => {
       title: '单位',
       dataIndex: 'unit',
       align: 'center',
-      width: 100,
       valueType: 'select',
       request: requestUnitSelectList
     },
@@ -71,7 +65,6 @@ export default () => {
       title: '价格',
       dataIndex: 'p_price',
       align: 'center',
-      width: 200,
       valueType: 'money'
     },
     {

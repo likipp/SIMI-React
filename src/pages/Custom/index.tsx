@@ -9,6 +9,7 @@ import CreateCustom from './CreateCustom';
 import CreateOrder from './CreateOrder';
 import { getCustomList } from '@/pages/Custom/services';
 import UpdateCustom from '@/pages/Custom/UpdateCustom';
+import { requestCustomLevelSelectList } from '@/components/BaseBill/services';
 
 export type TableListItem = {
   id: number;
@@ -17,6 +18,7 @@ export type TableListItem = {
   createdAt: number;
   boughtAt: number;
   level: number;
+  level_id: number;
   mark: string;
   phone: string;
   address: string;
@@ -59,18 +61,24 @@ export default () => {
       title: '等级',
       dataIndex: 'level_name',
       align: 'center',
-      initialValue: 'all',
       filters: true,
       onFilter: true,
-      // width: 140,
-      // valueEnum: {
-      //   all: { text: '全部', status: 'Default' },
-      //   close: { text: '零售客户', status: 'Default' },
-      //   running: { text: 'VIP代理', status: 'Processing' },
-      //   online: { text: '区域代理', status: 'Success' },
-      //   error: { text: '特约代理', status: 'Error' },
-      //   total: { text: '总代理', status: 'Error' },
-      // },
+      valueType: 'select',
+      formItemProps: () => {
+        return {
+          rules: [{ required: true, message: '客户等级必填' }],
+        };
+      },
+      fieldProps: {
+        showArrow: false,
+        showSearch: true,
+      },
+      request: requestCustomLevelSelectList,
+    },
+    {
+      title: '手机号码',
+      align: 'center',
+      dataIndex: 'phone',
     },
     {
       title: '创建时间',
@@ -99,13 +107,11 @@ export default () => {
     },
     {
       title: '操作',
-      width: 180,
       key: 'option',
       valueType: 'option',
       render: (_, record) => [
         <a key="editable"
            onClick={() => {
-             console.log("点击了操作", record)
              setUpdateModalVisible(true)
              setData(record)
            }}

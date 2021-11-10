@@ -1,5 +1,5 @@
 import {
-  getBrandSelectList,
+  getBrandSelectList, getCustomLevelList,
   getProductSelectList,
   getUnitSelectList,
   getWareHouseList,
@@ -29,4 +29,10 @@ const requestBrandSelectList  = async (keyWords: any) => {
   });
 };
 
-export { requestProduct, requestWareHouse, requestUnitSelectList, requestBrandSelectList };
+const requestCustomLevelSelectList = async (keyWords: any) => {
+  return Promise.resolve(getCustomLevelList(keyWords)).then((res) => {
+    return res.data;
+  });
+}
+
+export { requestProduct, requestWareHouse, requestUnitSelectList, requestBrandSelectList, requestCustomLevelSelectList };

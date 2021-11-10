@@ -1,13 +1,15 @@
 import React, { useRef } from 'react';
 import { message } from 'antd';
+import type { ProFormInstance} from '@ant-design/pro-form';
 import ProForm, {
   ModalForm,
   ProFormText,
   ProFormSelect,
-  ProFormTextArea, ProFormInstance,
+  ProFormTextArea
 } from '@ant-design/pro-form';
 import { addCustom } from '@/pages/Custom/services';
 import type { TableListItem } from '@/pages/Custom';
+import { requestCustomLevelSelectList } from '@/components/BaseBill/services';
 
 export type CreateFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -62,31 +64,10 @@ const CreateCustom: React.FC<CreateFormProps> = (props) => {
           rules={[{ required: true, message: '请输入客户名称' }]}
         />
         <ProFormSelect
-          options={[
-            {
-              value: '4',
-              label: '零售客户',
-            },
-            {
-              value: '2',
-              label: 'VIP代理',
-            },
-            {
-              value: '3',
-              label: '区域代理',
-            },
-            {
-              value: '1 ',
-              label: '特约代理',
-            },
-            {
-              value: '5 ',
-              label: '总代理',
-            },
-          ]}
           width="xs"
           name="level"
           label="客户等级"
+          request={requestCustomLevelSelectList}
           rules={[{ required: true, message: '请选择客户等级' }]}
         />
       </ProForm.Group>
