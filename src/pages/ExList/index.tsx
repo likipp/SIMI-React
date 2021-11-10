@@ -49,6 +49,7 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '客户',
     dataIndex: 'c_name',
+    sorter: true,
     align: 'center',
     render: (value, row) => {
       return {
@@ -63,6 +64,7 @@ const columns: ProColumns<TableListItem>[] = [
     title: '创建时间',
     dataIndex: 'created_at',
     align: 'center',
+    sorter: true,
     valueType: 'dateRange',
     render: (value, row) => {
       return {
@@ -79,6 +81,7 @@ const columns: ProColumns<TableListItem>[] = [
     align: 'center',
     valueType: 'select',
     initialValue: 'all',
+    sorter: true,
     filters: true,
     onFilter: true,
     key: 'select',
@@ -172,7 +175,8 @@ export default () => {
           params.pageSize = 9999
           params.current = 1
           try {
-            const res = await Promise.resolve(getExStockList({params, sorter, filter }));
+            const res = await Promise.resolve(getExStockList({...params, sorter, filter }));
+            console.log(sorter, "sorter")
             for (let i = 0; i < res.data.length; i++) {
               res.data[i].key = res.data[i].number + res.data[i].p_number + res.data[i].id;
             }

@@ -43,6 +43,7 @@ const columns: ProColumns<TableListItem>[] = [
     title: '单号',
     dataIndex: 'number',
     align: 'center',
+    sorter: true,
     width: '15px',
     render: (value, row) => {
       return {
@@ -55,6 +56,7 @@ const columns: ProColumns<TableListItem>[] = [
   },
   {
     title: '创建时间',
+    sorter: true,
     dataIndex: 'created_at',
     align: 'center',
     valueType: 'dateRange',
@@ -123,6 +125,8 @@ const columns: ProColumns<TableListItem>[] = [
   {
     title: '状态',
     dataIndex: 'status',
+    filters: true,
+    onFilter: true,
     align: 'center',
     valueType: 'radio',
     valueEnum: valueStatusEnum,
@@ -152,7 +156,7 @@ export default () => {
         columns={columns}
         request={(params, sorter, filter) => {
           // 表单搜索项会从 params 传入，传递给后端接口。
-          return Promise.resolve(getInStockList({ sorter, filter }))
+          return Promise.resolve(getInStockList({ ...params, sorter, filter }))
             .then((res) => {
               for (let i = 0; i < res.data.length; i++) {
                 res.data[i].key = res.data[i].number + res.data[i].p_number + res.data[i].id;

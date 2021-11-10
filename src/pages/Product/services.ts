@@ -63,3 +63,8 @@ export async function addProduct(params: ProductListItem) {
     },
   });
 }
+
+export async function updatesProduct(params: ProductListItem) {
+  console.log(params, "params", params.id)
+  return request(`/api/v1/base/product/${params.id}`, { method: 'patch', data:params});
+}

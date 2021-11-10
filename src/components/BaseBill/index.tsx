@@ -98,6 +98,8 @@ const discountChange = (record: any, recordList: any, type: string) => {
           }
           createExBill(result).then(() => {
             message.success('单据创建成功');
+            formRef?.current?.setFieldsValue({ custom: "" });
+            formRef?.current?.setFieldsValue({ c_name: "" });
             form.resetFields();
             setDataSource([]);
           });

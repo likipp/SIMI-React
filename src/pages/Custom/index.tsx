@@ -29,7 +29,7 @@ export default () => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [createOrderVisible, setCreateOrderVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false)
-  const [id, setID] = useState(0)
+  const [data, setData] = useState([])
   const actionRef = useRef<ActionType>();
 
   const columns: ProColumns<TableListItem>[] = [
@@ -102,12 +102,12 @@ export default () => {
       width: 180,
       key: 'option',
       valueType: 'option',
-      render: (text, record) => [
-        <a key="link">查看</a>,
-        <a key="link2"
+      render: (_, record) => [
+        <a key="editable"
            onClick={() => {
-             setID(record.id)
+             console.log("点击了操作", record)
              setUpdateModalVisible(true)
+             setData(record)
            }}
         >编辑</a>,
       ],
@@ -116,11 +116,12 @@ export default () => {
 
   const handleCancel = () => {
     setCreateModalVisible(false);
+    actionRef.current?.reset?.()
   };
 
   const handleUpdateFormCancel = () => {
     setUpdateModalVisible(false)
-    setID(0)
+    setData([])
   }
 
   const handleOrderCancel = () => {
@@ -185,11 +186,8 @@ export default () => {
           selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE,],
         }}
       />
-      <CreateCustom createModalVisible={createModalVisible} onCancel={handleCancel} />
-      {
-        id > 0 ? <UpdateCustom onCancel={handleUpdateFormCancel} updateModalVisible={updateModalVisible} id={id}/>
-          : <></>
-      }
+      <CreateCustom createModalVisible={createModalVisible} onCancel={handleCancel} reload={actionRef.current?.reload}/>
+      <UpdateCustom onCancel={handleUpdateFormCancel} updateModalVisible={updateModalVisible} data={data} reload={actionRef.current?.reload}/>
       <CreateOrder createOrderVisible={createOrderVisible} onCancel={handleOrderCancel} />
     </PageContainer>
   );

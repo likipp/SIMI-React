@@ -1,4 +1,5 @@
 export type ProductListItem = {
+  key: string;
   id: number;
   p_name: string;
   p_number: string;

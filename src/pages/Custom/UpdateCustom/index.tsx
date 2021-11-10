@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { message } from 'antd';
+import React, { useEffect, useRef } from 'react';
+import type { ProFormInstance} from '@ant-design/pro-form';
 import ProForm, {
   ModalForm,
   ProFormText,
@@ -7,34 +7,38 @@ import ProForm, {
   ProFormTextArea
 } from '@ant-design/pro-form';
 import type { TableListItem } from '@/pages/Custom';
-import { getCustomList } from '@/pages/Custom/services';
 
 export type UpdateFormProps = {
   onCancel: (flag?: boolean) => void;
-  // onSubmit: (values: FormValueType) => Promise<void>;
+  data: TableListItem;
   updateModalVisible: boolean;
-  id: number
-  // values: Partial<API.RuleListItem>;
+  reload: ((resetPageIndex?: (boolean | undefined)) => Promise<void>) | undefined;
 };
 
 const UpdateCustom: React.FC<UpdateFormProps> = (props) => {
-  const {onCancel, updateModalVisible, id} = props
-  const [initialValue, SetInitialValue] = useState<TableListItem>()
+  const {onCancel, updateModalVisible, data, reload} = props
+  const formRef = useRef<ProFormInstance>()
+  const onFill = () => {
+    formRef?.current?.setFieldsValue({
+      id: data.id,
+      c_name: data.c_name,
+      c_number: data.c_number,
+      level: String(data.level),
+      mark: data.mark,
+      phone: data.phone,
+      address: data.address
+    });
+  };
 
-  // const requestCustom = async () => {
-  //   return Promise.resolve(getCustomList({ id: id })).then((res) => {
-  //     SetInitialValue(res.data);
-  //   });
-  // };
+
   useEffect(() => {
-    getCustomList({id: id}).then((res) => {
-      SetInitialValue(res.data)
-    })
-  }, [id])
+    onFill()
+  }, [data.id > 0])
   return (
     <ModalForm<
         TableListItem
       >
+      formRef={formRef}
       visible={updateModalVisible}
       modalProps={{
         onCancel: () => onCancel()
@@ -42,7 +46,9 @@ const UpdateCustom: React.FC<UpdateFormProps> = (props) => {
       onFinish={async (values) => {
         // await waitTime(2000);
         console.log(values);
-        return false
+        onCancel()
+        reload?.()
+        return true
       }}
     >
       <ProForm.Group>
@@ -60,7 +66,6 @@ const UpdateCustom: React.FC<UpdateFormProps> = (props) => {
           label="客户名称"
           tooltip="最长为 24 位"
           placeholder="请输入名称"
-          initialValue={initialValue?.c_name}
           rules={[{ required: true, message: '请输入客户名称' }]}
         />
         <ProFormSelect

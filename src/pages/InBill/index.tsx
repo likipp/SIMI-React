@@ -33,7 +33,7 @@ const columns: ProColumns<InSourceType>[] = [
         onChange: (value: any, item: any) => {
           form.setFieldsValue({ [rowKey as any]: { p_number2: item.label } });
           form.setFieldsValue({[rowKey as any]: {unit_price: item.price}})
-          form.setFieldsValue({[rowKey as any]: {ware_house: item.ware_house}})
+          form.setFieldsValue({[rowKey as any]: {ware_house: item.ware_house.toString()}})
         },
       };
     },

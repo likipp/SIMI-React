@@ -1,30 +1,34 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { message } from 'antd';
 import ProForm, {
   ModalForm,
   ProFormText,
   ProFormSelect,
-  ProFormTextArea
+  ProFormTextArea, ProFormInstance,
 } from '@ant-design/pro-form';
 import { addCustom } from '@/pages/Custom/services';
 import type { TableListItem } from '@/pages/Custom';
 
 export type CreateFormProps = {
   onCancel: (flag?: boolean) => void;
-  // onSubmit: (values: FormValueType) => Promise<void>;
   createModalVisible: boolean;
-  // values: Partial<API.RuleListItem>;
+  reload: ((resetPageIndex?: (boolean | undefined)) => Promise<void>) | undefined;
 };
 
-const createCustom: React.FC<CreateFormProps> = (props) => {
+const CreateCustom: React.FC<CreateFormProps> = (props) => {
+  const {onCancel, createModalVisible, reload} = props
+  const formRef = useRef<ProFormInstance>();
   return (
     <ModalForm<
       TableListItem
     >
-      visible={props.createModalVisible}
+      formRef={formRef}
+      visible={createModalVisible}
       modalProps={{
-        // onCancel: () => console.log('run'),
-        onCancel: () => props.onCancel()
+        onCancel: () => {
+          formRef.current?.resetFields()
+          onCancel()
+        }
       }}
       onFinish={async (values) => {
         // await waitTime(2000);
@@ -32,6 +36,8 @@ const createCustom: React.FC<CreateFormProps> = (props) => {
         res.level = parseInt(String(res.level))
         console.log(res);
         addCustom(res).then(() => {
+          onCancel()
+          reload?.()
           message.success('提交成功');
           return true;
         })
@@ -58,7 +64,7 @@ const createCustom: React.FC<CreateFormProps> = (props) => {
         <ProFormSelect
           options={[
             {
-              value: '1',
+              value: '4',
               label: '零售客户',
             },
             {
@@ -70,7 +76,7 @@ const createCustom: React.FC<CreateFormProps> = (props) => {
               label: '区域代理',
             },
             {
-              value: '4 ',
+              value: '1 ',
               label: '特约代理',
             },
             {
@@ -99,4 +105,4 @@ const createCustom: React.FC<CreateFormProps> = (props) => {
   );
 };
 
-export default createCustom
+export default CreateCustom

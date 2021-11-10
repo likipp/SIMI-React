@@ -1,8 +1,12 @@
 import { request } from 'umi';
 import type { PayItem } from '@/pages/InList/index';
+import { isNull } from 'lodash';
 
 export async function getInStockList(params?: any) {
-  return request('/api/v1/base/stock/in/', {
+  if (params.status == undefined || isNull(params.status)) {
+    params.status = 2
+  }
+  return request('/api/v1/base/stock/in', {
     params,
   });
 }
