@@ -4,7 +4,7 @@ import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-import { notification } from 'antd';
+import { message, notification } from 'antd';
 import type { RequestConfig } from '@@/plugin-request/request';
 
 // const isDev = process.env.NODE_ENV === 'development';
@@ -56,10 +56,23 @@ const authHeaderInterceptor = (url: string, options: any) => {
   };
 };
 
-// const demoResponseInterceptors = (response: Response) => {
-//   response.headers.append('interceptors', 'yes yo');
-//   return response;
-// };
+const ResponseInterceptors = async (response: Response) => {
+  const data = await response.clone().json()
+  if (data.errorCode != 200) {
+    if (data.showType == 1) {
+      message.error({
+        content: data.errorMessage,
+        className: 'custom-message-color'
+      })
+    } else {
+      notification.error({
+        description: data.errorMessage,
+        message: data.errorCode,
+      });
+    }
+  }
+  return response;
+};
 
 export const request: RequestConfig = {
   errorHandler: (error: any) => {
@@ -73,6 +86,7 @@ export const request: RequestConfig = {
     throw error;
   },
   requestInterceptors: [authHeaderInterceptor],
+  responseInterceptors: [ResponseInterceptors]
 };
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
