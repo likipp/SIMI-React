@@ -103,7 +103,7 @@ export default () => {
         }}
         rowKey="id"
         request={(params, sorter, filter) => {
-          return Promise.resolve(getProductList({sorter, filter}))
+          return Promise.resolve(getProductList({...params, sorter, filter}))
             .then((res) => {
               for (let i = 0; i < res.data.length; i++) {
                 res.data[i].key = res.data[i].p_number
@@ -139,6 +139,9 @@ export default () => {
             </div>
           </div>
         )}
+        pagination={{
+          pageSize: 10,
+        }}
       />
       <CreateProduct createModalVisible={createModalVisible} onCancel={handleCancel} reload={actionRef.current?.reload} />
       <UpdateProduct updateModalVisible={updateModalVisible} onCancel={handleUpdateCancel} reload={actionRef.current?.reload} data={data}/>

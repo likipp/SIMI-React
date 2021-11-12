@@ -36,13 +36,17 @@ const CreateProduct: React.FC<CreateFormProps> = (props) => {
         result.unit = parseInt(String(result.unit))
         result.brand = parseInt(String(result.brand))
         result.ware_house = parseInt(String(result.ware_house))
-        addProduct(result).then(() => {
+        addProduct(result).then((res) => {
+          console.log(res.success, "成功与否")
           onCancel()
           reload?.()
           message.success('提交成功');
           return true;
+        }).catch((err) => {
+          console.log(err, "err")
+          return false
         })
-        return false
+
       }}
     >
       <ProForm.Group >
