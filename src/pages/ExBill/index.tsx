@@ -24,7 +24,7 @@ export default () => {
       align: 'right',
       dataIndex: 'p_number',
       key: 'p_number',
-      width: '10%',
+      width: '15%',
       valueType: 'select',
       formItemProps: () => {
         return {

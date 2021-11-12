@@ -16,7 +16,7 @@ const columns: ProColumns<InSourceType>[] = [
     align: 'right',
     dataIndex: 'p_number',
     key: 'p_number',
-    width: '10%',
+    width: '15%',
     valueType: 'select',
     formItemProps: () => {
       return {
@@ -119,6 +119,22 @@ const columns: ProColumns<InSourceType>[] = [
     align: 'right',
     dataIndex: 'p_number2',
     hideInTable: true,
+  },
+  {
+    title: '进货折扣',
+    align: 'right',
+    dataIndex: 'in_discount',
+    valueType: 'percent',
+    fieldProps: {
+      precision: 2,
+      min: 0,
+      max: 100,
+    },
+    formItemProps: () => {
+      return {
+        rules: [{ required: true, message: '进货折扣必填' }],
+      };
+    },
   },
   {
     title: '总价',
