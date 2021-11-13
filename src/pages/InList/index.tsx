@@ -3,10 +3,10 @@ import ProTable from '@ant-design/pro-table';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { MomentInput } from 'moment';
 import moment from 'moment';
-import { getInStockList } from '@/pages/InList/services';
+import { deleteBill, getInStockList } from '@/pages/InList/services';
 import mergeCells from '@/utils/mergeCells';
 import { Link } from 'umi';
-import { Tag } from 'antd';
+import { Button, Tag } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import Payable from './Payable';
 
@@ -38,113 +38,116 @@ const valueStatusEnum = {
   1: { text: '结清', status: 'Success' },
 };
 
-const columns: ProColumns<TableListItem>[] = [
-  {
-    title: '单号',
-    dataIndex: 'number',
-    align: 'center',
-    sorter: true,
-    width: '15px',
-    render: (value, row) => {
-      return {
-        children: <Link to={`/inbilldetail/${value}`}>{value}</Link>,
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
-    },
-  },
-  {
-    title: '创建时间',
-    sorter: true,
-    dataIndex: 'created_at',
-    align: 'center',
-    valueType: 'dateRange',
-    render: (value, row) => {
-      return {
-        children: moment(row.created_at as MomentInput).format('YYYY-MM-DD HH:mm'),
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
-    },
-  },
-  {
-    title: '产品代码',
-    dataIndex: 'p_number',
-    align: 'center',
-  },
-  {
-    title: '产品名称',
-    dataIndex: 'p_name',
-    align: 'center',
-  },
-  {
-    title: '单价',
-    dataIndex: 'in_qty',
-    align: 'center',
-    search: false,
-  },
-  {
-    title: '数量',
-    dataIndex: 'unit_price',
-    align: 'center',
-    search: false,
-    valueType: 'digit',
-  },
-  {
-    title: '订单金额',
-    dataIndex: 'bill_amount',
-    align: 'center',
-    search: false,
-    valueType: 'money',
-    render: (value, row) => {
-      return {
-        children: <span>{row.bill_amount}</span>,
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
-    },
-  },
-  {
-    title: '已付金额',
-    dataIndex: 'remain_amount',
-    align: 'center',
-    search: false,
-    valueType: 'money',
-    render: (value, row) => {
-      return {
-        children: <span>{row.remain_amount}</span>,
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
-    },
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    filters: true,
-    onFilter: true,
-    align: 'center',
-    valueType: 'radio',
-    valueEnum: valueStatusEnum,
-    render: (value, row) => {
-      return {
-        children: row.status == 1 ? <Tag color="green">已结清</Tag> : <Tag color="red">欠款中</Tag>,
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
-    },
-  },
-];
+
 
 export default () => {
   const [drawerVisit, setDrawerVisit] = useState(false);
   const [defaultPay, setPay] = useState<PayItem>();
+  const [id, setID] = useState(0)
   const ref = useRef<ActionType>();
+
+  const columns: ProColumns<TableListItem>[] = [
+    {
+      title: '单号',
+      dataIndex: 'number',
+      align: 'center',
+      sorter: true,
+      width: '15px',
+      render: (value, row) => {
+        return {
+          children: <Link to={`/inbilldetail/${value}`}>{value}</Link>,
+          props: {
+            rowSpan: row.rowSpan,
+          },
+        };
+      },
+    },
+    {
+      title: '创建时间',
+      sorter: true,
+      dataIndex: 'created_at',
+      align: 'center',
+      valueType: 'dateRange',
+      render: (value, row) => {
+        return {
+          children: moment(row.created_at as MomentInput).format('YYYY-MM-DD HH:mm'),
+          props: {
+            rowSpan: row.rowSpan,
+          },
+        };
+      },
+    },
+    {
+      title: '产品代码',
+      dataIndex: 'p_number',
+      align: 'center',
+    },
+    {
+      title: '产品名称',
+      dataIndex: 'p_name',
+      align: 'center',
+    },
+    {
+      title: '单价',
+      dataIndex: 'in_qty',
+      align: 'center',
+      search: false,
+    },
+    {
+      title: '数量',
+      dataIndex: 'unit_price',
+      align: 'center',
+      search: false,
+      valueType: 'digit',
+    },
+    {
+      title: '订单金额',
+      dataIndex: 'bill_amount',
+      align: 'center',
+      search: false,
+      valueType: 'money',
+      render: (value, row) => {
+        return {
+          children: <span>{row.bill_amount}</span>,
+          props: {
+            rowSpan: row.rowSpan,
+          },
+        };
+      },
+    },
+    {
+      title: '已付金额',
+      dataIndex: 'remain_amount',
+      align: 'center',
+      search: false,
+      valueType: 'money',
+      render: (value, row) => {
+        return {
+          children: <span>{row.remain_amount}</span>,
+          props: {
+            rowSpan: row.rowSpan,
+          },
+        };
+      },
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      filters: true,
+      onFilter: true,
+      align: 'center',
+      valueType: 'radio',
+      valueEnum: valueStatusEnum,
+      render: (value, row) => {
+        return {
+          children: row.status == 1 ? <Tag color="green">已结清</Tag> : <Tag color="red">欠款中</Tag>,
+          props: {
+            rowSpan: row.rowSpan,
+          },
+        };
+      },
+    },
+  ];
 
   useEffect(() => {
     ref.current?.reload()
@@ -186,7 +189,13 @@ export default () => {
         // }}
         onRow={record => {
           return {
-            // onClick: event => {}, // 点击行
+            onClick: () => {
+              console.log(record.id, record.number)
+              console.log(event)
+              setID(record.id)
+              console.log("点击行")
+
+            }, // 点击行
             onDoubleClick: () => {
               setPay({
                 source_bill: record?.id,
@@ -196,9 +205,21 @@ export default () => {
                 status: record?.status,
               });
               setDrawerVisit(true)
-            },
+            }
           };
         }}
+        // toolBarRender={() => [
+        //   <Button key="primary" type="primary"
+        //     onClick={() => {
+        //       console.log("...", id)
+        //       deleteBill(id).then(() => {
+        //         console.log("删除成功")
+        //       })
+        //     }}
+        //   >
+        //     删除
+        //   </Button>,
+        // ]}
       />
       {defaultPay?.source_bill ? (
         <Payable

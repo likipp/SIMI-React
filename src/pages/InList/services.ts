@@ -27,3 +27,9 @@ export async function getPayList(params: any) {
     params,
   });
 }
+
+export async function deleteBill(params: any) {
+  console.log(params.number, "params")
+  return request(`/api/v1/base/stock/${params.number}/`, { method: 'delete'}
+    )
+}

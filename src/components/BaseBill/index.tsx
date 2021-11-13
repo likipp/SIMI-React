@@ -43,49 +43,53 @@ const discountChange = (record: any, recordList: any, type: string) => {
     let qty = 0
     if (record) {
       if (type == '出库单') {
-        qty = record.ex_qty;
-        const unit_price = record.unit_price;
-        let in_discount = record.in_discount;
-        let ex_discount = record.ex_discount;
-        if (in_discount == undefined) {
-          in_discount = 100
-        }
-        if (ex_discount == undefined) {
-          ex_discount = 100
-        }
         for (const listKey in list) {
-          if (list[listKey].p_name === record.p_name && list[listKey].id != record.id) {
-            record.p_number2 = list[listKey].p_number2;
-            const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
-            const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
-            const profit = toDecimal2(total - cost)
-            form.setFieldsValue({
-              [listKey]: { total: total },
-            });
-            form.setFieldsValue({
-              [listKey]: { cost: cost },
-            });
-            form.setFieldsValue({
-              [listKey]: { profit: profit },
-            });
+          qty = list[listKey].ex_qty;
+          const unit_price = list[listKey].unit_price;
+          let in_discount = list[listKey].in_discount;
+          let ex_discount = list[listKey].ex_discount;
+          if (in_discount == undefined) {
+            in_discount = 100
           }
+          if (ex_discount == undefined) {
+            ex_discount = 100
+          }
+          // if (list[listKey].p_name === record.p_name && list[listKey].id != record.id) {
+          // }
+          record.p_number2 = list[listKey].p_number2;
+          const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
+          const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
+          const profit = toDecimal2(total - cost)
+          form.setFieldsValue({
+            [listKey]: { total: total },
+          });
+          form.setFieldsValue({
+            [listKey]: { cost: cost },
+          });
+          form.setFieldsValue({
+            [listKey]: { profit: profit },
+          });
         }
       } else {
-        let in_discount = record.in_discount;
-        if (in_discount == undefined) {
-          in_discount = 100
-        }
-        qty = record.in_qty;
         for (const listKey in list) {
-          const unit_price = record.unit_price;
-          console.log(listKey, "listKey")
-          if (list[listKey].p_name === record.p_name) {
-            record.p_number2 = list[listKey].p_number2;
-            const total: number = toDecimal2((unit_price * qty * in_discount) / 100);
+          let in_discount = list[listKey].in_discount;
+          if (in_discount == undefined) {
+            in_discount = 100
+          }
+          qty = list[listKey].in_qty;
+          record.p_number2 = list[listKey].p_number2;
+          const unit_price = list[listKey].unit_price;
+          const total: number = toDecimal2((unit_price * qty * in_discount) / 100);
             form.setFieldsValue({
               [listKey]: { total: total },
             });
-          }
+          // if (list[listKey].p_name === record.p_name) {
+          //   record.p_number2 = list[listKey].p_number2;
+          //   const total: number = toDecimal2((unit_price * qty * in_discount) / 100);
+          //   form.setFieldsValue({
+          //     [listKey]: { total: total },
+          //   });
+          // }
         }
       }
       record.p_name = record.p_number;
@@ -107,6 +111,7 @@ const discountChange = (record: any, recordList: any, type: string) => {
             i.id = 0;
             i.ware_house = parseInt(String(i.ware_house));
           }
+          // console.log(result, "result")
           createExBill(result).then(() => {
             message.success('单据创建成功');
             formRef?.current?.setFieldsValue({ custom: "" });

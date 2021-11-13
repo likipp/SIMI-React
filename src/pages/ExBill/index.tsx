@@ -150,14 +150,14 @@ export default () => {
       dataIndex: 'total',
       valueType: 'money',
       fieldProps: (form, { rowKey }) => {
-        const unit_price = form.getFieldValue([rowKey || '', 'unit_price'])
-        const ex_qty = form.getFieldValue([rowKey || '', 'ex_qty'])
+        // const unit_price = form.getFieldValue([rowKey || '', 'unit_price'])
+        // const ex_qty = form.getFieldValue([rowKey || '', 'ex_qty'])
         return {
           rules: [{ required: true, message: '金额必填' }],
-          onChange: (item: any) => {
-            setRealDiscount((Math.round(item / ex_qty / unit_price * 1000)) / 1000)
-            // form.setFieldsValue({[rowKey as any]: {ex_discount: (Math.round(item / ex_qty / unit_price * 1000)) / 1000}})
-          },
+          // onChange: (item: any) => {
+          //   setRealDiscount((Math.round(item / ex_qty / unit_price * 1000)) / 1000 /100)
+          //   // form.setFieldsValue({[rowKey as any]: {ex_discount: (Math.round(item / ex_qty / unit_price * 1000)) / 1000}})
+          // },
         };
       },
     },
@@ -167,7 +167,7 @@ export default () => {
       dataIndex: 'in_discount',
       valueType: 'percent',
       fieldProps: {
-        precision: 2,
+        precision: 3,
         min: 0,
         max: 100,
       },

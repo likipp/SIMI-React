@@ -1,6 +1,6 @@
-import { Button } from 'antd';
+import { Button, Radio } from 'antd';
 import { history, useParams } from 'umi';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProForm, {
   ProFormDatePicker,
@@ -14,6 +14,7 @@ import { getInBillDetail } from '@/pages/InBillDetail/services';
 import summary from '@/utils/summary';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
 import { requestWareHouse } from '@/components/BaseBill/services';
+import { deleteBill } from '@/pages/InList/services';
 
 // const defaultData: InSourceType[] = [];
 
@@ -83,7 +84,7 @@ const columns: ProColumns<InSourceType>[] = [
 export default () => {
   const number = useParams();
   const [data, setDate] = useState([]);
-  const [disabled] = useState(true);
+  const [disabled, setDisabled] = useState(true);
 
   return (
     <PageContainer
@@ -91,6 +92,13 @@ export default () => {
         title: '入库单详情',
       }}
     >
+      <Radio.Group>
+        <Radio.Button value="large" icon={<ArrowLeftOutlined />}
+                      onClick={() => history.goBack()}
+        >返回</Radio.Button>
+        <Radio.Button value="default">修改</Radio.Button>
+        <Radio.Button value="small">删除</Radio.Button>
+      </Radio.Group>
       <Button
         onClick={() => history.goBack()}
         icon={<ArrowLeftOutlined />}
@@ -98,6 +106,31 @@ export default () => {
         type={'primary'}
       >
         返回
+      </Button>
+      <Button
+        icon={<EditOutlined />}
+        style={{ marginBottom: '25px', marginLeft: '15px', marginRight: '15px' }}
+        type={'primary'}
+        onClick={() => {
+          setDisabled(false)
+        }}
+      >
+        修改
+      </Button>
+      <Button
+        icon={<DeleteOutlined />}
+        style={{ marginBottom: '25px' }}
+        type={'primary'}
+        onClick={() => {
+          deleteBill(number).then(() => {
+                    console.log("删除成功")
+                  }).catch(err => {
+                    console.log(err, "错误消息")
+          })
+          history.push("/manager/in")
+        }}
+      >
+        删除
       </Button>
       <ProForm<InSourceType>
         submitter={{
@@ -119,12 +152,12 @@ export default () => {
         }}
       >
         <ProForm.Group>
-          <ProFormText width="sm" name="bill_number" label="单据编号" disabled={disabled} />
+          <ProFormText width="sm" name="bill_number" label="单据编号" disabled={true} />
           <ProFormDatePicker
             name="created_at"
             label="单据日期"
             initialValue={moment(new Date().getTime()).format('YYYY-MM-DD')}
-            disabled={disabled}
+            disabled={true}
           />
         </ProForm.Group>
         <ProForm.Item

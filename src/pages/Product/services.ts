@@ -26,6 +26,7 @@ export async function getWareHouseList(params?: any) {
 }
 
 export async function createExBill(params: any) {
+  console.log(params, "params")
   return request('/api/v1/base/stock/', {
     method: 'POST',
     body: JSON.stringify(params),
@@ -71,6 +72,5 @@ export async function addProduct(params: ProductListItem) {
 }
 
 export async function updatesProduct(params: ProductListItem) {
-  console.log(params, "params", params.id)
   return request(`/api/v1/base/product/${params.id}`, { method: 'patch', data:params});
 }

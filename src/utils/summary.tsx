@@ -32,7 +32,7 @@ const summary = (pageData: any, bill: string) => {
       totalSum += item.total;
     }
     if (item.profit) {
-      totalProfit += item.profit
+      totalProfit += item.total - item.cost
     }
   }
 
