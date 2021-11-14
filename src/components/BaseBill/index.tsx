@@ -41,7 +41,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
 const discountChange = (record: any, recordList: any, type: string) => {
     const list = form.getFieldsValue(true);
     let qty = 0
-    if (record) {
+    if (record != undefined) {
       if (type == '出库单') {
         for (const listKey in list) {
           qty = list[listKey].ex_qty;
@@ -54,12 +54,11 @@ const discountChange = (record: any, recordList: any, type: string) => {
           if (ex_discount == undefined) {
             ex_discount = 100
           }
-          // if (list[listKey].p_name === record.p_name && list[listKey].id != record.id) {
-          // }
           record.p_number2 = list[listKey].p_number2;
           const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
           const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
           const profit = toDecimal2(total - cost)
+
           form.setFieldsValue({
             [listKey]: { total: total },
           });
@@ -80,6 +79,7 @@ const discountChange = (record: any, recordList: any, type: string) => {
           record.p_number2 = list[listKey].p_number2;
           const unit_price = list[listKey].unit_price;
           const total: number = toDecimal2((unit_price * qty * in_discount) / 100);
+          list[listKey].total = total
             form.setFieldsValue({
               [listKey]: { total: total },
             });
@@ -93,6 +93,7 @@ const discountChange = (record: any, recordList: any, type: string) => {
         }
       }
       record.p_name = record.p_number;
+      return
     }
   }
 
@@ -111,7 +112,6 @@ const discountChange = (record: any, recordList: any, type: string) => {
             i.id = 0;
             i.ware_house = parseInt(String(i.ware_house));
           }
-          // console.log(result, "result")
           createExBill(result).then(() => {
             message.success('单据创建成功');
             formRef?.current?.setFieldsValue({ custom: "" });
@@ -246,7 +246,9 @@ const discountChange = (record: any, recordList: any, type: string) => {
               },
               onValuesChange: (record, recordList) => {
                 discountChange(record, recordList, bill)
-                setDataSource(recordList);
+                setDataSource(() => {
+                 return recordList
+                });
               },
             }}
             summary={(pageData) => summary(pageData, bill)}
