@@ -5,12 +5,14 @@ import { requestProduct, requestWareHouse } from '@/components/BaseBill/services
 import type {ExSourceType} from "@/pages/ExBillDetail/data";
 import toDecimal2 from '@/utils/toDecimal2';
 import { useState } from 'react';
+import useBillNumber from '@/Hooks/billNumber';
 
 
 
 export default () => {
 
-  const [realDiscount, setRealDiscount] = useState(0)
+  const [realDiscount, ] = useState(0)
+  const billNumber = useBillNumber("出库单")
 
   const columns: ProColumns<ExSourceType>[] = [
     {
@@ -149,17 +151,9 @@ export default () => {
       align: 'right',
       dataIndex: 'total',
       valueType: 'money',
-      fieldProps: (form, { rowKey }) => {
-        // const unit_price = form.getFieldValue([rowKey || '', 'unit_price'])
-        // const ex_qty = form.getFieldValue([rowKey || '', 'ex_qty'])
-        return {
-          rules: [{ required: true, message: '金额必填' }],
-          // onChange: (item: any) => {
-          //   setRealDiscount((Math.round(item / ex_qty / unit_price * 1000)) / 1000 /100)
-          //   // form.setFieldsValue({[rowKey as any]: {ex_discount: (Math.round(item / ex_qty / unit_price * 1000)) / 1000}})
-          // },
-        };
-      },
+      fieldProps: {
+        rules: [{ required: true, message: '金额必填' }],
+      }
     },
     {
       title: '进货折扣',
@@ -223,7 +217,10 @@ export default () => {
 
   return (
     <PageContainer>
-      <BaseBill bill={'出库单'} columns={columns} realDiscount={realDiscount}/>
+      {
+        billNumber ? <BaseBill bill={'出库单'} columns={columns} realDiscount={realDiscount} billNumber={billNumber}/>
+          : null
+      }
     </PageContainer>
   );
 };

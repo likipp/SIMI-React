@@ -119,7 +119,7 @@ const columns: ProColumns<TableListItem>[] = [
     valueType: 'digit',
   },
   {
-    title: '金额',
+    title: '售出金额',
     dataIndex: 'total',
     align: 'center',
     search: false,

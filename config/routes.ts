@@ -47,13 +47,25 @@ export default [
         name: '新增入库单',
         component: './InBill',
       },
+    ],
+  },
+  {
+    path: '/stock-table',
+    name: '库存报表',
+    icon: 'setting',
+    routes: [
       {
-        path: '/manager/ex',
+        path: '/stock-table/exist',
+        name: '现有库存',
+        component: './ExistingStock',
+      },
+      {
+        path: '/stock-table/ex',
         name: '出库明细',
         component: './ExList',
       },
       {
-        path: '/manager/in',
+        path: '/stock-table/in',
         name: '入库明细',
         component: './InList',
       },

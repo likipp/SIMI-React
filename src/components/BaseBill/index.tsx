@@ -3,40 +3,32 @@ import React, { useRef, useState } from 'react';
 import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm, {ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText} from '@ant-design/pro-form';
 import type {ExSourceType, InSourceType} from '@/pages/ExBillDetail/data';
-import { Button, Form, message, Tooltip } from 'antd';
+import { Button, Form, message } from 'antd';
 import {createExBill, getCustomQueryList} from '@/pages/Product/services';
 import moment from 'moment';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import summary from '@/utils/summary';
-import { getBillNumber } from '@/pages/InBill/services';
 import toDecimal2 from '@/utils/toDecimal2';
 import CopyButton from '@/components/CopyButton';
 
 interface BillProps {
   bill: string;
-  realDiscount: number
+  realDiscount: number;
+  billNumber: string;
   columns: ProColumns<InSourceType | ExSourceType>[];
 }
 
 const defaultData: InSourceType[] = [];
 
 const BaseBill: React.FC<BillProps> = (prop) => {
-  const { bill, columns, realDiscount } = prop;
+  const { bill, columns, realDiscount, billNumber } = prop;
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     defaultData.map((item) => item.id),
   );
   const formRef = useRef<ProFormInstance>();
   const [dataSource, setDataSource] = useState<InSourceType[]>(() => defaultData);
   const [form] = Form.useForm();
-  const [billNumber, setBillNumber] = useState("");
-
-  const requestBillNumber = async () => {
-    return Promise.resolve(getBillNumber({ type: bill })).then((res) => {
-      setBillNumber(res.data);
-      return { bill_number: res.data };
-    });
-  };
 
 const discountChange = (record: any, recordList: any, type: string) => {
     const list = form.getFieldsValue(true);
@@ -54,8 +46,6 @@ const discountChange = (record: any, recordList: any, type: string) => {
           if (ex_discount == undefined) {
             ex_discount = 100
           }
-          // if (list[listKey].p_name === record.p_name && list[listKey].id != record.id) {
-          // }
           record.p_number2 = list[listKey].p_number2;
           const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
           const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
@@ -83,13 +73,6 @@ const discountChange = (record: any, recordList: any, type: string) => {
             form.setFieldsValue({
               [listKey]: { total: total },
             });
-          // if (list[listKey].p_name === record.p_name) {
-          //   record.p_number2 = list[listKey].p_number2;
-          //   const total: number = toDecimal2((unit_price * qty * in_discount) / 100);
-          //   form.setFieldsValue({
-          //     [listKey]: { total: total },
-          //   });
-          // }
         }
       }
       record.p_name = record.p_number;
@@ -103,7 +86,7 @@ const discountChange = (record: any, recordList: any, type: string) => {
         onFinish={async (values) => {
           const result: InSourceType | ExSourceType = values;
           result.bill_type = bill;
-          result.bill_number = billNumber;
+          // result.bill_number = billNumber;
           // delete result.c_name
           for (const i of result.body) {
             i.p_number = i.p_number2;
@@ -111,7 +94,6 @@ const discountChange = (record: any, recordList: any, type: string) => {
             i.id = 0;
             i.ware_house = parseInt(String(i.ware_house));
           }
-          // console.log(result, "result")
           createExBill(result).then(() => {
             message.success('单据创建成功');
             formRef?.current?.setFieldsValue({ custom: "" });
@@ -119,6 +101,7 @@ const discountChange = (record: any, recordList: any, type: string) => {
             form.resetFields();
             setDataSource([]);
           });
+
         }}
         submitter={{
           searchConfig: {
@@ -145,10 +128,10 @@ const discountChange = (record: any, recordList: any, type: string) => {
             ];
           },
         }}
-        request={requestBillNumber}
+        // request={requestBillNumber}
       >
         <ProForm.Group>
-          <ProFormText width="sm" name="bill_number" label="单据编号" disabled={true} />
+          <ProFormText width="sm" name="bill_number" label="单据编号" disabled={true} initialValue={billNumber} />
           <ProFormDatePicker
             name="created_at"
             label="单据日期"

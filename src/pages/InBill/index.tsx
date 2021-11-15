@@ -3,6 +3,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import BaseBill from '@/components/BaseBill';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
+import useBillNumber from '@/Hooks/billNumber';
 
 const columns: ProColumns<InSourceType>[] = [
   {
@@ -154,9 +155,13 @@ const columns: ProColumns<InSourceType>[] = [
 ];
 
 export default () => {
+  const billNumber = useBillNumber("入库单")
   return (
     <PageContainer>
-      <BaseBill bill={'入库单'} columns={columns} />
+      {
+        billNumber ? <BaseBill bill={'入库单'} columns={columns} billNumber={billNumber}/>
+          : null
+      }
     </PageContainer>
   );
 };
