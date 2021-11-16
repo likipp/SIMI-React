@@ -1,7 +1,6 @@
 import ProTable from '@ant-design/pro-table';
 import { Typography } from 'antd';
-import toDecimal2 from '@/utils/toDecimal2';
-import { isNaN } from 'lodash';
+// import toDecimal2 from '@/utils/toDecimal2';
 
 const { Text } = Typography;
 
@@ -9,39 +8,55 @@ const summary = (pageData: any, bill: string) => {
   let totalNum = 0;
   let totalSum = 0;
   let totalProfit = 0;
-  let totalCost = 0;
-  let ex_discount = 0;
-  let in_discount = 0;
+  // let totalCost = 0;
+  // let ex_discount = 0;
+  // let in_discount = 0;
   for (const item of pageData) {
-    if (item.ex_qty) {
-      totalNum += item.ex_qty;
+    if (bill === '出库单') {
+      // if (item.ex_discount == undefined) {
+      //   ex_discount = 100;
+      // } else {
+      //   ex_discount = item.ex_discount;
+      // }
+      // if (item.in_discount == undefined) {
+      //   in_discount = 100;
+      // } else {
+      //   in_discount = item.in_discount;
+      // }
+
+      // if (item.cost) {
+      //   totalCost += item.cost;
+      // }
+      // if (item.cost) {
+      //   totalCost += item.cost;
+      // }
+      // console.log((item.ex_qty * item.unit_price * ex_discount) / 100, '总金额');
+      // totalSum += (item.ex_qty * item.unit_price * ex_discount) / 100;
+      // totalCost += (item.ex_qty * item.unit_price * in_discount) / 100;
+      // totalProfit += (totalSum - totalCost);
+      // continue;
+      if (item.ex_qty) {
+        totalNum += item.ex_qty;
+      }
+      if (item.total) {
+        totalSum += item.total;
+      }
+      if (item.profit) {
+        totalProfit += item.profit
+      }
+    }
+    // if (item.in_discount == undefined) {
+    //   in_discount = 100;
+    // } else {
+    //   in_discount = item.in_discount;
+    // }
+    // totalSum += toDecimal2((item.in_qty * item.unit_price * in_discount) / 100);
+    if (item.total) {
+      totalSum += item.total
     }
     if (item.in_qty) {
       totalNum += item.in_qty;
     }
-    if (bill === '出库单') {
-      if (item.ex_discount == undefined) {
-        ex_discount = 100;
-      } else {
-        ex_discount = item.ex_discount;
-      }
-      if (item.in_discount == undefined) {
-        in_discount = 100;
-      } else {
-        in_discount = item.in_discount;
-      }
-      console.log((item.ex_qty * item.unit_price * ex_discount) / 100, '总金额');
-      totalSum += (item.ex_qty * item.unit_price * ex_discount) / 100;
-      totalCost += (item.ex_qty * item.unit_price * in_discount) / 100;
-      totalProfit += totalSum - totalCost;
-      continue;
-    }
-    if (item.in_discount == undefined) {
-      in_discount = 100;
-    } else {
-      in_discount = item.in_discount;
-    }
-    totalSum += toDecimal2((item.in_qty * item.unit_price * in_discount) / 100);
   }
 
   return (

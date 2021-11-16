@@ -7,6 +7,7 @@ import ProForm, {
   ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-form';
+import { history } from 'umi';
 import type { ExSourceType, InSourceType } from '@/pages/ExBillDetail/data';
 import { Button, Form, message } from 'antd';
 import { createExBill, getCustomQueryList } from '@/pages/Product/services';
@@ -56,7 +57,9 @@ const BaseBill: React.FC<BillProps> = (prop) => {
           const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
           const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
           const profit = toDecimal2(total - cost);
-
+          record.total = total
+          record.cost = cost
+          record.profit = profit
           form.setFieldsValue({
             [listKey]: { total: total },
           });
@@ -78,12 +81,13 @@ const BaseBill: React.FC<BillProps> = (prop) => {
           const unit_price = list[listKey].unit_price;
           const total: number = toDecimal2((unit_price * qty * in_discount) / 100);
           list[listKey].total = total;
-          form.setFieldsValue({
-            [listKey]: { total: total },
-          });
+          record.total = total
+          // form.setFieldsValue({
+          //   [listKey]: { total: total },
+          // });
         }
       }
-      record.p_name = record.p_number;
+      // record.p_name = record.p_number;
       return;
     }
   };
@@ -104,12 +108,15 @@ const BaseBill: React.FC<BillProps> = (prop) => {
             i.id = 0;
             i.ware_house = parseInt(String(i.ware_house));
           }
+          console.log(result, "结果")
           createExBill(result).then(() => {
+            setLoading(false)
             message.success('单据创建成功', 2.5);
             formRef?.current?.setFieldsValue({ custom: '' });
             formRef?.current?.setFieldsValue({ c_name: '' });
             form.resetFields();
             setDataSource([]);
+            history.push("/stock-table/in")
           });
         }}
         submitter={{
@@ -137,7 +144,6 @@ const BaseBill: React.FC<BillProps> = (prop) => {
             ];
           },
         }}
-        // request={requestBillNumber}
       >
         <ProForm.Group>
           <ProFormText
@@ -235,7 +241,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
                 id: Date.now(),
               }),
             }}
-            controlled
+            // controlled
             editable={{
               type: 'multiple',
               editableKeys,

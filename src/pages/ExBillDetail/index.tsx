@@ -1,6 +1,4 @@
-import { Button } from 'antd';
-import { history, useParams } from 'umi';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useParams } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProForm, {
   ProFormDatePicker,
@@ -16,6 +14,7 @@ import { getExBillDetail } from '@/pages/ExBillDetail/services';
 import summary from '@/utils/summary';
 import type { ExSourceType } from '@/pages/ExBillDetail/data';
 import { requestWareHouse } from '@/components/BaseBill/services';
+import HeaderBillDetail from '@/components/HeaderBillDetail';
 
 const columns: ProColumns<ExSourceType>[] = [
   {
@@ -115,14 +114,7 @@ export default () => {
         title: '出库单详情',
       }}
     >
-      <Button
-        onClick={() => history.goBack()}
-        icon={<ArrowLeftOutlined />}
-        style={{ marginBottom: '25px' }}
-        type={'primary'}
-      >
-        返回
-      </Button>
+      <HeaderBillDetail number={number} type={"ex"}/>
       <ProForm<ExSourceType>
         submitter={{
           render: () => {

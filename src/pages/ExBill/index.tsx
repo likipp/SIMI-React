@@ -24,7 +24,6 @@ export default () => {
     },
     {
       title: '产品代码',
-      align: 'right',
       dataIndex: 'p_number',
       key: 'p_number',
       width: '15%',
@@ -35,6 +34,7 @@ export default () => {
         };
       },
       fieldProps: (form, { rowKey }) => {
+
         return {
           optionItemRender(item: { label: string; value: string }) {
             return item.label + ' - ' + item.value;
@@ -42,13 +42,10 @@ export default () => {
           showArrow: false,
           showSearch: true,
           onChange: (value: any, item: any) => {
-            console.log("点击了物料代码")
-            console.log(rowKey, item)
-            console.log(form.getFieldsValue())
             form.setFieldsValue({ [rowKey as any]: { p_number2: item.label } });
             form.setFieldsValue({[rowKey as any]: {unit_price: item.price}})
+            form.setFieldsValue({[rowKey as any]: {p_name: item.value}})
             form.setFieldsValue({[rowKey as any]: {ware_house: item.ware_house.toString()}})
-            console.log(form.getFieldsValue(), "form")
           },
         };
       },
@@ -56,7 +53,6 @@ export default () => {
     },
     {
       title: '产品名称',
-      align: 'right',
       dataIndex: 'p_name',
       width: '20%',
       formItemProps: () => {
@@ -64,26 +60,25 @@ export default () => {
           rules: [{ required: true, message: '产品名称必填' }],
         };
       },
-      fieldProps: (from, { rowKey }) => {
-        if (from) {
-          const p_number = from.getFieldValue([rowKey || '', 'p_number']);
-          from.setFields([
-            {
-              name: [`${rowKey}`, 'p_name'],
-              value: p_number,
-            },
-          ]);
-        }
-        return {
-          precision: 2,
-          min: 0,
-          max: 9999,
-        };
-      },
+      // fieldProps: (from, { rowKey }) => {
+      //   if (from) {
+      //     const p_number = from.getFieldValue([rowKey || '', 'p_number']);
+      //     from.setFields([
+      //       {
+      //         name: [`${rowKey}`, 'p_name'],
+      //         value: p_number,
+      //       },
+      //     ]);
+      //   }
+      //   // return {
+      //   //   precision: 2,
+      //   //   min: 0,
+      //   //   max: 9999,
+      //   // };
+      // },
     },
     {
       title: '仓库',
-      align: 'right',
       dataIndex: 'ware_house',
       valueType: 'select',
       formItemProps: () => {
@@ -99,7 +94,6 @@ export default () => {
     },
     {
       title: '单价',
-      align: 'right',
       dataIndex: 'unit_price',
       valueType: 'money',
       fieldProps: {
@@ -115,7 +109,6 @@ export default () => {
     },
     {
       title: '数量',
-      align: 'right',
       dataIndex: 'ex_qty',
       valueType: 'digit',
       fieldProps: {
@@ -131,13 +124,11 @@ export default () => {
     },
     {
       title: '产品代码',
-      align: 'right',
       dataIndex: 'p_number2',
       hideInTable: true,
     },
     {
       title: '会员折扣',
-      align: 'right',
       dataIndex: 'ex_discount',
       valueType: 'percent',
       fieldProps: {
@@ -153,7 +144,6 @@ export default () => {
     },
     {
       title: '金额',
-      align: 'right',
       dataIndex: 'total',
       valueType: 'money',
       fieldProps: {
@@ -162,7 +152,6 @@ export default () => {
     },
     {
       title: '进货折扣',
-      align: 'right',
       dataIndex: 'in_discount',
       valueType: 'percent',
       fieldProps: {
@@ -178,12 +167,11 @@ export default () => {
     },
     {
       title: '成本',
-      align: 'right',
       dataIndex: 'cost',
       valueType: 'money',
       fieldProps: (form, { rowKey }) => {
-        const unit_price = form.getFieldValue([rowKey || '', 'unit_price'])
-        const ex_qty = form.getFieldValue([rowKey || '', 'ex_qty'])
+        const unit_price = form.getFieldsValue([rowKey || '', 'unit_price'])
+        const ex_qty = form.getFieldsValue([rowKey || '', 'ex_qty'])
 
         return {
           rules: [{ required: true, message: '成本必填' }],
@@ -198,7 +186,6 @@ export default () => {
 
     {
       title: '利润',
-      align: 'right',
       dataIndex: 'profit',
       valueType: 'money',
       formItemProps: () => {

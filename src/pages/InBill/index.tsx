@@ -15,7 +15,6 @@ const columns: ProColumns<InSourceType>[] = [
   },
   {
     title: '产品代码',
-    align: 'right',
     dataIndex: 'p_number',
     key: 'p_number',
     width: '15%',
@@ -43,7 +42,6 @@ const columns: ProColumns<InSourceType>[] = [
   },
   {
     title: '产品名称',
-    align: 'right',
     dataIndex: 'p_name',
     width: '20%',
     formItemProps: () => {
@@ -70,7 +68,6 @@ const columns: ProColumns<InSourceType>[] = [
   },
   {
     title: '单价',
-    align: 'right',
     dataIndex: 'unit_price',
     valueType: 'money',
     fieldProps: {
@@ -86,7 +83,6 @@ const columns: ProColumns<InSourceType>[] = [
   },
   {
     title: '仓库',
-    align: 'right',
     dataIndex: 'ware_house',
     valueType: 'select',
     formItemProps: () => {
@@ -102,7 +98,6 @@ const columns: ProColumns<InSourceType>[] = [
   },
   {
     title: '数量',
-    align: 'right',
     dataIndex: 'in_qty',
     valueType: 'digit',
     fieldProps: {
@@ -118,13 +113,11 @@ const columns: ProColumns<InSourceType>[] = [
   },
   {
     title: '产品代码',
-    align: 'right',
     dataIndex: 'p_number2',
     hideInTable: true,
   },
   {
     title: '进货折扣',
-    align: 'right',
     dataIndex: 'in_discount',
     valueType: 'percent',
     fieldProps: {
@@ -140,7 +133,6 @@ const columns: ProColumns<InSourceType>[] = [
   },
   {
     title: '总价',
-    align: 'right',
     dataIndex: 'total',
     valueType: 'money',
     formItemProps: () => {
