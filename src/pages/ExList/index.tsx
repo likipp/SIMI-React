@@ -199,6 +199,11 @@ export default () => {
           if (index % 2 === 1) className = 'dark-row';
           return className;
         }}
+        // toolbar={{
+        //   actions: [
+        //     <Button>删除</Button>
+        //   ]
+        // }}
       />
     </PageContainer>
   );

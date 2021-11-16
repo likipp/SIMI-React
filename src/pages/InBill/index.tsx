@@ -4,6 +4,7 @@ import BaseBill from '@/components/BaseBill';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
 import useBillNumber from '@/Hooks/billNumber';
+import { Spin } from 'antd';
 
 const columns: ProColumns<InSourceType>[] = [
   {
@@ -160,7 +161,7 @@ export default () => {
     <PageContainer>
       {
         billNumber ? <BaseBill bill={'入库单'} columns={columns} billNumber={billNumber}/>
-          : null
+          : <Spin size="large" style={{display: "flex", justifyContent: "center", flexDirection:"row"}} />
       }
     </PageContainer>
   );

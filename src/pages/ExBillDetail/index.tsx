@@ -136,6 +136,7 @@ export default () => {
                 for (let i = 0; i < res.data.length; i++) {
                   res.data[i].key = res.data[i].number + res.data[i].p_number + res.data[i].id;
                 }
+                console.log(data, "data")
                 setDate(res.data.body);
                 return res.data;
               })

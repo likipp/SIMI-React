@@ -1,6 +1,5 @@
-import { Button, Radio } from 'antd';
+import { Radio } from 'antd';
 import { history, useParams } from 'umi';
-import { ArrowLeftOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProForm, {
   ProFormDatePicker,
@@ -85,53 +84,33 @@ export default () => {
   const number = useParams();
   const [data, setDate] = useState([]);
   const [disabled, setDisabled] = useState(true);
-
+console.log(data, "data", number, "单号")
   return (
     <PageContainer
       header={{
         title: '入库单详情',
       }}
     >
-      <Radio.Group>
-        <Radio.Button value="large" icon={<ArrowLeftOutlined />}
-                      onClick={() => history.goBack()}
-        >返回</Radio.Button>
-        <Radio.Button value="default">修改</Radio.Button>
-        <Radio.Button value="small">删除</Radio.Button>
-      </Radio.Group>
-      <Button
-        onClick={() => history.goBack()}
-        icon={<ArrowLeftOutlined />}
-        style={{ marginBottom: '25px' }}
-        type={'primary'}
-      >
-        返回
-      </Button>
-      <Button
-        icon={<EditOutlined />}
-        style={{ marginBottom: '25px', marginLeft: '15px', marginRight: '15px' }}
-        type={'primary'}
-        onClick={() => {
-          setDisabled(false)
-        }}
-      >
-        修改
-      </Button>
-      <Button
-        icon={<DeleteOutlined />}
-        style={{ marginBottom: '25px' }}
-        type={'primary'}
-        onClick={() => {
-          deleteBill(number).then(() => {
-                    console.log("删除成功")
-                  }).catch(err => {
-                    console.log(err, "错误消息")
-          })
-          history.push("/manager/in")
-        }}
-      >
-        删除
-      </Button>
+      {
+        data == [] ? <></>
+          : <Radio.Group style={{marginBottom: '20px', backgroundColor: 'red'}}>
+            <Radio.Button value="back" type={'primary'}
+                          onClick={() => history.goBack()}
+            >返回</Radio.Button>
+            <Radio.Button value="copy" disabled={true} type={'primary'}>复制</Radio.Button>
+            <Radio.Button value="change" disabled={true} type={'primary'}>修改</Radio.Button>
+            <Radio.Button value="delete" type={'primary'}
+                          onClick={() => {
+                            deleteBill(number).then(() => {
+                              console.log("删除成功")
+                            }).catch(err => {
+                              console.log(err, "错误消息")
+                            })
+                            history.push("/manager/in")
+                          }}
+            >删除</Radio.Button>
+          </Radio.Group>
+      }
       <ProForm<InSourceType>
         submitter={{
           render: () => {
@@ -142,6 +121,7 @@ export default () => {
           return Promise.resolve(
             getInBillDetail(number)
               .then((res) => {
+                console.log("set, 查看set次数")
                 setDate(res.data.body);
                 return res.data;
               })
@@ -177,5 +157,3 @@ export default () => {
     </PageContainer>
   );
 };
-
-// ExBillDetail

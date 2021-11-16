@@ -6,6 +6,7 @@ import type {ExSourceType} from "@/pages/ExBillDetail/data";
 import toDecimal2 from '@/utils/toDecimal2';
 import { useState } from 'react';
 import useBillNumber from '@/Hooks/billNumber';
+import { Spin } from 'antd';
 
 
 
@@ -219,7 +220,12 @@ export default () => {
     <PageContainer>
       {
         billNumber ? <BaseBill bill={'出库单'} columns={columns} realDiscount={realDiscount} billNumber={billNumber}/>
-          : null
+          : <Spin size="large" style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection:"column",
+            height: "100%"}} />
       }
     </PageContainer>
   );

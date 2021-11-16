@@ -1,10 +1,15 @@
 import type { MutableRefObject } from 'react';
 import React, { useRef, useState } from 'react';
 import type { ProFormInstance } from '@ant-design/pro-form';
-import ProForm, {ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText} from '@ant-design/pro-form';
-import type {ExSourceType, InSourceType} from '@/pages/ExBillDetail/data';
+import ProForm, {
+  ProFormDatePicker,
+  ProFormRadio,
+  ProFormSelect,
+  ProFormText,
+} from '@ant-design/pro-form';
+import type { ExSourceType, InSourceType } from '@/pages/ExBillDetail/data';
 import { Button, Form, message } from 'antd';
-import {createExBill, getCustomQueryList} from '@/pages/Product/services';
+import { createExBill, getCustomQueryList } from '@/pages/Product/services';
 import moment from 'moment';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
@@ -29,11 +34,12 @@ const BaseBill: React.FC<BillProps> = (prop) => {
   const formRef = useRef<ProFormInstance>();
   const [dataSource, setDataSource] = useState<InSourceType[]>(() => defaultData);
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false)
 
-const discountChange = (record: any, recordList: any, type: string) => {
+  const discountChange = (record: any, recordList: any, type: string) => {
     const list = form.getFieldsValue(true);
-    let qty = 0
-    if (record) {
+    let qty = 0;
+    if (record != undefined) {
       if (type == '出库单') {
         for (const listKey in list) {
           qty = list[listKey].ex_qty;
@@ -41,15 +47,16 @@ const discountChange = (record: any, recordList: any, type: string) => {
           let in_discount = list[listKey].in_discount;
           let ex_discount = list[listKey].ex_discount;
           if (in_discount == undefined) {
-            in_discount = 100
+            in_discount = 100;
           }
           if (ex_discount == undefined) {
-            ex_discount = 100
+            ex_discount = 100;
           }
           record.p_number2 = list[listKey].p_number2;
           const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
           const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
-          const profit = toDecimal2(total - cost)
+          const profit = toDecimal2(total - cost);
+
           form.setFieldsValue({
             [listKey]: { total: total },
           });
@@ -64,26 +71,29 @@ const discountChange = (record: any, recordList: any, type: string) => {
         for (const listKey in list) {
           let in_discount = list[listKey].in_discount;
           if (in_discount == undefined) {
-            in_discount = 100
+            in_discount = 100;
           }
           qty = list[listKey].in_qty;
           record.p_number2 = list[listKey].p_number2;
           const unit_price = list[listKey].unit_price;
           const total: number = toDecimal2((unit_price * qty * in_discount) / 100);
-            form.setFieldsValue({
-              [listKey]: { total: total },
-            });
+          list[listKey].total = total;
+          form.setFieldsValue({
+            [listKey]: { total: total },
+          });
         }
       }
       record.p_name = record.p_number;
+      return;
     }
-  }
+  };
 
   return (
     <div>
       <ProForm<InSourceType | ExSourceType>
         formRef={formRef as MutableRefObject<any>}
         onFinish={async (values) => {
+          setLoading(true)
           const result: InSourceType | ExSourceType = values;
           result.bill_type = bill;
           // result.bill_number = billNumber;
@@ -95,13 +105,12 @@ const discountChange = (record: any, recordList: any, type: string) => {
             i.ware_house = parseInt(String(i.ware_house));
           }
           createExBill(result).then(() => {
-            message.success('单据创建成功');
-            formRef?.current?.setFieldsValue({ custom: "" });
-            formRef?.current?.setFieldsValue({ c_name: "" });
+            message.success('单据创建成功', 2.5);
+            formRef?.current?.setFieldsValue({ custom: '' });
+            formRef?.current?.setFieldsValue({ c_name: '' });
             form.resetFields();
             setDataSource([]);
           });
-
         }}
         submitter={{
           searchConfig: {
@@ -122,7 +131,7 @@ const discountChange = (record: any, recordList: any, type: string) => {
               >
                 重置
               </Button>,
-              <Button type="primary" key="submit" onClick={() => props.form?.submit?.()}>
+              <Button type="primary" key="submit" onClick={() => props.form?.submit?.()} loading={loading}>
                 提交
               </Button>,
             ];
@@ -131,14 +140,20 @@ const discountChange = (record: any, recordList: any, type: string) => {
         // request={requestBillNumber}
       >
         <ProForm.Group>
-          <ProFormText width="sm" name="bill_number" label="单据编号" disabled={true} initialValue={billNumber} />
+          <ProFormText
+            width="sm"
+            name="bill_number"
+            label="单据编号"
+            disabled={true}
+            initialValue={billNumber}
+          />
           <ProFormDatePicker
             name="created_at"
             label="单据日期"
             initialValue={moment(new Date().getTime()).format('YYYY-MM-DD')}
           />
-          {
-            bill == '出库单' ? <ProFormRadio.Group
+          {bill == '出库单' ? (
+            <ProFormRadio.Group
               name="pay_method"
               label="付款方式"
               options={[
@@ -151,13 +166,14 @@ const discountChange = (record: any, recordList: any, type: string) => {
                   value: 'wechat',
                 },
               ]}
-              rules={[{ required: true, message: '付款方式必填' }]} />
-              : <></>
-
-          }
+              rules={[{ required: true, message: '付款方式必填' }]}
+            />
+          ) : (
+            <></>
+          )}
         </ProForm.Group>
-        {
-          bill == '出库单' ? <ProForm.Group>
+        {bill == '出库单' ? (
+          <ProForm.Group>
             <ProFormSelect
               name="c_number"
               label="客户代码"
@@ -198,11 +214,11 @@ const discountChange = (record: any, recordList: any, type: string) => {
               disabled={true}
               hidden={true}
             />
-            {
-              realDiscount ? <CopyButton realDiscount={realDiscount}/> : <></>
-            }
+            {realDiscount ? <CopyButton realDiscount={realDiscount} /> : <></>}
           </ProForm.Group>
-            : <></>}
+        ) : (
+          <></>
+        )}
 
         <ProForm.Item name="body" initialValue={defaultData} trigger="onValuesChange">
           <EditableProTable<InSourceType>
@@ -214,6 +230,7 @@ const discountChange = (record: any, recordList: any, type: string) => {
             recordCreatorProps={{
               newRecordType: 'dataSource',
               position: 'bottom',
+              creatorButtonText: '新增',
               record: () => ({
                 id: Date.now(),
               }),
@@ -228,8 +245,10 @@ const discountChange = (record: any, recordList: any, type: string) => {
                 return [dom.delete];
               },
               onValuesChange: (record, recordList) => {
-                discountChange(record, recordList, bill)
-                setDataSource(recordList);
+                discountChange(record, recordList, bill);
+                setDataSource(() => {
+                  return recordList;
+                });
               },
             }}
             summary={(pageData) => summary(pageData, bill)}

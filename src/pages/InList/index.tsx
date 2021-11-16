@@ -3,10 +3,10 @@ import ProTable from '@ant-design/pro-table';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { MomentInput } from 'moment';
 import moment from 'moment';
-import { deleteBill, getInStockList } from '@/pages/InList/services';
+import { getInStockList } from '@/pages/InList/services';
 import mergeCells from '@/utils/mergeCells';
 import { Link } from 'umi';
-import { Button, Tag } from 'antd';
+import { Tag } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import Payable from './Payable';
 
@@ -191,8 +191,7 @@ export default () => {
           return {
             onClick: () => {
               console.log(record.id, record.number)
-              console.log(event)
-              setID(record.id)
+              // setID(record.id)
               console.log("点击行")
 
             }, // 点击行
