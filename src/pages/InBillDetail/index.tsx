@@ -1,4 +1,4 @@
-import { Radio } from 'antd';
+import { Radio, Modal, message } from 'antd';
 import { history, useParams } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProForm, {
@@ -14,6 +14,7 @@ import summary from '@/utils/summary';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
 import { requestWareHouse } from '@/components/BaseBill/services';
 import { deleteBill } from '@/pages/InList/services';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 // const defaultData: InSourceType[] = [];
 
@@ -83,8 +84,35 @@ const columns: ProColumns<InSourceType>[] = [
 export default () => {
   const number = useParams();
   const [data, setDate] = useState([]);
-  const [disabled, setDisabled] = useState(true);
+  // const [modal, setModal] = useState(false)
 console.log(data, "data", number, "单号")
+
+  const { confirm } = Modal;
+
+  const showDeleteConfirm = () => {
+    confirm({
+      title: '确定删除此订单吗?',
+      icon: <ExclamationCircleOutlined />,
+      // content: 'Some descriptions',
+      okText: '是',
+      okType: 'danger',
+      cancelText: '否',
+      onOk() {
+        deleteBill(number).then(() => {
+          message.success("删除成功")
+          history.push("/stock-table/in")
+        }).catch(err => {
+          console.log(err, "错误消息")
+        })
+
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  }
+
+
   return (
     <PageContainer
       header={{
@@ -99,15 +127,15 @@ console.log(data, "data", number, "单号")
             >返回</Radio.Button>
             <Radio.Button value="copy" disabled={true} type={'primary'}>复制</Radio.Button>
             <Radio.Button value="change" disabled={true} type={'primary'}>修改</Radio.Button>
-            <Radio.Button value="delete" type={'primary'}
-                          onClick={() => {
-                            deleteBill(number).then(() => {
-                              console.log("删除成功")
-                            }).catch(err => {
-                              console.log(err, "错误消息")
-                            })
-                            history.push("/manager/in")
-                          }}
+            <Radio.Button value="delete" type={'primary'} onClick={showDeleteConfirm}
+                          // onClick={() => {
+                          //   deleteBill(number).then(() => {
+                          //     console.log("删除成功")
+                          //   }).catch(err => {
+                          //     console.log(err, "错误消息")
+                          //   })
+                          //   history.push("/manager/in")
+                          // }}
             >删除</Radio.Button>
           </Radio.Group>
       }

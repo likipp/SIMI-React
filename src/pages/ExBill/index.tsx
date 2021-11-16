@@ -42,9 +42,13 @@ export default () => {
           showArrow: false,
           showSearch: true,
           onChange: (value: any, item: any) => {
+            console.log("点击了物料代码")
+            console.log(rowKey, item)
+            console.log(form.getFieldsValue())
             form.setFieldsValue({ [rowKey as any]: { p_number2: item.label } });
             form.setFieldsValue({[rowKey as any]: {unit_price: item.price}})
             form.setFieldsValue({[rowKey as any]: {ware_house: item.ware_house.toString()}})
+            console.log(form.getFieldsValue(), "form")
           },
         };
       },
