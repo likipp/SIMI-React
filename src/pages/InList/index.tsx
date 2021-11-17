@@ -43,7 +43,7 @@ const valueStatusEnum = {
 export default () => {
   const [drawerVisit, setDrawerVisit] = useState(false);
   const [defaultPay, setPay] = useState<PayItem>();
-  const [id, setID] = useState(0)
+  // const [id, setID] = useState(0)
   const ref = useRef<ActionType>();
 
   const columns: ProColumns<TableListItem>[] = [

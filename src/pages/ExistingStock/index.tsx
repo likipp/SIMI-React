@@ -21,6 +21,16 @@ export default () => {
       width: '15%',
       valueType: 'select',
       request: requestProduct,
+      fieldProps: () => {
+
+        return {
+          optionItemRender(item: { label: string; value: string }) {
+            return item.label + ' - ' + item.value;
+          },
+          showArrow: false,
+          showSearch: true
+        };
+      },
     },
     {
       title: '产品名称',

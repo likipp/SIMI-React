@@ -1,87 +1,105 @@
 import { useParams } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProForm, {
-  ProFormDatePicker,
-  ProFormText,
-} from '@ant-design/pro-form';
-import { useState } from 'react';
-import moment from 'moment';
-import type { ProColumns } from '@ant-design/pro-table';
-import { EditableProTable } from '@ant-design/pro-table';
-import { getInBillDetail } from '@/pages/InBillDetail/services';
-import summary from '@/utils/summary';
+import { useEffect, useState } from 'react';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
-import { requestWareHouse } from '@/components/BaseBill/services';
-import HeaderBillDetail from '@/components/HeaderBillDetail';
+import BillReadOnly from '@/components/BaseBill/ReadOnly';
+import { BillContext } from '@/context/billChange';
+import BillUpdate from '@/components/BaseBill/Update';
+import { getInBillDetail } from '@/pages/InBillDetail/services';
+import columns from '@/pages/InBill/columns';
 
-// const defaultData: InSourceType[] = [];
 
-const columns: ProColumns<InSourceType>[] = [
-  {
-    title: '序号',
-    dataIndex: 'index',
-    valueType: 'indexBorder',
-    width: 48,
-  },
-  {
-    title: '产品代码',
-    align: 'right',
-    dataIndex: 'p_number',
-    key: 'p_number',
-    width: '10%',
-    valueType: 'select',
-    fieldProps: () => {
-      return {
-        optionItemRender(item: { label: string; value: string }) {
-          return item.label + ' - ' + item.value;
-        },
-        showArrow: false,
-        showSearch: true,
-      };
-    },
-  },
-  {
-    title: '产品名称',
-    align: 'right',
-    dataIndex: 'p_name',
-    width: '20%',
-  },
-  {
-    title: '单价',
-    align: 'right',
-    dataIndex: 'unit_price',
-    valueType: 'money',
-  },
-  {
-    title: '仓库',
-    align: 'right',
-    dataIndex: 'ware_house',
-    valueType: 'select',
-    request: requestWareHouse,
-  },
-  {
-    title: '数量',
-    align: 'right',
-    dataIndex: 'in_qty',
-    valueType: 'digit',
-  },
-  {
-    title: '产品代码',
-    align: 'right',
-    dataIndex: 'p_number2',
-    hideInTable: true,
-  },
-  {
-    title: '金额',
-    align: 'right',
-    dataIndex: 'total',
-    valueType: 'money',
-  },
-];
-
+// export const BillContext = createContext(false)
 export default () => {
   const number = useParams();
-  const [data, setDate] = useState([]);
+  const [data, setData] = useState<InSourceType>()
+  const [change, setChange] = useState(false)
+
+  // const columns: ProColumns<InSourceType>[] = [
+  //   {
+  //     title: '序号',
+  //     dataIndex: 'index',
+  //     valueType: 'indexBorder',
+  //     width: 48,
+  //   },
+  //   {
+  //     title: '产品代码',
+  //     dataIndex: 'p_number',
+  //     key: 'p_number',
+  //     width: '10%',
+  //     valueType: 'select',
+  //     request: requestProduct,
+  //     fieldProps: (form, { rowKey }) => {
+  //       return {
+  //         optionItemRender(item: { label: string; value: string }) {
+  //           return item.label + ' - ' + item.value;
+  //         },
+  //         showArrow: false,
+  //         showSearch: true,
+  //         onChange: (value: any, item: any) => {
+  //           form.setFieldsValue({ [rowKey as any]: { p_number2: item.label } });
+  //           form.setFieldsValue({[rowKey as any]: {unit_price: item.price}})
+  //           form.setFieldsValue({[rowKey as any]: {ware_house: item.ware_house.toString()}})
+  //         },
+  //       };
+  //     },
+  //   },
+  //   {
+  //     title: '产品名称',
+  //     dataIndex: 'p_name',
+  //     width: '20%',
+  //   },
+  //   {
+  //     title: '单价',
+  //     dataIndex: 'unit_price',
+  //     valueType: 'money',
+  //   },
+  //   {
+  //     title: '仓库',
+  //     dataIndex: 'ware_house',
+  //     valueType: 'select',
+  //     request: requestWareHouse,
+  //   },
+  //   {
+  //     title: '数量',
+  //     dataIndex: 'in_qty',
+  //     valueType: 'digit',
+  //   },
+  //   {
+  //     title: '进货折扣',
+  //     dataIndex: 'in_discount',
+  //     valueType: 'percent'
+  //   },
+  //   {
+  //     title: '产品代码',
+  //     align: 'right',
+  //     dataIndex: 'p_number2',
+  //     hideInTable: true,
+  //   },
+  //   {
+  //     title: '金额',
+  //     dataIndex: 'total',
+  //     valueType: 'money',
+  //   },
+  //   {
+  //     title: '操作',
+  //     valueType: 'option',
+  //     align: 'right',
+  //     hideInTable: !change
+  //   },
+  // ];
+
+  useEffect(() => {
+    getInBillDetail(number)
+      .then((res) => {
+        setData(() => {
+          return res.data
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  }, [])
 
   return (
     <PageContainer
@@ -89,52 +107,13 @@ export default () => {
         title: '入库单详情',
       }}
     >
-      {
-        data == [] ? <></>
-          : <HeaderBillDetail number={number} type={"in"}/>
-      }
-      <ProForm<InSourceType>
-        submitter={{
-          render: () => {
-            return [];
-          },
-        }}
-        request={async () => {
-          return Promise.resolve(
-            getInBillDetail(number)
-              .then((res) => {
-                setDate(res.data.body);
-                return res.data;
-              })
-              .catch((err) => {
-                console.log(err);
-              }),
-          );
-        }}
-      >
-        <ProForm.Group>
-          <ProFormText width="sm" name="bill_number" label="单据编号" disabled={true} />
-          <ProFormDatePicker
-            name="created_at"
-            label="单据日期"
-            initialValue={moment(new Date().getTime()).format('YYYY-MM-DD')}
-            disabled={true}
-          />
-        </ProForm.Group>
-        <ProForm.Item
-          name="body"
-        >
-          <EditableProTable<InSourceType>
-            rowKey="id"
-            toolBarRender={false}
-            columns={columns}
-            value={data}
-            controlled
-            recordCreatorProps={false}
-            summary={(pageData) => summary(pageData, "出库")}
-          />
-        </ProForm.Item>
-      </ProForm>
+      <BillContext.Provider value={{change, setChange}}>
+        {
+          change ? <BillUpdate bill={'入库单'} columns={columns} data={data as InSourceType}/>
+            : <BillReadOnly columns={columns} data={data as InSourceType} />
+        }
+      </BillContext.Provider>
+
     </PageContainer>
   );
 };

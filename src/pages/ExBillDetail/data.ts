@@ -1,8 +1,8 @@
-import type React from 'react';
+// import type React from 'react';
 
-interface BaseBodyType {
+export interface BaseBodyType {
   key: string;
-  id: React.Key;
+  id: number;
   p_number: string;
   p_number2: string;
   p_name: string;
@@ -10,11 +10,11 @@ interface BaseBodyType {
   ware_house: number;
   discount: number;
   total: number;
-  crated_at: string;
+  createdAt: string;
 }
 
 interface BaseSourceType {
-  id: React.Key;
+  id: number;
   bill_number: string;
   bill_type: string;
   pay_method: string;

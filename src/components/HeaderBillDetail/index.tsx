@@ -2,9 +2,12 @@ import { message, Modal, Radio } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { deleteBill } from '@/pages/InList/services';
 import { history } from '@@/core/history';
+import { useContext } from 'react';
+import { BillContext } from '@/context/billChange';
 
-const headerBillDetail =(props: any) => {
+const HeaderBillDetail =(props: any) => {
   const {number, type} = props
+  const {setChange} = useContext(BillContext)
   const { confirm } = Modal;
 
   const showDeleteConfirm = () => {
@@ -29,15 +32,22 @@ const headerBillDetail =(props: any) => {
     });
   }
 
-  return <Radio.Group style={{marginBottom: '20px', backgroundColor: 'red'}}>
-    <Radio.Button value="back" type={'primary'}
-                  onClick={() => history.goBack()}
-    >返回</Radio.Button>
-    <Radio.Button value="copy" disabled={true} type={'primary'}>复制</Radio.Button>
-    <Radio.Button value="change" disabled={true} type={'primary'}>修改</Radio.Button>
-    <Radio.Button value="delete" type={'primary'} onClick={showDeleteConfirm}
-    >删除</Radio.Button>
-  </Radio.Group>
+  return (
+    <Radio.Group style={{marginBottom: '20px', backgroundColor: 'red'}}>
+      <Radio.Button value="back"
+                    onClick={() => history.goBack()}
+      >返回</Radio.Button>
+      <Radio.Button value="copy" disabled={true}>复制</Radio.Button>
+      <Radio.Button value="change"
+                    onClick={() => {
+                      setChange(() => true)
+                      console.log("点击修改")
+                    }}
+      >修改</Radio.Button>
+      <Radio.Button value="delete" onClick={showDeleteConfirm}
+      >删除</Radio.Button>
+    </Radio.Group>
+  )
 }
 
-export default headerBillDetail
+export default HeaderBillDetail
