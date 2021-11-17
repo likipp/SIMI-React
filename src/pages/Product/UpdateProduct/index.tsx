@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type {
   ProFormInstance} from '@ant-design/pro-form';
 import ProForm, {
@@ -10,7 +10,7 @@ import ProForm, {
 } from '@ant-design/pro-form';
 import type { ProductListItem } from '@/pages/Product/data';
 import { requestUnitSelectList, requestBrandSelectList, requestWareHouse } from '@/components/BaseBill/services';
-import { updatesProduct } from '@/pages/Product/services';
+import { addProduct, generateProductNumber, updatesProduct } from '@/pages/Product/services';
 import { message } from 'antd';
 
 export type updateFormProps = {
@@ -18,11 +18,14 @@ export type updateFormProps = {
   onCancel: (flag?: boolean) => void;
   updateModalVisible: boolean;
   reload: ((resetPageIndex?: (boolean | undefined)) => Promise<void>) | undefined;
+  copy: string
 }
 
 const UpdateProduct: React.FC<updateFormProps> = (props) => {
-  const {onCancel, updateModalVisible, reload, data} = props
+  const {onCancel, updateModalVisible, reload, data, copy} = props
   const formRef = useRef<ProFormInstance>()
+  const [, setActions] = useState("编辑")
+  // const [disabled, setDisabled] = useState(false)
 
   const onFill = () => {
     formRef?.current?.setFieldsValue({
@@ -40,9 +43,15 @@ const UpdateProduct: React.FC<updateFormProps> = (props) => {
   useEffect(() => {
     onFill()
   }, [data.id > 0])
+
+  useEffect(() => {
+    setActions("新建")
+    // setDisabled(true)
+  }, [copy === "新建"])
   return (
 
     <ModalForm<ProductListItem>
+      title={`${copy}产品`}
       visible={updateModalVisible}
       modalProps={{
         onCancel: () => {
@@ -56,12 +65,32 @@ const UpdateProduct: React.FC<updateFormProps> = (props) => {
         result.brand = parseInt(String(result.brand))
         result.ware_house = parseInt(String(result.ware_house))
         result.id = data.id
-        updatesProduct(result).then(() => {
-          onCancel()
-          reload?.()
-          message.success('提交成功');
-          return true;
-        })
+        if (copy === "编辑") {
+          // updatesProduct(result).then(() => {
+          //   onCancel()
+          //   reload?.()
+          //   message.success('编辑成功');
+          //   return true;
+          // })
+        } else {
+          console.log(result, "结果")
+          let parent: string
+          if (result.brand == 1) {
+            parent = "HX"
+          } else {
+            parent = "B"
+          }
+          result.id = 0
+          generateProductNumber({parent: parent}).then((res) => {
+            result.p_number = res.data
+          })
+          addProduct(result).then(() => {
+            onCancel()
+            reload?.()
+            message.success('新建成功');
+            return true;
+          })
+        }
         return false
       }}
       formRef={formRef}
@@ -72,6 +101,7 @@ const UpdateProduct: React.FC<updateFormProps> = (props) => {
           name="p_number"
           label="产品代码"
           placeholder="请输入编号"
+          disabled={true}
           // initialValue={data.p_number}
           rules={[{ required: true, message: '请输入产品编号' }]}
         />

@@ -1,7 +1,6 @@
-import { ProColumns } from '@ant-design/pro-table';
-import { ExSourceType } from '@/pages/ExBillDetail/data';
+import type { ProColumns } from '@ant-design/pro-table';
+import type { ExSourceType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
-import toDecimal2 from '@/utils/toDecimal2';
 
 const columns: ProColumns<ExSourceType>[] = [
   {
@@ -24,17 +23,20 @@ const columns: ProColumns<ExSourceType>[] = [
     fieldProps: (form, { rowKey }) => {
 
       return {
-        optionItemRender(item: { label: string; value: string }) {
-          return item.label + ' - ' + item.value;
+        optionItemRender(item: { key: string; value: string }) {
+          return item.value + ' - ' + item.key;
         },
         showArrow: false,
         showSearch: true,
         onChange: (value: any, item: any) => {
-          form.setFieldsValue({ [rowKey as any]: { p_number2: item.label } });
           form.setFieldsValue({[rowKey as any]: {unit_price: item.price}})
-          form.setFieldsValue({[rowKey as any]: {p_name: item.value}})
+          form.setFieldsValue({[rowKey as any]: {p_name: item.p_name}})
           form.setFieldsValue({[rowKey as any]: {ware_house: item.ware_house.toString()}})
         },
+        onSelect: (value: any, option: any) => {
+          option.label = value;
+          option["data-item"].label = value;
+        }
       };
     },
     request: requestProduct,
@@ -48,22 +50,6 @@ const columns: ProColumns<ExSourceType>[] = [
         rules: [{ required: true, message: '产品名称必填' }],
       };
     },
-    // fieldProps: (from, { rowKey }) => {
-    //   if (from) {
-    //     const p_number = from.getFieldValue([rowKey || '', 'p_number']);
-    //     from.setFields([
-    //       {
-    //         name: [`${rowKey}`, 'p_name'],
-    //         value: p_number,
-    //       },
-    //     ]);
-    //   }
-    //   // return {
-    //   //   precision: 2,
-    //   //   min: 0,
-    //   //   max: 9999,
-    //   // };
-    // },
   },
   {
     title: '仓库',
@@ -111,11 +97,6 @@ const columns: ProColumns<ExSourceType>[] = [
     },
   },
   {
-    title: '产品代码',
-    dataIndex: 'p_number2',
-    hideInTable: true,
-  },
-  {
     title: '会员折扣',
     dataIndex: 'ex_discount',
     valueType: 'percent',
@@ -157,18 +138,18 @@ const columns: ProColumns<ExSourceType>[] = [
     title: '成本',
     dataIndex: 'cost',
     valueType: 'money',
-    fieldProps: (form, { rowKey }) => {
-      const unit_price = form.getFieldsValue([rowKey || '', 'unit_price'])
-      const ex_qty = form.getFieldsValue([rowKey || '', 'ex_qty'])
-
-      return {
-        rules: [{ required: true, message: '成本必填' }],
-        onChange: (item: any) => {
-          const in_discount = Math.floor(item / ex_qty / unit_price * 100 * 1000) / 1000
-          form.setFieldsValue({[rowKey as any]: {in_discount: in_discount}})
-        },
-      };
-    },
+    // fieldProps: (form, { rowKey }) => {
+    //   const unit_price = form.getFieldsValue([rowKey || '', 'unit_price'])
+    //   const ex_qty = form.getFieldsValue([rowKey || '', 'ex_qty'])
+    //
+    //   return {
+    //     rules: [{ required: true, message: '成本必填' }],
+    //     onChange: (item: any) => {
+    //       const in_discount = Math.floor(item / ex_qty / unit_price * 100 * 1000) / 1000
+    //       form.setFieldsValue({[rowKey as any]: {in_discount: in_discount}})
+    //     },
+    //   };
+    // },
   },
 
 
@@ -181,12 +162,12 @@ const columns: ProColumns<ExSourceType>[] = [
         rules: [{ required: true, message: '利润必填' }],
       };
     },
-    renderFormItem: (_, {record})  => {
-      if (record?.total === undefined || record?.cost === undefined || isNaN(record?.total) || isNaN(record?.cost)) {
-        return 0
-      }
-      return toDecimal2(record.total - record.cost)
-    }
+    // renderFormItem: (_, {record})  => {
+    //   if (record?.total === undefined || record?.cost === undefined || isNaN(record?.total) || isNaN(record?.cost)) {
+    //     return 0
+    //   }
+    //   return toDecimal2(record.total - record.cost)
+    // }
   },
   {
     title: '操作',

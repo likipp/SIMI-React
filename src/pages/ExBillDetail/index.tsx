@@ -15,93 +15,6 @@ import type { ExSourceType } from '@/pages/ExBillDetail/data';
 import HeaderBillDetail from '@/components/HeaderBillDetail';
 import columns from '@/pages/ExBill/columns';
 
-{/*const columns: ProColumns<ExSourceType>[] = [*/}
-{/*  {*/}
-//     title: '序号',
-//     dataIndex: 'index',
-//     valueType: 'indexBorder',
-//     width: 48,
-//   },
-//   {
-//     title: '产品代码',
-//     align: 'right',
-//     dataIndex: 'p_number',
-//     key: 'p_number',
-{/*    width: '10%',*/}
-{/*    valueType: 'select',*/}
-{/*    fieldProps: () => {*/}
-{/*      return {*/}
-{/*        optionItemRender(item: { label: string; value: string }) {*/}
-//           return item.label + ' - ' + item.value;
-//         },
-//         showArrow: false,
-//         showSearch: true,
-//       };
-//     },
-//   },
-//   {
-//     title: '产品名称',
-//     align: 'right',
-//     dataIndex: 'p_name',
-//     width: '20%',
-//   },
-//   {
-{/*    title: '单价',*/}
-{/*    align: 'right',*/}
-{/*    dataIndex: 'unit_price',*/}
-//     valueType: 'money',
-//   },
-//   {
-//     title: '仓库',
-//     align: 'right',
-//     dataIndex: 'ware_house',
-//     valueType: 'select',
-//     request: requestWareHouse,
-//   },
-//   {
-//     title: '数量',
-//     align: 'right',
-//     dataIndex: 'ex_qty',
-//     valueType: 'digit',
-//   },
-//   {
-//     title: '产品代码',
-//     align: 'right',
-//     dataIndex: 'p_number2',
-//     hideInTable: true,
-//   },
-//   {
-//     title: '会员折扣',
-//     align: 'right',
-//     dataIndex: 'ex_discount',
-//     valueType: 'percent',
-//   },
-//   {
-//     title: '金额',
-//     align: 'right',
-//     dataIndex: 'total',
-//     valueType: 'money',
-//   },
-//   {
-//     title: '进货折扣',
-//     align: 'right',
-//     dataIndex: 'in_discount',
-//     valueType: 'percent',
-//   },
-//   {
-//     title: '成本',
-//     align: 'right',
-//     dataIndex: 'cost',
-//     valueType: 'money',
-//   },
-//   {
-//     title: '利润',
-//     align: 'right',
-//     dataIndex: 'profit',
-//     valueType: 'money',
-//   },
-// ];
-
 export default () => {
   const number = useParams();
   const [data, setDate] = useState([]);
@@ -203,5 +116,3 @@ export default () => {
     </PageContainer>
   );
 };
-
-// ExBillDetail

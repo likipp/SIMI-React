@@ -55,19 +55,27 @@ const BaseBill: React.FC<BillProps> = (prop) => {
           // if (ex_discount == undefined) {
           //   ex_discount = 100;
           // }
+          // console.log(unit_price, "list", qty, ex_discount)
           // const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
           // const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
           // const profit = toDecimal2(total - cost);
+          // console.log(total, cost, "金额")
           const {total, cost, profit} =  calculateEx(qty, list, listKey)
           record.cost = cost
           record.profit = profit
           record.total = total
-          form.setFieldsValue({
-            [listKey]: { cost: cost },
-          });
-          form.setFieldsValue({
-            [listKey]: { profit: profit },
-          });
+          list[listKey].total = total;
+          list[listKey].profit = profit;
+          list[listKey].cost = cost;
+          // form.setFieldsValue({
+          //   [listKey]: { cost: total },
+          // });
+          // form.setFieldsValue({
+          //   [listKey]: { cost: cost },
+          // });
+          // form.setFieldsValue({
+          //   [listKey]: { profit: profit },
+          // });
         }
       } else {
         for (const listKey in list) {
@@ -108,12 +116,18 @@ const BaseBill: React.FC<BillProps> = (prop) => {
           createExBill(result).then(() => {
             setLoading(false)
             message.success('单据创建成功', 2.5);
-            formRef?.current?.setFieldsValue({ custom: '' });
-            formRef?.current?.setFieldsValue({ c_name: '' });
             form.resetFields();
             setDataSource([]);
-            history.push("/stock-table/in")
-          });
+            if (result.bill_type === "出库单") {
+              formRef?.current?.setFieldsValue({ custom: '' });
+              formRef?.current?.setFieldsValue({ c_name: '' });
+              history.push("/stock-table/ex")
+            } else {
+              history.push("/stock-table/in")
+            }
+          }).catch(() => {
+            setLoading(false)
+          })
         }}
         submitter={{
           searchConfig: {

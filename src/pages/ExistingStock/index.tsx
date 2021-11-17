@@ -4,6 +4,8 @@ import { requestProduct, requestWareHouse } from '@/components/BaseBill/services
 import type { DataSourceType } from '@/pages/ExistingStock/data';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getStockList } from '@/pages/ExistingStock/services';
+import { Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 
 export default () => {
   const columns: ProColumns<DataSourceType>[] = [
@@ -22,13 +24,16 @@ export default () => {
       valueType: 'select',
       request: requestProduct,
       fieldProps: () => {
-
         return {
-          optionItemRender(item: { label: string; value: string }) {
-            return item.label + ' - ' + item.value;
+          optionItemRender(item: { key: string; value: string }) {
+            return item.value + ' - ' + item.key;
           },
           showArrow: false,
-          showSearch: true
+          showSearch: true,
+          onSelect: (value: any, option: any) => {
+            option.label = value;
+            option["data-item"].label = value;
+          }
         };
       },
     },
@@ -41,13 +46,23 @@ export default () => {
         precision: 2,
         min: 0,
         max: 9999,
-      }
+      },
+      filterDropdown: () => (
+        <div style={{ padding: 8 }}>
+          <Input style={{ width: 188, marginBottom: 8, display: 'block' }} />
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+      ),
     },
     {
       title: '仓库',
       align: 'right',
       dataIndex: 'ware_house',
       valueType: 'select',
+      filters: true,
+      onFilter: true,
       fieldProps: {
         showArrow: false,
         showSearch: true,
@@ -59,16 +74,14 @@ export default () => {
       align: 'right',
       dataIndex: 'qty',
       valueType: 'digit',
+      hideInSearch: true,
       fieldProps: {
         precision: 0,
         min: 1,
         max: 9999,
       },
+      sorter: (a, b) => a.qty - b.qty,
     },
-    // {
-    //   title: '操作',
-    //   valueType: 'option',
-    // },
   ];
   return <PageContainer>
     <ProTable<DataSourceType>

@@ -1,5 +1,5 @@
-import { ProColumns } from '@ant-design/pro-table';
-import { InSourceType } from '@/pages/ExBillDetail/data';
+import type { ProColumns } from '@ant-design/pro-table';
+import type { InSourceType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
 
 const columns: ProColumns<InSourceType>[] = [
@@ -32,6 +32,10 @@ const columns: ProColumns<InSourceType>[] = [
           form.setFieldsValue({[rowKey as any]: {unit_price: item.price}})
           form.setFieldsValue({[rowKey as any]: {ware_house: item.ware_house.toString()}})
         },
+        onSelect: (value: any, option: any) => {
+          option.label = value;
+          option["data-item"].label = value;
+        }
       };
     },
     request: requestProduct,
@@ -44,14 +48,7 @@ const columns: ProColumns<InSourceType>[] = [
       return {
         rules: [{ required: true, message: '产品名称必填' }],
       };
-    },
-    fieldProps: () => {
-      return {
-        precision: 2,
-        min: 0,
-        max: 9999,
-      };
-    },
+    }
   },
   {
     title: '单价',

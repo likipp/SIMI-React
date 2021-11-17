@@ -89,13 +89,13 @@ export default () => {
     },
     {
       title: '单价',
-      dataIndex: 'in_qty',
+      dataIndex: 'unit_price',
       align: 'center',
       search: false,
     },
     {
       title: '数量',
-      dataIndex: 'unit_price',
+      dataIndex: 'in_qty',
       align: 'center',
       search: false,
       valueType: 'digit',

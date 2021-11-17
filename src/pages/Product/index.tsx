@@ -17,6 +17,7 @@ export default () => {
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [data, setData] = useState([])
+  const [copy, setCopy] = useState("编辑")
   const columns: ProColumns<ProductListItem>[] = [
     {
       title: '排序',
@@ -80,7 +81,18 @@ export default () => {
           }}
         >
           编辑
+        </a>,
+        <a
+          key="copy"
+          onClick={() => {
+            setUpdateModalVisible(true)
+            setCopy("新建")
+            setData(record)
+          }}
+        >
+          复制
         </a>
+
       ],
     },
   ]
@@ -144,7 +156,7 @@ export default () => {
         }}
       />
       <CreateProduct createModalVisible={createModalVisible} onCancel={handleCancel} reload={actionRef.current?.reload} />
-      <UpdateProduct updateModalVisible={updateModalVisible} onCancel={handleUpdateCancel} reload={actionRef.current?.reload} data={data}/>
+      <UpdateProduct updateModalVisible={updateModalVisible} onCancel={handleUpdateCancel} reload={actionRef.current?.reload} data={data} copy={copy}/>
     </PageContainer>
   )
 }
