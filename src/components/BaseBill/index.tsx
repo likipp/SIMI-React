@@ -17,6 +17,7 @@ import { EditableProTable } from '@ant-design/pro-table';
 import summary from '@/utils/summary';
 import toDecimal2 from '@/utils/toDecimal2';
 import CopyButton from '@/components/CopyButton';
+import calculateEx from '@/components/BaseBill/calculate';
 
 interface BillProps {
   bill: string;
@@ -44,26 +45,22 @@ const BaseBill: React.FC<BillProps> = (prop) => {
     if (record != undefined) {
       if (type == '出库单') {
         for (const listKey in list) {
-          qty = list[listKey].ex_qty;
-          const unit_price = list[listKey].unit_price;
-          let in_discount = list[listKey].in_discount;
-          let ex_discount = list[listKey].ex_discount;
-          if (in_discount == undefined) {
-            in_discount = 100;
-          }
-          if (ex_discount == undefined) {
-            ex_discount = 100;
-          }
-          // record.p_number2 = list[listKey].p_number2;
-          const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
-          const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
-          const profit = toDecimal2(total - cost);
-          record.total = total
+          // qty = list[listKey].ex_qty;
+          // const unit_price = list[listKey].unit_price;
+          // let in_discount = list[listKey].in_discount;
+          // let ex_discount = list[listKey].ex_discount;
+          // if (in_discount == undefined) {
+          //   in_discount = 100;
+          // }
+          // if (ex_discount == undefined) {
+          //   ex_discount = 100;
+          // }
+          // const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
+          // const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
+          // const profit = toDecimal2(total - cost);
+          const {total, cost, profit} =  calculateEx(qty, list, listKey)
           record.cost = cost
           record.profit = profit
-          // form.setFieldsValue({
-          //   [listKey]: { total: total },
-          // });
           record.total = total
           form.setFieldsValue({
             [listKey]: { cost: cost },

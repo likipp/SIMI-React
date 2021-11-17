@@ -12,6 +12,7 @@ import { EditableProTable } from '@ant-design/pro-table';
 import summary from '@/utils/summary';
 import toDecimal2 from '@/utils/toDecimal2';
 import { BillContext } from '@/context/billChange';
+import calculateEx from '@/components/BaseBill/calculate';
 // import CopyButton from '@/components/CopyButton';
 
 interface BillProps {
@@ -39,20 +40,21 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
     if (record != undefined) {
       if (type == '出库单') {
         for (const listKey in list) {
-          qty = list[listKey].ex_qty;
-          const unit_price = list[listKey].unit_price;
-          let in_discount = list[listKey].in_discount;
-          let ex_discount = list[listKey].ex_discount;
-          if (in_discount == undefined) {
-            in_discount = 100;
-          }
-          if (ex_discount == undefined) {
-            ex_discount = 100;
-          }
-          record.p_number2 = list[listKey].p_number2;
-          const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
-          const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
-          const profit = toDecimal2(total - cost);
+          // qty = list[listKey].ex_qty;
+          // const unit_price = list[listKey].unit_price;
+          // let in_discount = list[listKey].in_discount;
+          // let ex_discount = list[listKey].ex_discount;
+          // if (in_discount == undefined) {
+          //   in_discount = 100;
+          // }
+          // if (ex_discount == undefined) {
+          //   ex_discount = 100;
+          // }
+          // record.p_number2 = list[listKey].p_number2;
+          // const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
+          // const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
+          // const profit = toDecimal2(total - cost);
+          const {total, cost, profit} =  calculateEx(qty, list, listKey)
           record.total = total
           record.cost = cost
           record.profit = profit
