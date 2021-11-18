@@ -66,6 +66,15 @@ const columns: ProColumns<TableListItem>[] = [
     align: 'center',
     sorter: true,
     valueType: 'dateRange',
+    fieldProps: () => {
+      return {
+        range: {
+          Today: [moment(), moment()],
+          'This Month': [moment().startOf('month'), moment().endOf('month')],
+        },
+        showTime: true
+      }
+    },
     render: (value, row) => {
       return {
         children: moment(row.created_at as MomentInput).format('YYYY-MM-DD HH:mm'),

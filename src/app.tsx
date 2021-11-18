@@ -33,7 +33,7 @@ export async function getInitialState(): Promise<{
     return undefined;
   };
   // 如果是登录页面，不执行
-  if (history.location.pathname !== loginPath) {
+  if (history.location.pathname !== loginPath && history.location.pathname !== "/") {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
@@ -58,13 +58,15 @@ const authHeaderInterceptor = (url: string, options: any) => {
 
 const ResponseInterceptors = async (response: Response) => {
   const data = await response.clone().json()
-  if (data.errorCode != 200) {
+  if (data.errorCode != 200 && data.status != "ok") {
+    console.log(data, "错误了", data.showType)
     if (data.showType == 1) {
       message.error({
         content: data.errorMessage,
         className: 'custom-message-color'
       })
     } else {
+      console.log(234234234)
       notification.error({
         description: data.errorMessage,
         message: data.errorCode,
@@ -105,18 +107,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         history.push(loginPath);
       }
     },
-    // links: isDev
-    //   ? [
-    //       <Link to="/umi/plugin/openapi" target="_blank">
-    //         <LinkOutlined />
-    //         <span>OpenAPI 文档</span>
-    //       </Link>,
-    //       <Link to="/~docs">
-    //         <BookOutlined />
-    //         <span>业务组件文档</span>
-    //       </Link>,
-    //     ]
-    //   : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
