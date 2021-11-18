@@ -11,6 +11,7 @@ const HeaderBillDetail =(props: any) => {
   const { confirm } = Modal;
 
   const showDeleteConfirm = () => {
+    console.log(number, "单号number")
     confirm({
       title: '确定删除此订单吗?',
       icon: <ExclamationCircleOutlined />,
@@ -18,7 +19,7 @@ const HeaderBillDetail =(props: any) => {
       okType: 'danger',
       cancelText: '否',
       onOk() {
-        deleteBill(number).then(() => {
+        deleteBill({number}).then(() => {
           message.success("删除成功")
           history.push(`/stock-table/${type}`)
         }).catch(err => {

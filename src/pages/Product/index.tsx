@@ -139,12 +139,16 @@ export default () => {
             style={{
               display: 'flex',
               width: '100%',
+              marginRight: '15px'
             }}
           >
-            <BrandTree/>
+            <div style={{ width: '200px', height: 'auto', borderRight: '1px solid #eee' }}>
+              <BrandTree />
+            </div>
             <div
               style={{
                 flex: 1,
+                marginRight: '15px'
               }}
             >
               {dom}

@@ -36,6 +36,9 @@ export default () => {
           }
         };
       },
+      render: (_, record) => {
+        return <span>{record.p_number}</span>
+      }
     },
     {
       title: '产品名称',

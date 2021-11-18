@@ -74,8 +74,7 @@ export async function addProduct(params: ProductListItem) {
 export async function generateProductNumber(params: any) {
   return request('/api/v1/base/product-number/', {
     method: 'POST',
-    // 看Fetch官网资料里需要怎么转化下。
-    body: JSON.stringify(params),
+    params: {parent: params.parent},
     headers: {
       'content-type': 'application/json',
     },
@@ -84,4 +83,9 @@ export async function generateProductNumber(params: any) {
 
 export async function updatesProduct(params: ProductListItem) {
   return request(`/api/v1/base/product/${params.id}`, { method: 'patch', data:params});
+}
+
+export async function getBrandTree() {
+  console.log("获取品牌树")
+  return request('/api/v1/base/brand-tree/');
 }

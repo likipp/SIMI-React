@@ -39,6 +39,9 @@ const columns: ProColumns<ExSourceType>[] = [
         }
       };
     },
+    render: (_, record) => {
+      return <span>{record.p_number}</span>
+    },
     request: requestProduct,
   },
   {

@@ -66,29 +66,22 @@ const UpdateProduct: React.FC<updateFormProps> = (props) => {
         result.ware_house = parseInt(String(result.ware_house))
         result.id = data.id
         if (copy === "编辑") {
-          // updatesProduct(result).then(() => {
-          //   onCancel()
-          //   reload?.()
-          //   message.success('编辑成功');
-          //   return true;
-          // })
-        } else {
-          console.log(result, "结果")
-          let parent: string
-          if (result.brand == 1) {
-            parent = "HX"
-          } else {
-            parent = "B"
-          }
-          result.id = 0
-          generateProductNumber({parent: parent}).then((res) => {
-            result.p_number = res.data
-          })
-          addProduct(result).then(() => {
+          updatesProduct(result).then(() => {
             onCancel()
             reload?.()
-            message.success('新建成功');
+            message.success('编辑成功');
             return true;
+          })
+        } else {
+          result.id = 0
+          generateProductNumber({parent: result.brand}).then((res) => {
+            result.p_number = res.data
+            addProduct(result).then(() => {
+              onCancel()
+              reload?.()
+              message.success('新建成功');
+              return true;
+            })
           })
         }
         return false
