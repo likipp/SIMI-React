@@ -1,6 +1,7 @@
 import type { ProColumns } from '@ant-design/pro-table';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
+import productColumn from '@/pages/Product/productColumn';
 
 const columns: ProColumns<InSourceType>[] = [
   {
@@ -20,24 +21,7 @@ const columns: ProColumns<InSourceType>[] = [
         rules: [{ required: true, message: '产品代码必填' }],
       };
     },
-    fieldProps: (form, { rowKey }) => {
-      return {
-        optionItemRender(item: { key: string; value: string }) {
-          return item.value + ' - ' + item.key;
-        },
-        showArrow: false,
-        showSearch: true,
-        onChange: (value: any, item: any) => {
-          form.setFieldsValue({ [rowKey as any]: { p_name: item.p_name } });
-          form.setFieldsValue({[rowKey as any]: {unit_price: item.price}})
-          form.setFieldsValue({[rowKey as any]: {ware_house: item.ware_house.toString()}})
-        },
-        onSelect: (value: any, option: any) => {
-          option.label = value;
-          option["data-item"].label = value;
-        }
-      };
-    },
+    fieldProps: productColumn,
     render: (_, record) => {
       return <span>{record.p_number}</span>
     },

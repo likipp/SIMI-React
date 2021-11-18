@@ -2,13 +2,19 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { getProductList } from '@/pages/Product/services';
-import { requestUnitSelectList, requestBrandSelectList, requestWareHouse } from '@/components/BaseBill/services';
+import {
+  requestUnitSelectList,
+  requestBrandSelectList,
+  requestWareHouse,
+  requestProduct,
+} from '@/components/BaseBill/services';
 import type { ProductListItem } from '@/pages/Product/data';
 import CreateProduct from '@/pages/Product/CreateProduct';
 import UpdateProduct from '@/pages/Product/UpdateProduct'
-import { useState, useRef } from 'react';
-import { Button } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
+import { Badge, Button } from 'antd';
 import BrandTree from '@/pages/Brand/Tree';
+import productColumn from '@/pages/Product/productColumn';
 
 
 
@@ -16,8 +22,10 @@ export default () => {
   const actionRef = useRef<ActionType>();
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
-  const [data, setData] = useState([])
+  const [data, setData] = useState<ProductListItem>()
   const [copy, setCopy] = useState("编辑")
+  const [brand, setBrand] = useState(0)
+  const [activeKey, setActiveKey] = useState<React.Key>('tab1');
   const columns: ProColumns<ProductListItem>[] = [
     {
       title: '排序',
@@ -29,6 +37,11 @@ export default () => {
       title: '产品代码',
       dataIndex: 'p_number',
       align: 'center',
+      fieldProps: productColumn,
+      render: (_, record) => {
+        return <span>{record.p_number}</span>
+      },
+      request: requestProduct,
     },
     {
       title: '产品名称',
@@ -46,6 +59,8 @@ export default () => {
       align: 'center',
       valueType: 'select',
       hideInSearch: true,
+      filters: true,
+      onFilter: true,
       request: requestWareHouse
     },
     {
@@ -53,6 +68,8 @@ export default () => {
       dataIndex: 'brand',
       align: 'center',
       valueType: 'select',
+      filters: true,
+      onFilter: true,
       request: requestBrandSelectList
     },
     {
@@ -60,6 +77,8 @@ export default () => {
       dataIndex: 'unit',
       align: 'center',
       valueType: 'select',
+      filters: true,
+      onFilter: true,
       request: requestUnitSelectList
     },
     {
@@ -97,14 +116,35 @@ export default () => {
     },
   ]
 
+  const renderBadge = (count: number, active = false) => {
+    return (
+      <Badge
+        count={count}
+        style={{
+          marginTop: -2,
+          marginLeft: 4,
+          color: active ? '#1890FF' : '#999',
+          backgroundColor: active ? '#E6F7FF' : '#eee',
+        }}
+      />
+    );
+  };
+
+
   const handleCancel = () => {
     setCreateModalVisible(false);
   };
 
   const handleUpdateCancel = () => {
     setUpdateModalVisible(false)
-    setData([])
+    setData(() => {
+      return undefined
+    })
   }
+
+  useEffect(() => {
+    actionRef.current?.reload()
+  }, [brand])
   return (
     <PageContainer>
       <ProTable<ProductListItem>
@@ -115,7 +155,7 @@ export default () => {
         }}
         rowKey="id"
         request={(params, sorter, filter) => {
-          return Promise.resolve(getProductList({...params, sorter, filter}))
+          return Promise.resolve(getProductList({...params, brand: brand, sorter, filter}))
             .then((res) => {
               for (let i = 0; i < res.data.length; i++) {
                 res.data[i].key = res.data[i].p_number
@@ -142,9 +182,7 @@ export default () => {
               marginRight: '15px'
             }}
           >
-            <div style={{ width: '200px', height: 'auto', borderRight: '1px solid #eee' }}>
-              <BrandTree />
-            </div>
+            <BrandTree brand={brand} reload={actionRef.current?.reload} set={setBrand}/>
             <div
               style={{
                 flex: 1,
@@ -155,12 +193,38 @@ export default () => {
             </div>
           </div>
         )}
+        toolbar={{
+          menu: {
+            type: 'tab',
+            activeKey: activeKey,
+            items: [
+              {
+                key: 'tab1',
+                label: <span>应用{renderBadge(99, activeKey === 'tab1')}</span>,
+              },
+              {
+                key: 'tab2',
+                label: <span>项目{renderBadge(30, activeKey === 'tab2')}</span>,
+              },
+              {
+                key: 'tab3',
+                label: <span>文章{renderBadge(30, activeKey === 'tab3')}</span>,
+              },
+            ],
+            onChange: (key) => {
+              setActiveKey(key as string);
+            },
+          },
+        }}
         pagination={{
           pageSize: 10,
         }}
       />
       <CreateProduct createModalVisible={createModalVisible} onCancel={handleCancel} reload={actionRef.current?.reload} />
-      <UpdateProduct updateModalVisible={updateModalVisible} onCancel={handleUpdateCancel} reload={actionRef.current?.reload} data={data} copy={copy}/>
+      {
+        data ? <UpdateProduct updateModalVisible={updateModalVisible} onCancel={handleUpdateCancel} reload={actionRef.current?.reload} data={data} copy={copy}/>
+          : <></>
+      }
     </PageContainer>
   )
 }

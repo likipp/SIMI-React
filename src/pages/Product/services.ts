@@ -86,6 +86,5 @@ export async function updatesProduct(params: ProductListItem) {
 }
 
 export async function getBrandTree() {
-  console.log("获取品牌树")
   return request('/api/v1/base/brand-tree/');
 }

@@ -9,29 +9,38 @@ interface DataNode {
   children?: DataNode[];
 }
 
-// const initTreeData: DataNode[] = [
-//   { title: 'Expand to load', key: '0' },
-//   { title: 'Expand to load', key: '1' },
-//   { title: 'Tree Node', key: '2', isLeaf: true },
-// ];
-
-const handleSelect = (selectedKeys: React.Key[], info: any) => {
-  console.log('selectedKeys', selectedKeys);
-  console.log('info', info);
+interface TreeProps {
+  reload?: any;
+  set: React.Dispatch<React.SetStateAction<number>>;
+  brand?: number
 }
 
-const BrandTree: React.FC = () => {
-  const [treeData, setTreeData] = useState<DataNode>();
+const BrandTree: React.FC<TreeProps> = (prop) => {
+  const {set} = prop
+  const [treeData, setTreeData] = useState<DataNode[]>();
 
   useEffect(() => {
     getBrandTree().then((res) => {
-      setTreeData(res.data)
+      const tree: DataNode[] = [{title: "品牌", key: "all", children: res.data}]
+      setTreeData(tree)
     })
   }, [])
 
+  const handleSelect = (selectedKeys: React.Key[]) => {
+    let brand: number = 0
+    if (selectedKeys[0] != "all") {
+      brand = selectedKeys[0] as number
+    }
+    set(brand)
+  }
+
   return  (
     <div>
-      <Tree treeData={treeData} onSelect={handleSelect}/>
+      <Tree treeData={treeData} onSelect={handleSelect}
+            defaultExpandAll={true}
+            autoExpandParent={true}
+            defaultExpandedKeys={["all"]}
+            style={{height:"661px", width: '200px', borderRight: '2px solid #eee'}}/>
     </div>
   )
 }
