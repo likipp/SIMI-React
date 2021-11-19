@@ -7,6 +7,18 @@ export async function getProductSelectList(params?: any) {
   });
 }
 
+export async function getUnitSelectList(params: any) {
+  return request('/api/v1/base/unit-select/', {
+    params: { param: params.keyWord },
+  });
+}
+
+export async function getBrandSelectList(params: any) {
+  return request('/api/v1/base/brand-select/', {
+    params: { param: params.keyWord },
+  });
+}
+
 export async function getCustomList(params?: any) {
   return request('/api/v1/base/custom/', {
     params: { param: params.keyWord },
@@ -26,7 +38,6 @@ export async function getWareHouseList(params?: any) {
 }
 
 export async function createExBill(params: any) {
-  console.log(params, "params")
   return request('/api/v1/base/stock/', {
     method: 'POST',
     body: JSON.stringify(params),
@@ -38,18 +49,6 @@ export async function createExBill(params: any) {
 
 export async function getProductList(params: any) {
   return request('/api/v1/base/product/', {
-    params,
-  });
-}
-
-export async function getUnitSelectList(params: any) {
-  return request('/api/v1/base/unit-select/', {
-    params,
-  });
-}
-
-export async function getBrandSelectList(params: any) {
-  return request('/api/v1/base/brand-select/', {
     params,
   });
 }

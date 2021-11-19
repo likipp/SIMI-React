@@ -11,10 +11,11 @@ import {
 import type { ProductListItem } from '@/pages/Product/data';
 import CreateProduct from '@/pages/Product/CreateProduct';
 import UpdateProduct from '@/pages/Product/UpdateProduct'
-import React, { useState, useRef, useEffect } from 'react';
-import { Badge, Button } from 'antd';
+import { useState, useRef, useEffect } from 'react';
+import { Button } from 'antd';
 import BrandTree from '@/pages/Brand/Tree';
 import productColumn from '@/pages/Product/productColumn';
+import { parseInt } from 'lodash';
 
 
 
@@ -25,7 +26,6 @@ export default () => {
   const [data, setData] = useState<ProductListItem>()
   const [copy, setCopy] = useState("编辑")
   const [brand, setBrand] = useState(0)
-  const [activeKey, setActiveKey] = useState<React.Key>('tab1');
   const columns: ProColumns<ProductListItem>[] = [
     {
       title: '排序',
@@ -52,6 +52,7 @@ export default () => {
       title: '规格',
       dataIndex: 'p_spec',
       align: 'center',
+      hideInSearch: true
     },
     {
       title: '仓库',
@@ -116,20 +117,6 @@ export default () => {
     },
   ]
 
-  const renderBadge = (count: number, active = false) => {
-    return (
-      <Badge
-        count={count}
-        style={{
-          marginTop: -2,
-          marginLeft: 4,
-          color: active ? '#1890FF' : '#999',
-          backgroundColor: active ? '#E6F7FF' : '#eee',
-        }}
-      />
-    );
-  };
-
 
   const handleCancel = () => {
     setCreateModalVisible(false);
@@ -155,7 +142,13 @@ export default () => {
         }}
         rowKey="id"
         request={(params, sorter, filter) => {
-          return Promise.resolve(getProductList({...params, brand: brand, sorter, filter}))
+          if (brand) {
+            params.brand = brand
+          }
+          if (params.brand) {
+            params.brand = parseInt(params.brand)
+          }
+          return Promise.resolve(getProductList({...params, sorter, filter}))
             .then((res) => {
               for (let i = 0; i < res.data.length; i++) {
                 res.data[i].key = res.data[i].p_number
@@ -193,29 +186,6 @@ export default () => {
             </div>
           </div>
         )}
-        toolbar={{
-          menu: {
-            type: 'tab',
-            activeKey: activeKey,
-            items: [
-              {
-                key: 'tab1',
-                label: <span>应用{renderBadge(99, activeKey === 'tab1')}</span>,
-              },
-              {
-                key: 'tab2',
-                label: <span>项目{renderBadge(30, activeKey === 'tab2')}</span>,
-              },
-              {
-                key: 'tab3',
-                label: <span>文章{renderBadge(30, activeKey === 'tab3')}</span>,
-              },
-            ],
-            onChange: (key) => {
-              setActiveKey(key as string);
-            },
-          },
-        }}
         pagination={{
           pageSize: 10,
         }}
