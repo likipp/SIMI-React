@@ -7,7 +7,7 @@ import { getInStockList } from '@/pages/InList/services';
 import mergeCells from '@/utils/mergeCells';
 import { Link } from 'umi';
 import { Tag } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Payable from './Payable';
 
 export type TableListItem = {
@@ -149,9 +149,9 @@ export default () => {
     },
   ];
 
-  useEffect(() => {
-    ref.current?.reload()
-  }, [drawerVisit])
+  // useEffect(() => {
+  //   ref.current?.reload()
+  // }, [drawerVisit])
 
   return (
     <PageContainer>
@@ -189,12 +189,12 @@ export default () => {
         // }}
         onRow={record => {
           return {
-            onClick: () => {
-              console.log(record.id, record.number)
-              // setID(record.id)
-              console.log("点击行")
-
-            }, // 点击行
+            // onClick: () => {
+            //   console.log(record.id, record.number)
+            //   setID(record.id)
+            //   console.log("点击行")
+            //
+            // }, // 点击行
             onDoubleClick: () => {
               setPay({
                 source_bill: record?.id,
@@ -225,6 +225,7 @@ export default () => {
           setDrawerVisit={setDrawerVisit}
           drawerVisit={drawerVisit}
           defaultPay={defaultPay}
+          reload={ref.current?.reload()}
         />
       ) : (
         <></>

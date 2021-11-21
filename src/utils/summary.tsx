@@ -37,7 +37,7 @@ const summary = (pageData: any, bill: string) => {
               合计:
             </Text>
           </ProTable.Summary.Cell>
-          <ProTable.Summary.Cell align={'right'} index={2} colSpan={4}>
+          <ProTable.Summary.Cell align={'right'} index={2} colSpan={5}>
             <Text strong style={{ fontSize: '20px' }}>
               总数：{totalNum}
             </Text>

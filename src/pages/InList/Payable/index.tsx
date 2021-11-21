@@ -10,6 +10,7 @@ export type CreateFormProps = {
   drawerVisit: boolean;
   setDrawerVisit: React.Dispatch<React.SetStateAction<boolean>>;
   defaultPay: PayItem;
+  reload: any
 };
 
 interface timeItem {
@@ -21,7 +22,7 @@ interface timeItem {
 }
 
 const CreatePayable: React.FC<CreateFormProps> = (props) => {
-  const { setDrawerVisit, drawerVisit, defaultPay } = props;
+  const { setDrawerVisit, drawerVisit, defaultPay, reload } = props;
 
   const renderTime = (arr: any[]) =>
     arr.map((item, i) => {
@@ -31,7 +32,7 @@ const CreatePayable: React.FC<CreateFormProps> = (props) => {
           return (
             <Timeline.Item
               label={moment(item.createdAt).format('YYYY-MM-DD HH:mm')}
-              dot={<AlipayCircleOutlined />}
+              dot={<AlipayCircleOutlined style={{color: '#1890ff'}}/>}
             >
               {`${item.this_amount}元`}
             </Timeline.Item>
@@ -51,7 +52,7 @@ const CreatePayable: React.FC<CreateFormProps> = (props) => {
         return (
           <Timeline.Item
             label={moment(item.createdAt).format('YYYY-MM-DD HH:mm')}
-            dot={<AlipayCircleOutlined />}
+            dot={<AlipayCircleOutlined style={{color: '#1890ff'}}/>}
           >
             {`${item.this_amount}元`}
           </Timeline.Item>
@@ -69,6 +70,7 @@ const CreatePayable: React.FC<CreateFormProps> = (props) => {
     });
   const [timeLine, setTimeLine] = useState<timeItem[]>([]);
   const [billStatus, setBillStatus] = useState('新增');
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     getPayList({ bill: defaultPay.source_bill }).then((res) => {
@@ -89,14 +91,23 @@ const CreatePayable: React.FC<CreateFormProps> = (props) => {
           forceRender: true,
           destroyOnClose: true,
         }}
+        submitter={{
+          submitButtonProps: {
+            loading: loading
+          }
+        }}
         onFinish={async (values) => {
+          setLoading(true)
           message
             .loading("创建订单中")
             .then(() => updatePayDiscount(values as PayItem).then(() => {
+              setLoading(false)
               message.success('提交成功');
-              return true;
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              reload
+              return true
             }))
-          return true
+          return false
         }}
       >
         <ProForm.Group>

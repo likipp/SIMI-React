@@ -20,19 +20,11 @@ interface TreeProps {
 const BrandTree: React.FC<TreeProps> = (prop) => {
   const {set} = prop
   const [treeData, setTreeData] = useState<DataNode[]>();
-  const [expandedKeys, setExpandedKeys] = useState<string[]>()
-  const [defaultExpandAll, setDefaultExpandAll] = useState(false)
 
   useEffect(() => {
     getBrandTree().then((res) => {
       const tree: DataNode[] = [{title: "品牌", key: "all", icon: <HomeOutlined style={{color:'#F5222D', marginRight: '5px'}}/>, children: res.data}]
       setTreeData(tree)
-      setExpandedKeys(() => {
-        return ['all']
-      })
-      setDefaultExpandAll(() => {
-        return true
-      })
     })
   }, [])
 
@@ -46,9 +38,9 @@ const BrandTree: React.FC<TreeProps> = (prop) => {
 
   return  (
     <div style={{width: '150px', borderRight: '2px solid #eee', backgroundColor: '#fff'}}>
-      <Tree showIcon={true} treeData={treeData} onSelect={handleSelect} style={{display: 'flex', paddingTop: '16px'}}
-            defaultExpandAll={defaultExpandAll}
-            defaultExpandedKeys={expandedKeys} />
+      {treeData ? <Tree showIcon={true} treeData={treeData} onSelect={handleSelect} style={{display: 'flex', paddingTop: '16px'}}
+                        defaultExpandAll={true} />
+      : <></>}
     </div>
   )
 }

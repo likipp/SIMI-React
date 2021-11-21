@@ -97,6 +97,7 @@ export default () => {
           onClick={() => {
             // action?.startEditable?.(record.id);
             setUpdateModalVisible(true)
+            setCopy("编辑")
             setData(record)
           }}
         >

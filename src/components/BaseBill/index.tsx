@@ -67,15 +67,6 @@ const BaseBill: React.FC<BillProps> = (prop) => {
           list[listKey].total = total;
           list[listKey].profit = profit;
           list[listKey].cost = cost;
-          // form.setFieldsValue({
-          //   [listKey]: { cost: total },
-          // });
-          // form.setFieldsValue({
-          //   [listKey]: { cost: cost },
-          // });
-          // form.setFieldsValue({
-          //   [listKey]: { profit: profit },
-          // });
         }
       } else {
         for (const listKey in list) {
@@ -84,17 +75,12 @@ const BaseBill: React.FC<BillProps> = (prop) => {
             in_discount = 100;
           }
           qty = list[listKey].in_qty;
-          // record.p_number2 = list[listKey].p_number2;
           const unit_price = list[listKey].unit_price;
           const total: number = toDecimal2((unit_price * qty * in_discount) / 100);
           list[listKey].total = total;
           record.total = total
-          // form.setFieldsValue({
-          //   [listKey]: { total: total },
-          // });
         }
       }
-      // record.p_name = record.p_number;
       return;
     }
   };
@@ -204,12 +190,20 @@ const BaseBill: React.FC<BillProps> = (prop) => {
               rules={[{ required: true, message: '客户代码必填' }]}
               fieldProps={{
                 showArrow: false,
+                showSearch: true,
                 optionItemRender(item) {
-                  return item.label + ' - ' + item.value;
+                  return item.value + ' - ' + item.key;
                 },
-                onChange: (value: any, label: any) => {
-                  formRef?.current?.setFieldsValue({ custom: label.id });
-                  formRef?.current?.setFieldsValue({ c_name: label.value });
+                optionLabelProp: "value",
+                onChange: (value: any, item: any) => {
+                  if (value) {
+                    formRef?.current?.setFieldsValue({ custom: item.id });
+                    formRef?.current?.setFieldsValue({ c_name: item["data-item"].key });
+                  }
+                },
+                onClear:() => {
+                  formRef?.current?.setFieldsValue({ custom: 0 });
+                  formRef?.current?.setFieldsValue({ c_name: '' });
                 }
               }}
             />
@@ -261,6 +255,9 @@ const BaseBill: React.FC<BillProps> = (prop) => {
                 return [dom.delete];
               },
               onValuesChange: (record, recordList) => {
+                // form.validateFields().then((val) => {
+                //   console.log(val, "验证值")
+                // })
                 discountChange(record, recordList, bill);
                 setDataSource(() => {
                   return recordList;

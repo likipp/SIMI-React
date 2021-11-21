@@ -2,6 +2,20 @@ import type { ProColumns } from '@ant-design/pro-table';
 import type { ExSourceType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
 import productColumn from '@/pages/Product/productColumn';
+import { getStockList } from '@/pages/ExistingStock/services';
+import { parseInt } from 'lodash';
+import type { FormInstance } from 'antd';
+import styles from '@/pages/ExBill/exbill.less'
+
+const checkStock = (qty: number, stock: number) => {
+  return new Promise((resolve) => {
+    if (qty <= stock) {
+      resolve(true)
+    } else {
+      resolve(false)
+    }
+  })
+}
 
 const columns: ProColumns<ExSourceType>[] = [
   {
@@ -46,11 +60,40 @@ const columns: ProColumns<ExSourceType>[] = [
         rules: [{ required: true, message: '仓库必填' }],
       };
     },
-    fieldProps: {
-      showArrow: false,
-      showSearch: true,
+    fieldProps: (form: FormInstance, {rowKey}) => {
+        return {
+          showArrow: false,
+          showSearch: true,
+            onChange: (value: string) => {
+              if (value) {
+                const col =  form.getFieldsValue(true)
+                const p_number = col[rowKey as string].p_number
+                getStockList({p_number: p_number, ware_house: parseInt(value)}).then((res) => {
+                  if (Object.keys(res.data).length !== 0) {
+                    form.setFieldsValue({[rowKey as string]: {stock: res.data[0].qty}})
+                  } else {
+                    form.setFieldsValue({[rowKey as string]: {stock: 0}})
+                  }
+                })
+              }
+          }
+        }
     },
     request: requestWareHouse,
+  },
+  {
+    title: '即时库存',
+    dataIndex: 'stock',
+    renderFormItem: (_,{recordKey},form) => {
+      let stock = 0
+      const col =  form.getFieldsValue(true)
+      if (Object.keys(col).length !== 0 && recordKey && col[recordKey as string] != undefined) {
+        // if (col[recordKey as string] != undefined) {
+        // }
+        stock =  col[recordKey as string].stock
+      }
+      return <span className={stock > 0 ? styles.stockGT0Color : styles.stockLT0Color}>{stock}</span>
+    }
   },
   {
     title: '单价',
@@ -76,9 +119,22 @@ const columns: ProColumns<ExSourceType>[] = [
       min: 1,
       max: 9999,
     },
-    formItemProps: () => {
+    formItemProps: (form: FormInstance, { rowKey }) => {
       return {
-        rules: [{ required: true, message: '数量必填' }],
+        rules: [{ required: true, message: '数量必填' },
+          {
+            validator: (rule, value, callback) => {
+              const col =  form.getFieldsValue(true)
+              const stock = col[rowKey as string].stock
+              checkStock(value, stock).then((res) => {
+                if (res) {
+                  callback()
+                } else {
+                    callback("库存不足")
+                  }
+              })
+            }
+          }],
       };
     },
   },
@@ -148,12 +204,6 @@ const columns: ProColumns<ExSourceType>[] = [
         rules: [{ required: true, message: '利润必填' }],
       };
     },
-    // renderFormItem: (_, {record})  => {
-    //   if (record?.total === undefined || record?.cost === undefined || isNaN(record?.total) || isNaN(record?.cost)) {
-    //     return 0
-    //   }
-    //   return toDecimal2(record.total - record.cost)
-    // }
   },
   {
     title: '操作',
