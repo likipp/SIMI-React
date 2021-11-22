@@ -72,6 +72,7 @@ const columns: ProColumns<TableListItem>[] = [
       return {
         ranges: {
           '今天': [moment(), moment()],
+          '本周': [moment().startOf('week'), moment().endOf('week')],
           '本月': [moment().startOf('month'), moment().endOf('month')],
           '本季': [moment().startOf('quarter'), moment().endOf('quarter')],
           '本年': [moment().startOf('year'), moment().endOf('year')]

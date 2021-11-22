@@ -1,9 +1,10 @@
 import type { ProColumns } from '@ant-design/pro-table';
-import type { InSourceType } from '@/pages/ExBillDetail/data';
+import type { InBodyType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
 import productColumn from '@/pages/Product/productColumn';
+import { ExBodyType } from '@/pages/ExBillDetail/data';
 
-const columns: ProColumns<InSourceType>[] = [
+const columns: ProColumns<ExBodyType | InBodyType>[] = [
   {
     title: '序号',
     dataIndex: 'index',

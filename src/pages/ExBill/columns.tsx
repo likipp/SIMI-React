@@ -1,11 +1,12 @@
 import type { ProColumns } from '@ant-design/pro-table';
-import type { ExSourceType } from '@/pages/ExBillDetail/data';
+import type { ExBodyType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
 import productColumn from '@/pages/Product/productColumn';
 import { getStockList } from '@/pages/ExistingStock/services';
 import { parseInt } from 'lodash';
 import type { FormInstance } from 'antd';
 import styles from '@/pages/ExBill/exbill.less'
+import { InBodyType } from '@/pages/ExBillDetail/data';
 
 const checkStock = (qty: number, stock: number) => {
   return new Promise((resolve) => {
@@ -17,7 +18,7 @@ const checkStock = (qty: number, stock: number) => {
   })
 }
 
-const columns: ProColumns<ExSourceType>[] = [
+const columns: ProColumns<ExBodyType | InBodyType>[] = [
   {
     title: '序号',
     dataIndex: 'index',

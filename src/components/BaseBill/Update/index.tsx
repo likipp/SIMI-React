@@ -13,24 +13,26 @@ import summary from '@/utils/summary';
 import toDecimal2 from '@/utils/toDecimal2';
 import { BillContext } from '@/context/billChange';
 import calculateEx from '@/components/BaseBill/calculate';
+import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 // import CopyButton from '@/components/CopyButton';
 
 interface BillProps {
   bill: string;
   data: InSourceType
-  columns: ProColumns<InSourceType>[] | ProColumns<ExSourceType>[];
+  columns: ProColumns<ExBodyType | InBodyType>[];
 }
 
 const BillUpdate: React.FC<BillProps> = (prop) => {
-  const defaultData: InSourceType[] = [];
+  const defaultData: ExBodyType[] | InBodyType[] = [];
   const { bill, columns, data} = prop;
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     defaultData.map((item) => item.id),
   );
   const formRef = useRef<ProFormInstance>();
   const actionRef = useRef<ActionType>();
-  const {setChange} = useContext(BillContext)
-  const [dataSource, setDataSource] = useState<InSourceType[]>(() => defaultData);
+  const change = useContext(BillContext)
+  const [, setChange] = useState(change)
+  const [dataSource, setDataSource] = useState<ExBodyType[] | InBodyType[]>(() => defaultData);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false)
 
@@ -134,7 +136,7 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
                 key="rest"
                 danger
                 onClick={() => {
-                  setChange(false)
+                  setChange(() => false)
                 }}
               >
                 取消
@@ -163,18 +165,20 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
         </ProForm.Group>
 
         <ProForm.Item name="body" initialValue={defaultData} trigger="onValuesChange">
-          <EditableProTable<InSourceType>
+          <EditableProTable<ExBodyType | InBodyType>
             rowKey="id"
             toolBarRender={false}
             columns={columns}
             value={dataSource}
-            onChange={setDataSource}
+            onChange={() => {
+              return setDataSource
+            }}
             recordCreatorProps={{
               newRecordType: 'dataSource',
               position: 'bottom',
               creatorButtonText: '新增',
               record: () => ({
-                id: Date.now(),
+                id: Date.now()
               }),
             }}
             actionRef={actionRef}
@@ -189,9 +193,9 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
               },
               onValuesChange: (record, recordList) => {
                 discountChange(record, recordList, bill);
-                setDataSource(() => {
-                  return recordList;
-                });
+                // setDataSource(() => {
+                //   return recordList;
+                // });
               },
             }}
             summary={(pageData) => summary(pageData, bill)} />

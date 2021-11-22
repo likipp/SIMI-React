@@ -6,11 +6,12 @@ import { EditableProTable } from '@ant-design/pro-table';
 import summary from '@/utils/summary';
 import { useState } from 'react';
 import { Spin } from 'antd';
+import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 // import CopyButton from '@/components/CopyButton';
 
 interface BillReadOnlyProps {
   data: ExSourceType | InSourceType;
-  columns: ProColumns<InSourceType>[] | ProColumns<ExSourceType>[];
+  columns: ProColumns<ExBodyType | InBodyType>[];
   billType: string;
 }
 
@@ -52,7 +53,7 @@ const BillReadOnly = (props: BillReadOnlyProps) => {
                   },
                 ]}
                 disabled={true}
-                initialValue={data.pay_method}
+                initialValue={'pay_method' in data ? data.pay_method : null}
               />
             )
               : <></>
@@ -84,7 +85,7 @@ const BillReadOnly = (props: BillReadOnlyProps) => {
         <ProForm.Item
           name="body"
         >
-          <EditableProTable<InSourceType>
+          <EditableProTable<ExBodyType | InBodyType>
             rowKey="id"
             toolBarRender={false}
             columns={columns}
@@ -96,12 +97,8 @@ const BillReadOnly = (props: BillReadOnlyProps) => {
       </ProForm>
     </div>
     : (
-      <div style={{display: 'flex', justifyContent: 'center', alignContent: 'center',
-        height: '100%', width: '100%',
-        position: 'absolute',
-        backgroundColor: 'blue'
-      }}>
-        <Spin spinning={loading} tip="加载中" style={{height: '100%'}}/>
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%', position: 'absolute'}}>
+        <Spin spinning={loading} tip="加载中" />
       </div>
     )
 }
