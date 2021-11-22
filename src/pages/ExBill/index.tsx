@@ -8,7 +8,6 @@ import columns from '@/pages/ExBill/columns';
 
 
 export default () => {
-
   const [realDiscount, ] = useState(0)
   const billNumber = useBillNumber("出库单")
 
@@ -17,7 +16,7 @@ export default () => {
   return (
     <PageContainer>
       {
-        billNumber ? <BaseBill bill={'出库单'} columns={columns} realDiscount={realDiscount} billNumber={billNumber} change/>
+        billNumber ? <BaseBill bill={'出库单'} columns={columns} realDiscount={realDiscount} billNumber={billNumber} />
           : <Spin size="large" style={{
             display: "flex",
             justifyContent: "center",

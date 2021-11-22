@@ -6,6 +6,11 @@ import RightContent from '@/components/RightContent';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { message, notification } from 'antd';
 import type { RequestConfig } from '@@/plugin-request/request';
+import 'moment/dist/locale/zh-cn'
+import 'moment/locale/zh-cn'
+import moment from 'moment';
+
+moment.locale('zh-ch')
 
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -108,6 +113,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
       }
     },
     menuHeaderRender: undefined,
+    locale: {
+      enable: true,
+      default: 'zh-CN',
+      baseNavigator: true
+    },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     ...initialState?.settings,

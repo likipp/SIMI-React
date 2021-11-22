@@ -3,7 +3,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { useEffect, useState } from 'react';
 import type { InSourceType } from '@/pages/ExBillDetail/data';
 import BillReadOnly from '@/components/BaseBill/ReadOnly';
-import { BillContext } from '@/context/billChange';
+import { BillContext, InitChange } from '@/context/billChange';
 import BillUpdate from '@/components/BaseBill/Update';
 import { getInBillDetail } from '@/pages/InBillDetail/services';
 import columns from '@/pages/InBill/columns';
@@ -13,7 +13,7 @@ import columns from '@/pages/InBill/columns';
 export default () => {
   const number = useParams();
   const [data, setData] = useState<InSourceType>()
-  const [change, setChange] = useState(false)
+  // const [change, setChange] = useState(false)
 
   useEffect(() => {
     getInBillDetail(number)
@@ -33,10 +33,10 @@ export default () => {
         title: '入库单详情',
       }}
     >
-      <BillContext.Provider value={{change, setChange}}>
+      <BillContext.Provider value={InitChange}>
         {
-          change ? <BillUpdate bill={'入库单'} columns={columns} data={data as InSourceType}/>
-            : <BillReadOnly columns={columns} data={data as InSourceType} />
+          InitChange ? <BillUpdate bill={'入库单'} columns={columns} data={data as InSourceType}/>
+            : <BillReadOnly columns={columns} data={data as InSourceType} billType="入库单"/>
         }
       </BillContext.Provider>
 

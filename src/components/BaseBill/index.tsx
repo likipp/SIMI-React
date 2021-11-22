@@ -23,7 +23,7 @@ interface BillProps {
   bill: string;
   realDiscount?: number;
   billNumber: string;
-  change: boolean;
+  // change: boolean;
   columns: ProColumns<InSourceType>[] | ProColumns<ExSourceType>[];
 }
 

@@ -7,6 +7,8 @@ import moment from 'moment';
 import mergeCells from '@/utils/mergeCells';
 import { Link } from 'umi';
 import { AlipayCircleOutlined, WechatOutlined } from '@ant-design/icons';
+import 'moment/dist/locale/zh-cn'
+import locale from 'antd/es/date-picker/locale/zh_CN'
 
 export type TableListItem = {
   // 'key': number;
@@ -68,11 +70,14 @@ const columns: ProColumns<TableListItem>[] = [
     valueType: 'dateRange',
     fieldProps: () => {
       return {
-        range: {
-          Today: [moment(), moment()],
-          'This Month': [moment().startOf('month'), moment().endOf('month')],
+        ranges: {
+          '今天': [moment(), moment()],
+          '本月': [moment().startOf('month'), moment().endOf('month')],
+          '本季': [moment().startOf('quarter'), moment().endOf('quarter')],
+          '本年': [moment().startOf('year'), moment().endOf('year')]
         },
-        showTime: true
+        showTime: true,
+        local: locale
       }
     },
     render: (value, row) => {
@@ -185,7 +190,6 @@ export default () => {
           params.current = 1
           try {
             const res = await Promise.resolve(getExStockList({...params, sorter, filter }));
-            console.log(sorter, "sorter")
             for (let i = 0; i < res.data.length; i++) {
               res.data[i].key = res.data[i].number + res.data[i].p_number + res.data[i].id;
             }

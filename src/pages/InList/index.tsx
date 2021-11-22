@@ -60,7 +60,7 @@ export default () => {
             rowSpan: row.rowSpan,
           },
         };
-      },
+      }
     },
     {
       title: '创建时间',
@@ -75,6 +75,17 @@ export default () => {
             rowSpan: row.rowSpan,
           },
         };
+      },
+      fieldProps: () => {
+        return {
+          ranges: {
+            '今天': [moment(), moment()],
+            '本月': [moment().startOf('month'), moment().endOf('month')],
+            '本季': [moment().startOf('quarter'), moment().endOf('quarter')],
+            '本年': [moment().startOf('year'), moment().endOf('year')]
+          },
+          showTime: true
+        }
       },
     },
     {

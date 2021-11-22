@@ -36,6 +36,7 @@ interface InBodyType extends BaseBodyType {
 
 export interface ExSourceType extends BaseSourceType, ExBodyType{
   custom: number;
+  c_name: string;
   c_number: string;
 }
 

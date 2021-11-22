@@ -13,7 +13,11 @@ export default defineConfig({
   },
   layout: {
     // https://umijs.org/zh-CN/plugins/plugin-layout
-    locale: true,
+    locale: {
+      enable: true,
+      default: 'zh-CN',
+      baseNavigator: true
+    },
     siderWidth: 208,
     ...defaultSettings,
   },
