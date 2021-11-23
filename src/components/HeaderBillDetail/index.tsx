@@ -2,13 +2,13 @@ import { message, Modal, Radio } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { deleteBill } from '@/pages/InList/services';
 import { history } from '@@/core/history';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { BillContext } from '@/context/billChange';
 
 const HeaderBillDetail =(props: any) => {
   const {number, type} = props
-  const change = useContext(BillContext)
-  const [, setChange] = useState(change)
+  const {initState, updateState} = useContext(BillContext)
+  // const [, setChange] = useState(change)
   const { confirm } = Modal;
 
   const showDeleteConfirm = () => {
@@ -40,7 +40,7 @@ const HeaderBillDetail =(props: any) => {
       <Radio.Button value="copy" disabled={true}>复制</Radio.Button>
       <Radio.Button value="change"
                     onClick={() => {
-                      setChange(() => true)
+                      updateState(true)
                     }}
       >修改</Radio.Button>
       <Radio.Button value="delete" onClick={showDeleteConfirm}

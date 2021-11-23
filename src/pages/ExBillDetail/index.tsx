@@ -4,12 +4,16 @@ import { useEffect, useState } from 'react';
 import { getExBillDetail } from '@/pages/ExBillDetail/services';
 import type { ExSourceType } from '@/pages/ExBillDetail/data';
 import columns from '@/pages/ExBill/columns';
-import { BillContext, InitChange } from '@/context/billChange';
+import { BillContext } from '@/context/billChange';
 import BillReadOnly from '@/components/BaseBill/ReadOnly';
 
 export default () => {
   const number = useParams();
   const [data, setData] = useState<ExSourceType>();
+  const [change, setChange] = useState(false)
+  const handleChange = () => {
+    setChange(true)
+  }
 
   useEffect(() => {
     getExBillDetail(number)
@@ -29,9 +33,9 @@ export default () => {
         title: '出库单详情',
       }}
     >
-      <BillContext.Provider value={InitChange}>
+      <BillContext.Provider value={{initState: change, updateState: handleChange}}>
         {
-          InitChange ? <></>
+          change ? <></>
             : <BillReadOnly columns={columns} data={data as ExSourceType} billType="出库单"/>
         }
       </BillContext.Provider>

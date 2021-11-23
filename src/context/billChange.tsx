@@ -1,5 +1,5 @@
 import { createContext } from 'react';
 
-export const InitChange = false;
-export const BillContext = createContext(InitChange)
+// const InitChange = false;
+export const BillContext = createContext({initState: false, updateState: (b: boolean) => {}})
 // export default {InitChange, BillContext}

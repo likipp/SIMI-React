@@ -1,5 +1,5 @@
 import type { MutableRefObject } from 'react';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm, {
   ProFormDatePicker,
@@ -14,25 +14,29 @@ import toDecimal2 from '@/utils/toDecimal2';
 import { BillContext } from '@/context/billChange';
 import calculateEx from '@/components/BaseBill/calculate';
 import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
+import { updateExBill } from '@/pages/Product/services';
 // import CopyButton from '@/components/CopyButton';
 
 interface BillProps {
   bill: string;
-  data: InSourceType
+  data: InSourceType;
   columns: ProColumns<ExBodyType | InBodyType>[];
+  actionRef: React.MutableRefObject<ActionType | undefined> ;
+  formRef: React.MutableRefObject<ProFormInstance<any> | undefined>
 }
 
 const BillUpdate: React.FC<BillProps> = (prop) => {
-  const defaultData: ExBodyType[] | InBodyType[] = [];
-  const { bill, columns, data} = prop;
+  const defaultData: (InBodyType | ExBodyType)[] = [];
+  const { bill, columns, data, actionRef, formRef} = prop;
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     defaultData.map((item) => item.id),
   );
-  const formRef = useRef<ProFormInstance>();
-  const actionRef = useRef<ActionType>();
-  const change = useContext(BillContext)
-  const [, setChange] = useState(change)
-  const [dataSource, setDataSource] = useState<ExBodyType[] | InBodyType[]>(() => defaultData);
+  // const formRef = useRef<ProFormInstance>();
+  // const actionRef = useRef<ActionType>();
+  // const change = useContext(BillContext)
+  // const [, setChange] = useState(change)
+  const {initState, updateState} = useContext(BillContext)
+  const [dataSource, setDataSource] = useState<(InBodyType | ExBodyType)[]>(() => defaultData);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false)
 
@@ -106,14 +110,14 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
         onFinish={async (values) => {
           console.log(values, "提交内容")
           setLoading(true)
-          // const result: InSourceType | ExSourceType = values;
+          const result: InSourceType | ExSourceType = values;
           // result.bill_type = bill;
-          // for (const i of result.body) {
-          //   i.p_number = i.p_number2;
-          //   i.p_number2 = '';
-          //   i.id = 0;
-          //   i.ware_house = parseInt(String(i.ware_house));
-          // }
+          for (const i of result.body) {
+            // i.p_number = i.p_number2;
+            // i.p_number2 = '';
+            // i.id = 0;
+            i.ware_house = parseInt(String(i.ware_house));
+          }
           // createExBill(result).then(() => {
           //   setLoading(false)
           //   message.success('单据创建成功', 2.5);
@@ -123,6 +127,11 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
           //   setDataSource([]);
           //   history.push("/stock-table/in")
           // });
+          updateExBill(values).then((res) => {
+            console.log(res, "结果")
+            setLoading(false)
+          })
+
         }}
         submitter={{
           searchConfig: {
@@ -136,7 +145,7 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
                 key="rest"
                 danger
                 onClick={() => {
-                  setChange(() => false)
+                  updateState(false)
                 }}
               >
                 取消
@@ -188,14 +197,14 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
               editableKeys,
               form,
               onChange: setEditableRowKeys,
-              actionRender: (row, _, dom) => {
-                return [dom.delete];
+              actionRender: (row, config, defaultDom) => {
+                return [defaultDom.delete];
               },
               onValuesChange: (record, recordList) => {
                 discountChange(record, recordList, bill);
-                // setDataSource(() => {
-                //   return recordList;
-                // });
+                setDataSource(() => {
+                  return recordList;
+                });
               },
             }}
             summary={(pageData) => summary(pageData, bill)} />

@@ -2,6 +2,7 @@ import type { FormInstance } from 'antd';
 import { getStockList } from '@/pages/ExistingStock/services';
 import { parseInt } from 'lodash';
 
+// @ts-ignore
 const productColumn = (form: FormInstance, { rowKey }) => {
   return {
     optionItemRender(item: { key: string; value: string }) {
@@ -28,14 +29,14 @@ const productColumn = (form: FormInstance, { rowKey }) => {
           //   console.log(form.getFieldsValue(true), "物料的字段")
           // }
 
-          //   .then((res) => {
-          //   if (Object.keys(res.data).length !== 0) {
-          //     form.setFieldsValue({[rowKey as string]: {stock: res.data[0].qty}})
-          //     console.log(form.getFieldsValue(true))
-          //   } else {
-          //     form.setFieldsValue({[rowKey as string]: {stock: 0}})
-          //   }
-          // })
+          getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
+            if (Object.keys(res.data).length !== 0) {
+              form.setFieldsValue({[rowKey as string]: {stock: res.data[0].qty}})
+              console.log(form.getFieldsValue(true))
+            } else {
+              form.setFieldsValue({[rowKey as string]: {stock: 0}})
+            }
+          })
         }
       }
     },

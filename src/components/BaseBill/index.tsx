@@ -18,7 +18,7 @@ import summary from '@/utils/summary';
 import toDecimal2 from '@/utils/toDecimal2';
 import CopyButton from '@/components/CopyButton';
 import calculateEx from '@/components/BaseBill/calculate';
-import { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
+import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 
 interface BillProps {
   bill: string;
@@ -242,6 +242,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
               newRecordType: 'dataSource',
               position: 'bottom',
               creatorButtonText: '新增',
+              // @ts-ignore
               record: () => ({
                 id: Date.now()
               }),

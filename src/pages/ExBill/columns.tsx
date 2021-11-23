@@ -85,22 +85,12 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
     title: '即时库存',
     dataIndex: 'stock',
     renderFormItem: (_, { recordKey }, form) => {
-      let stock: number
       const col = form.getFieldsValue(true)
-      let p_number: string
-      let ware_house: string
       if (Object.keys(col).length !== 0 && col[recordKey as string] != undefined) {
-        p_number = col[recordKey as string].p_number;
-        ware_house = col[recordKey as string].ware_house;
-        getStockList({ p_number: p_number, ware_house: ware_house }).then((res) => {
-          if (res.data.length != 0) {
-            stock = res.data[0].qty
-            console.log(stock, "结果")
-          }
-        })
-        return <span>555</span>
+        const stock = col[recordKey as string].stock
+        return <span className={stock > 0 ? styles.stockGT0Color : styles.stockLT0Color}>{stock}</span>
       }
-      return <span>6666</span>
+      return <></>
     }
   },
   {
