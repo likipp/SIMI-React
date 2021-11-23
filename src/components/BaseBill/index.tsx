@@ -18,16 +18,17 @@ import summary from '@/utils/summary';
 import toDecimal2 from '@/utils/toDecimal2';
 import CopyButton from '@/components/CopyButton';
 import calculateEx from '@/components/BaseBill/calculate';
+import { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 
 interface BillProps {
   bill: string;
   realDiscount?: number;
   billNumber: string;
   // change: boolean;
-  columns: ProColumns<InSourceType>[] | ProColumns<ExSourceType>[];
+  columns: ProColumns<InBodyType | ExBodyType>[];
 }
 
-const defaultData: InSourceType[] = [];
+const defaultData: (InBodyType | ExBodyType)[] = [];
 
 const BaseBill: React.FC<BillProps> = (prop) => {
   const { bill, columns, realDiscount, billNumber } = prop;
@@ -35,7 +36,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
     defaultData.map((item) => item.id),
   );
   const formRef = useRef<ProFormInstance>();
-  const [dataSource, setDataSource] = useState<InSourceType[]>(() => defaultData);
+  const [dataSource, setDataSource] = useState<(InBodyType | ExBodyType)[]>(() => defaultData);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false)
 
@@ -231,7 +232,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
         )}
 
         <ProForm.Item name="body" initialValue={defaultData} trigger="onValuesChange">
-          <EditableProTable<InSourceType>
+          <EditableProTable<ExBodyType | InBodyType>
             rowKey="id"
             toolBarRender={false}
             columns={columns}
@@ -242,7 +243,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
               position: 'bottom',
               creatorButtonText: '新增',
               record: () => ({
-                id: Date.now(),
+                id: Date.now()
               }),
             }}
             // controlled

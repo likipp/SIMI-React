@@ -1,12 +1,11 @@
 import type { ProColumns } from '@ant-design/pro-table';
-import type { ExBodyType } from '@/pages/ExBillDetail/data';
+import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
 import productColumn from '@/pages/Product/productColumn';
 import { getStockList } from '@/pages/ExistingStock/services';
 import { parseInt } from 'lodash';
 import type { FormInstance } from 'antd';
-import styles from '@/pages/ExBill/exbill.less'
-import { InBodyType } from '@/pages/ExBillDetail/data';
+import styles from '@/pages/ExBill/exbill.less';
 
 const checkStock = (qty: number, stock: number) => {
   return new Promise((resolve) => {
@@ -85,15 +84,23 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
   {
     title: '即时库存',
     dataIndex: 'stock',
-    renderFormItem: (_,{recordKey},form) => {
-      let stock = 0
-      const col =  form.getFieldsValue(true)
-      if (Object.keys(col).length !== 0 && recordKey && col[recordKey as string] != undefined) {
-        // if (col[recordKey as string] != undefined) {
-        // }
-        stock =  col[recordKey as string].stock
+    renderFormItem: (_, { recordKey }, form) => {
+      let stock: number
+      const col = form.getFieldsValue(true)
+      let p_number: string
+      let ware_house: string
+      if (Object.keys(col).length !== 0 && col[recordKey as string] != undefined) {
+        p_number = col[recordKey as string].p_number;
+        ware_house = col[recordKey as string].ware_house;
+        getStockList({ p_number: p_number, ware_house: ware_house }).then((res) => {
+          if (res.data.length != 0) {
+            stock = res.data[0].qty
+            console.log(stock, "结果")
+          }
+        })
+        return <span>555</span>
       }
-      return <span className={stock > 0 ? styles.stockGT0Color : styles.stockLT0Color}>{stock}</span>
+      return <span>6666</span>
     }
   },
   {

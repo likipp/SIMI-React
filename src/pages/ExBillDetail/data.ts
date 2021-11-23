@@ -33,6 +33,7 @@ export interface ExBodyType {
   discount: number;
   total: number;
   createdAt: string;
+  stock: number;
   ex_qty: number
   cost: number
   profit: number
