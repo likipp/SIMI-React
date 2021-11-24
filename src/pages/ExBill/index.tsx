@@ -11,8 +11,6 @@ export default () => {
   const [realDiscount, ] = useState(0)
   const billNumber = useBillNumber("出库单")
 
-
-
   return (
     <PageContainer>
       {

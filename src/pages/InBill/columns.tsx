@@ -111,27 +111,27 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
   {
     title: '操作',
     valueType: 'option',
-    render: (_, row) => [
-      <a
-        key="delete"
-        onClick={() => {
-          const tableDataSource = formRef.current?.getFieldValue('table') as DataSourceType[];
-          formRef.current?.setFieldsValue({
-            table: tableDataSource.filter((item) => item.id !== row?.id),
-          });
-        }}
-      >
-        移除
-      </a>,
-      <a
-        key="edit"
-        onClick={() => {
-          actionRef.current?.startEditable(row.id);
-        }}
-      >
-        编辑
-      </a>,
-    ],
+    // render: (_, row) => [
+    //   <a
+    //     key="delete"
+    //     onClick={() => {
+    //       const tableDataSource = formRef.current?.getFieldValue('table') as DataSourceType[];
+    //       formRef.current?.setFieldsValue({
+    //         table: tableDataSource.filter((item) => item.id !== row?.id),
+    //       });
+    //     }}
+    //   >
+    //     移除
+    //   </a>,
+    //   <a
+    //     key="edit"
+    //     onClick={() => {
+    //       actionRef.current?.startEditable(row.id);
+    //     }}
+    //   >
+    //     编辑
+    //   </a>,
+    // ],
   },
 ];
 

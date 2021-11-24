@@ -4,27 +4,25 @@ import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm, {
   ProFormDatePicker,
   ProFormRadio,
-  ProFormSelect,
   ProFormText,
 } from '@ant-design/pro-form';
 import { history } from 'umi';
 import type { ExSourceType, InSourceType } from '@/pages/ExBillDetail/data';
 import { Button, Form, message } from 'antd';
-import { createExBill, getCustomQueryList } from '@/pages/Product/services';
+import { createExBill } from '@/pages/Product/services';
 import moment from 'moment';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import summary from '@/utils/summary';
 import toDecimal2 from '@/utils/toDecimal2';
-import CopyButton from '@/components/CopyButton';
 import calculateEx from '@/components/BaseBill/calculate';
 import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
+import CustomProForm from '@/components/BaseBill/Custom/custom'
 
 interface BillProps {
   bill: string;
   realDiscount?: number;
   billNumber: string;
-  // change: boolean;
   columns: ProColumns<InBodyType | ExBodyType>[];
 }
 
@@ -175,62 +173,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
             <></>
           )}
         </ProForm.Group>
-        {bill == '出库单' ? (
-          <ProForm.Group>
-            <ProFormSelect
-              name="c_number"
-              label="客户代码"
-              showSearch
-              width={'sm'}
-              request={async (keyWords) => {
-                return Promise.resolve(getCustomQueryList(keyWords)).then((res) => {
-                  return res.data;
-                });
-              }}
-              placeholder="请输入客户代码"
-              rules={[{ required: true, message: '客户代码必填' }]}
-              fieldProps={{
-                showArrow: false,
-                showSearch: true,
-                optionItemRender(item) {
-                  return item.value + ' - ' + item.key;
-                },
-                optionLabelProp: "value",
-                onChange: (value: any, item: any) => {
-                  if (value) {
-                    formRef?.current?.setFieldsValue({ custom: item.id });
-                    formRef?.current?.setFieldsValue({ c_name: item["data-item"].key });
-                  }
-                },
-                onClear:() => {
-                  formRef?.current?.setFieldsValue({ custom: 0 });
-                  formRef?.current?.setFieldsValue({ c_name: '' });
-                }
-              }}
-            />
-            <ProFormText
-              width="md"
-              name="c_name"
-              label="客户名称"
-              tooltip="最长为 24 位"
-              placeholder="请输入名称"
-              disabled={true}
-            />
-            <ProFormText
-              width="md"
-              name="custom"
-              label="客户名称"
-              tooltip="最长为 24 位"
-              placeholder="请输入名称"
-              disabled={true}
-              hidden={true}
-            />
-            {realDiscount ? <CopyButton realDiscount={realDiscount} /> : <></>}
-          </ProForm.Group>
-        ) : (
-          <></>
-        )}
-
+        <CustomProForm bill={bill} realDiscount={realDiscount} c_number={undefined} formRef={formRef} />
         <ProForm.Item name="body" initialValue={defaultData} trigger="onValuesChange">
           <EditableProTable<ExBodyType | InBodyType>
             rowKey="id"
@@ -257,9 +200,6 @@ const BaseBill: React.FC<BillProps> = (prop) => {
                 return [dom.delete];
               },
               onValuesChange: (record, recordList) => {
-                // form.validateFields().then((val) => {
-                //   console.log(val, "验证值")
-                // })
                 discountChange(record, recordList, bill);
                 setDataSource(() => {
                   return recordList;

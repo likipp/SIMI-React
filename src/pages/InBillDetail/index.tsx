@@ -7,12 +7,12 @@ import { BillContext } from '@/context/billChange';
 import BillUpdate from '@/components/BaseBill/Update';
 import { getInBillDetail } from '@/pages/InBillDetail/services';
 // import columns from '@/pages/InBill/columns';
-import { ActionType, ProColumns } from '@ant-design/pro-table';
-import { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
+import type { ActionType, ProColumns } from '@ant-design/pro-table';
+import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 import productColumn from '@/pages/Product/productColumn';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
-import { ProFormInstance } from '@ant-design/pro-form';
-import { DataSourceType } from '@/pages/InBillDetail/data';
+import type { ProFormInstance } from '@ant-design/pro-form';
+import type { DataSourceType } from '@/pages/InBillDetail/data';
 
 
 // export const BillContext = createContext(false)
@@ -25,7 +25,7 @@ export default () => {
   // const handleChange = (b: boolean) => {
   //   setChange(b)
   // }
-  const formRef = useRef<ProFormInstance<any>>();
+  const formRef = useRef<ProFormInstance>();
   const actionRef = useRef<ActionType>();
   const columns: ProColumns<ExBodyType | InBodyType>[] = [
     {

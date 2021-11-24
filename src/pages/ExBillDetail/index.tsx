@@ -225,10 +225,6 @@ export default () => {
         <a
           key="delete"
           onClick={() => {
-            // console.log(row.id, row.p_number)
-            // const tableDataSource = formRef.current?.getFieldsValue(true);
-            // console.log(tableDataSource, "总数据")
-            // const bodyDataSource = formRef.current?.getFieldValue('body') as DataSourceType[];
             formRef.current?.setFieldsValue({
               body: data?.body.filter((item: any) => item.id !== row?.id),
             });

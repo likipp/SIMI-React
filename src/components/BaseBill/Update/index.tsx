@@ -1,17 +1,19 @@
 import type { MutableRefObject } from 'react';
 import React, { useContext, useEffect, useState } from 'react';
 import type { ProFormInstance } from '@ant-design/pro-form';
-import ProForm, { ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText } from '@ant-design/pro-form';
+import ProForm, { ProFormDatePicker, ProFormRadio, ProFormText } from '@ant-design/pro-form';
 import type { ExSourceType, InSourceType } from '@/pages/ExBillDetail/data';
 import { Button, Form, message } from 'antd';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
+import { history } from '@@/core/history';
 import summary from '@/utils/summary';
 import toDecimal2 from '@/utils/toDecimal2';
 import { BillContext } from '@/context/billChange';
 import calculateEx from '@/components/BaseBill/calculate';
+import CustomProForm from '@/components/BaseBill/Custom/custom';
 import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
-import { getCustomQueryList, updateExBill } from '@/pages/Product/services';
+import { updateExBill } from '@/pages/Product/services';
 // import CopyButton from '@/components/CopyButton';
 
 interface BillProps {
@@ -40,7 +42,6 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
       if (type == '出库单') {
         for (const listKey in list) {
           const {total, cost, profit} =  calculateEx(qty, list, listKey)
-          // record.total = total
           record.cost = cost
           record.profit = profit
           record.total = total
@@ -97,11 +98,18 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
           // history.push("/stock-table/in")
           updateExBill(result).then((res) => {
             message.success(res.errorMessage, 15);
+            setLoading(false)
+            if (bill == "出库单") {
+              history.push(`/stock-table/ex`)
+            } else {
+              history.push(`/stock-table/in`)
+            }
+            // dispatch(false)
+            //
+            // return true
           }).catch((err) => {
             console.log(err)
           })
-          setLoading(false)
-          // return true
         }}
         submitter={{
           searchConfig: {
@@ -162,62 +170,7 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
             <></>
           )}
         </ProForm.Group>
-        {bill == '出库单' ? (
-          <ProForm.Group>
-            <ProFormSelect
-              name="c_number"
-              label="客户代码"
-              showSearch
-              width={'sm'}
-              request={async (keyWords) => {
-                return Promise.resolve(getCustomQueryList(keyWords)).then((res) => {
-                  return res.data;
-                });
-              }}
-              placeholder="请输入客户代码"
-              rules={[{ required: true, message: '客户代码必填' }]}
-              initialValue={'c_number' in data ? data.c_number : ""}
-              fieldProps={{
-                showArrow: false,
-                showSearch: true,
-                optionItemRender(item) {
-                  return item.value + ' - ' + item.key;
-                },
-                optionLabelProp: "value",
-                onChange: (value: any, item: any) => {
-                  if (value) {
-                    formRef?.current?.setFieldsValue({ custom: item.id });
-                    formRef?.current?.setFieldsValue({ c_name: item["data-item"].key });
-                  }
-                },
-                onClear:() => {
-                  formRef?.current?.setFieldsValue({ custom: 0 });
-                  formRef?.current?.setFieldsValue({ c_name: '' });
-                }
-              }}
-            />
-            <ProFormText
-              width="md"
-              name="c_name"
-              label="客户名称"
-              tooltip="最长为 24 位"
-              placeholder="请输入名称"
-              disabled={true}
-              initialValue={'c_name' in data ? data.c_name : ""}
-            />
-            <ProFormText
-              width="md"
-              name="custom"
-              label="客户名称"
-              tooltip="最长为 24 位"
-              placeholder="请输入名称"
-              disabled={true}
-              hidden={true}
-            />
-          </ProForm.Group>
-        ) : (
-          <></>
-        )}
+        <CustomProForm bill={bill} realDiscount={0} c_number={'c_number' in data ? data.c_number : ""} formRef={formRef} />
 
         <ProForm.Item name="body" initialValue={defaultData} trigger="onValuesChange">
           <EditableProTable<ExBodyType | InBodyType>
