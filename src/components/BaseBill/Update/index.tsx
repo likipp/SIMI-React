@@ -1,12 +1,9 @@
 import type { MutableRefObject } from 'react';
 import React, { useContext, useEffect, useState } from 'react';
 import type { ProFormInstance } from '@ant-design/pro-form';
-import ProForm, {
-  ProFormDatePicker,
-  ProFormText,
-} from '@ant-design/pro-form';
+import ProForm, { ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormText } from '@ant-design/pro-form';
 import type { ExSourceType, InSourceType } from '@/pages/ExBillDetail/data';
-import { Button, Form } from 'antd';
+import { Button, Form, message } from 'antd';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import summary from '@/utils/summary';
@@ -14,15 +11,15 @@ import toDecimal2 from '@/utils/toDecimal2';
 import { BillContext } from '@/context/billChange';
 import calculateEx from '@/components/BaseBill/calculate';
 import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
-import { updateExBill } from '@/pages/Product/services';
+import { getCustomQueryList, updateExBill } from '@/pages/Product/services';
 // import CopyButton from '@/components/CopyButton';
 
 interface BillProps {
   bill: string;
-  data: InSourceType;
+  data: InSourceType | ExSourceType;
   columns: ProColumns<ExBodyType | InBodyType>[];
   actionRef: React.MutableRefObject<ActionType | undefined> ;
-  formRef: React.MutableRefObject<ProFormInstance<any> | undefined>
+  formRef: React.MutableRefObject<ProFormInstance | undefined>
 }
 
 const BillUpdate: React.FC<BillProps> = (prop) => {
@@ -31,11 +28,7 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     defaultData.map((item) => item.id),
   );
-  // const formRef = useRef<ProFormInstance>();
-  // const actionRef = useRef<ActionType>();
-  // const change = useContext(BillContext)
-  // const [, setChange] = useState(change)
-  const {initState, updateState} = useContext(BillContext)
+  const {dispatch} = useContext(BillContext)
   const [dataSource, setDataSource] = useState<(InBodyType | ExBodyType)[]>(() => defaultData);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false)
@@ -46,28 +39,14 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
     if (record != undefined) {
       if (type == '出库单') {
         for (const listKey in list) {
-          // qty = list[listKey].ex_qty;
-          // const unit_price = list[listKey].unit_price;
-          // let in_discount = list[listKey].in_discount;
-          // let ex_discount = list[listKey].ex_discount;
-          // if (in_discount == undefined) {
-          //   in_discount = 100;
-          // }
-          // if (ex_discount == undefined) {
-          //   ex_discount = 100;
-          // }
-          // record.p_number2 = list[listKey].p_number2;
-          // const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
-          // const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
-          // const profit = toDecimal2(total - cost);
           const {total, cost, profit} =  calculateEx(qty, list, listKey)
-          record.total = total
+          // record.total = total
           record.cost = cost
           record.profit = profit
-          // form.setFieldsValue({
-          //   [listKey]: { total: total },
-          // });
           record.total = total
+          form.setFieldsValue({
+            [listKey]: { total: total },
+          });
           form.setFieldsValue({
             [listKey]: { cost: cost },
           });
@@ -108,30 +87,21 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
       <ProForm<InSourceType | ExSourceType>
         formRef={formRef as MutableRefObject<any>}
         onFinish={async (values) => {
-          console.log(values, "提交内容")
           setLoading(true)
           const result: InSourceType | ExSourceType = values;
-          // result.bill_type = bill;
+          console.log(result, "结果")
           for (const i of result.body) {
-            // i.p_number = i.p_number2;
-            // i.p_number2 = '';
-            // i.id = 0;
+            // i.id = 0
             i.ware_house = parseInt(String(i.ware_house));
           }
-          // createExBill(result).then(() => {
-          //   setLoading(false)
-          //   message.success('单据创建成功', 2.5);
-          //   formRef?.current?.setFieldsValue({ custom: '' });
-          //   formRef?.current?.setFieldsValue({ c_name: '' });
-          //   form.resetFields();
-          //   setDataSource([]);
-          //   history.push("/stock-table/in")
-          // });
-          updateExBill(values).then((res) => {
-            console.log(res, "结果")
-            setLoading(false)
+          // history.push("/stock-table/in")
+          updateExBill(result).then((res) => {
+            message.success(res.errorMessage, 15);
+          }).catch((err) => {
+            console.log(err)
           })
-
+          setLoading(false)
+          // return true
         }}
         submitter={{
           searchConfig: {
@@ -145,7 +115,7 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
                 key="rest"
                 danger
                 onClick={() => {
-                  updateState(false)
+                  dispatch(false)
                 }}
               >
                 取消
@@ -171,7 +141,83 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
             disabled={true}
             initialValue={data.createdAt}
           />
+          {bill == '出库单' ? (
+            <ProFormRadio.Group
+              name="pay_method"
+              label="付款方式"
+              options={[
+                {
+                  label: '支付宝',
+                  value: 'ali',
+                },
+                {
+                  label: '微信',
+                  value: 'wechat',
+                },
+              ]}
+              rules={[{ required: true, message: '付款方式必填' }]}
+              initialValue={'pay_method' in data ? data.pay_method : ""}
+            />
+          ) : (
+            <></>
+          )}
         </ProForm.Group>
+        {bill == '出库单' ? (
+          <ProForm.Group>
+            <ProFormSelect
+              name="c_number"
+              label="客户代码"
+              showSearch
+              width={'sm'}
+              request={async (keyWords) => {
+                return Promise.resolve(getCustomQueryList(keyWords)).then((res) => {
+                  return res.data;
+                });
+              }}
+              placeholder="请输入客户代码"
+              rules={[{ required: true, message: '客户代码必填' }]}
+              initialValue={'c_number' in data ? data.c_number : ""}
+              fieldProps={{
+                showArrow: false,
+                showSearch: true,
+                optionItemRender(item) {
+                  return item.value + ' - ' + item.key;
+                },
+                optionLabelProp: "value",
+                onChange: (value: any, item: any) => {
+                  if (value) {
+                    formRef?.current?.setFieldsValue({ custom: item.id });
+                    formRef?.current?.setFieldsValue({ c_name: item["data-item"].key });
+                  }
+                },
+                onClear:() => {
+                  formRef?.current?.setFieldsValue({ custom: 0 });
+                  formRef?.current?.setFieldsValue({ c_name: '' });
+                }
+              }}
+            />
+            <ProFormText
+              width="md"
+              name="c_name"
+              label="客户名称"
+              tooltip="最长为 24 位"
+              placeholder="请输入名称"
+              disabled={true}
+              initialValue={'c_name' in data ? data.c_name : ""}
+            />
+            <ProFormText
+              width="md"
+              name="custom"
+              label="客户名称"
+              tooltip="最长为 24 位"
+              placeholder="请输入名称"
+              disabled={true}
+              hidden={true}
+            />
+          </ProForm.Group>
+        ) : (
+          <></>
+        )}
 
         <ProForm.Item name="body" initialValue={defaultData} trigger="onValuesChange">
           <EditableProTable<ExBodyType | InBodyType>
@@ -186,6 +232,7 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
               newRecordType: 'dataSource',
               position: 'bottom',
               creatorButtonText: '新增',
+              // @ts-ignore
               record: () => ({
                 id: Date.now()
               }),

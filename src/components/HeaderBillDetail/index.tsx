@@ -7,7 +7,7 @@ import { BillContext } from '@/context/billChange';
 
 const HeaderBillDetail =(props: any) => {
   const {number, type} = props
-  const {initState, updateState} = useContext(BillContext)
+  const {dispatch} = useContext(BillContext)
   // const [, setChange] = useState(change)
   const { confirm } = Modal;
 
@@ -40,7 +40,7 @@ const HeaderBillDetail =(props: any) => {
       <Radio.Button value="copy" disabled={true}>复制</Radio.Button>
       <Radio.Button value="change"
                     onClick={() => {
-                      updateState(true)
+                      dispatch(true)
                     }}
       >修改</Radio.Button>
       <Radio.Button value="delete" onClick={showDeleteConfirm}

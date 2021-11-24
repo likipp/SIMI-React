@@ -22,9 +22,9 @@ export default () => {
   const [data, setData] = useState<InSourceType>()
   // const change = useContext(BillContext)
   const [change, setChange] = useState(false)
-  const handleChange = (b: boolean) => {
-    setChange(b)
-  }
+  // const handleChange = (b: boolean) => {
+  //   setChange(b)
+  // }
   const formRef = useRef<ProFormInstance<any>>();
   const actionRef = useRef<ActionType>();
   const columns: ProColumns<ExBodyType | InBodyType>[] = [
@@ -186,7 +186,7 @@ export default () => {
       }}
     >
       <span style={{backgroundColor: 'blue'}}>{change}</span>
-      <BillContext.Provider value={{initState: change, updateState: handleChange}}>
+      <BillContext.Provider value={{initState: change, dispatch: setChange}}>
         {
           change ? <BillUpdate bill={'入库单'} columns={columns} data={data as InSourceType} actionRef={actionRef} formRef={formRef}/>
             : <BillReadOnly columns={columns} data={data as InSourceType} billType="入库单"/>

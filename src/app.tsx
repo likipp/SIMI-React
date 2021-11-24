@@ -1,6 +1,6 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import type { RunTimeLayoutConfig } from 'umi';
+// import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
@@ -64,14 +64,12 @@ const authHeaderInterceptor = (url: string, options: any) => {
 const ResponseInterceptors = async (response: Response) => {
   const data = await response.clone().json()
   if (data.errorCode != 200 && data.status != "ok") {
-    console.log(data, "错误了", data.showType)
     if (data.showType == 1) {
       message.error({
         content: data.errorMessage,
         className: 'custom-message-color'
       })
     } else {
-      console.log(234234234)
       notification.error({
         description: data.errorMessage,
         message: data.errorCode,
@@ -90,14 +88,14 @@ export const request: RequestConfig = {
         message: '网络异常',
       });
     }
-    throw error;
+    // throw error;
   },
   requestInterceptors: [authHeaderInterceptor],
   responseInterceptors: [ResponseInterceptors]
 };
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+export const layout: ({ initialState }: { initialState: any }) => { rightContentRender: () => JSX.Element; disableContentMargin: boolean; onPageChange: () => void; menuHeaderRender: undefined; locale: { default: string; enable: boolean; baseNavigator: boolean } } = ({ initialState }) => {
   return {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,

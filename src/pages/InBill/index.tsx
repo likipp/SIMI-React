@@ -9,7 +9,7 @@ export default () => {
   return (
     <PageContainer>
       {
-        billNumber ? <BaseBill bill={'入库单'} columns={columns} billNumber={billNumber} change/>
+        billNumber ? <BaseBill bill={'入库单'} columns={columns} billNumber={billNumber} />
           : <Spin size="large" style={{display: "flex", justifyContent: "center", flexDirection:"row"}} />
       }
     </PageContainer>

@@ -48,7 +48,6 @@ export async function createExBill(params: any) {
 }
 
 export async function updateExBill(params: any) {
-  console.log(params, "params")
   return request(`/api/v1/base/stock/${params.bill_number}`, { method: 'patch', data:params});
 }
 
