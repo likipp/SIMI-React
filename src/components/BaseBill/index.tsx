@@ -18,6 +18,7 @@ import toDecimal2 from '@/utils/toDecimal2';
 import calculateEx from '@/components/BaseBill/calculate';
 import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 import CustomProForm from '@/components/BaseBill/Custom/custom'
+import CSelect from '@/components/CSelect/CSelect';
 
 interface BillProps {
   bill: string;
@@ -98,6 +99,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
             i.id = 0;
             i.ware_house = parseInt(String(i.ware_house));
           }
+          console.log(result, "result")
           createExBill(result).then(() => {
             setLoading(false)
             message.success('单据创建成功', 2.5);

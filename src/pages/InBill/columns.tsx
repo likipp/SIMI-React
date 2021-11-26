@@ -3,6 +3,9 @@ import type { InBodyType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
 import productColumn from '@/pages/Product/productColumn';
 import type { ExBodyType } from '@/pages/ExBillDetail/data';
+import CSelect from '@/components/CSelect/CSelect';
+import React from 'react';
+import { FormInstance } from 'antd';
 
 const columns: ProColumns<ExBodyType | InBodyType>[] = [
   {
@@ -26,6 +29,34 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
     render: (_, record) => {
       return <span>{record.p_number}</span>
     },
+    renderFormItem: (_, {recordKey}, form) => <CSelect
+      onChange={(value: any) => {
+        console.log(value, "自定义的onChange")
+        // console.log(form)
+        console.log(recordKey, "rowKey")
+        if (value) {
+          console.log(form.getFieldsValue(true))
+          form.setFieldsValue({ [recordKey]: { p_number: value.value } })
+          form.setFieldsValue({ [recordKey]: { unit_price: value.price } })
+          form.setFieldsValue({ [recordKey]: { p_name: value.p_name } })
+          form.setFieldsValue({ [recordKey]: { ware_house: value.ware_house.toString() } })
+          // const col = form.getFieldsValue(true)
+          // if (Object.keys(col).length !== 0) {
+          //   const p_number = col[rowKey as string].p_number
+          //   const ware_house = col[rowKey as string].ware_house
+          //
+          //   getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
+          //     if (Object.keys(res.data).length !== 0) {
+          //       form.setFieldsValue({[rowKey as string]: {stock: res.data[0].qty}})
+          //       console.log(form.getFieldsValue(true))
+          //     } else {
+          //       form.setFieldsValue({[rowKey as string]: {stock: 0}})
+          //     }
+          //   })
+          // }
+        }
+      }}
+    />,
     request: requestProduct,
   },
   {

@@ -1,6 +1,6 @@
 import type { FormInstance } from 'antd';
-import { getStockList } from '@/pages/ExistingStock/services';
-import { parseInt } from 'lodash';
+// import { getStockList } from '@/pages/ExistingStock/services';
+// import { parseInt } from 'lodash';
 import { Table } from 'antd';
 import { useEffect, useState } from 'react';
 import { getProductSelectList } from '@/pages/Product/services';
@@ -18,55 +18,75 @@ const columns = [
   },
 ];
 
+export interface DataItem {
+  key: string;
+  value: string;
+  price: number;
+  p_name: string;
+  ware_house: number;
+  label: string;
+}
+
 const ProductSelect = (props: any) => {
-  const {form, rowKey, menu} = props
-  const [data, setData] = useState()
+  const {form, rowKey, menu, open} = props
+  const [data, setData] = useState<DataItem[]>()
+  const [display, setDisplay] = useState('block')
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     getProductSelectList().then((res) => {
       setData(res.data)
+      setLoading(false)
     })
   }, [])
 
+  useEffect(() => {
+    console.log(menu, '状态', open)
+    if (menu.props.open) {setDisplay("block")} else {setDisplay("none")}
+  }, [menu.props.open])
+
   return (
-    <Table dataSource={data} columns={columns} pagination={false} size="small"
-      onRow={record => {
-        return {
-          onClick: () => {
-            form.setFieldsValue({ [rowKey]: { p_number: record.value } })
-            form.setFieldsValue({ [rowKey]: { unit_price: record.price } })
-            form.setFieldsValue({ [rowKey]: { p_name: record.p_name } })
-            form.setFieldsValue({ [rowKey]: { ware_house: record.ware_house.toString() } })
-            const col = form.getFieldsValue(true)
-            if (Object.keys(col).length !== 0) {
-              const p_number = col[rowKey as string].p_number
-              const ware_house = col[rowKey as string].ware_house
-              getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
-                if (Object.keys(res.data).length !== 0) {
-                  form.setFieldsValue({[rowKey as string]: {stock: res.data[0].qty}})
-                } else {
-                  form.setFieldsValue({[rowKey as string]: {stock: 0}})
-                }
-              })
-            }
-            console.log(menu, "菜单")
-          }
-        }
-      }}
-    />
+    <div style={{display: display}}>
+      <Table dataSource={data} columns={columns} pagination={false} size="small" loading={loading}
+             onRow={record => {
+               return {
+                 onClick: () => {
+                   form.setFieldsValue({ [rowKey]: { p_number: record.value } })
+                   form.setFieldsValue({ [rowKey]: { unit_price: record.price } })
+                   form.setFieldsValue({ [rowKey]: { p_name: record.p_name } })
+                   form.setFieldsValue({ [rowKey]: { ware_house: record.ware_house.toString() } })
+                   // const col = form.getFieldsValue(true)
+                   // if (Object.keys(col).length !== 0) {
+                   //   const p_number = col[rowKey as string].p_number
+                   //   const ware_house = col[rowKey as string].ware_house
+                   //   getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
+                   //     if (Object.keys(res.data).length !== 0) {
+                   //       form.setFieldsValue({[rowKey as string]: {stock: res.data[0].qty}})
+                   //     } else {
+                   //       form.setFieldsValue({[rowKey as string]: {stock: 0}})
+                   //     }
+                   //   })
+                   // }
+                   // setDisplay('none')
+                   open()
+                 }
+               }
+             }}
+      />
+    </div>
   )
 }
 
 // @ts-ignore
 const productColumn = (form: FormInstance, { rowKey }) => {
-  const changeOpen = (status: boolean) => {
-    console.log(status, "状态")
-    return false
+  let open = true
+  const changeOpen = (o: boolean) => {
+    open = o
   }
   return {
     // optionItemRender(item: { key: string; value: string }) {
     //   return item.value + ' - ' + item.key;
     // },
-    // optionLabelProp: "value",
+    optionLabelProp: "value",
     showArrow: false,
     showSearch: true,
     // onChange: async (value: any, item: any) => {
@@ -98,13 +118,19 @@ const productColumn = (form: FormInstance, { rowKey }) => {
     //     }
     //   }
     // },
-    dropdownRender: () => {
+    dropdownRender: (menu: any) => {
       return (
-        <ProductSelect form={form} rowKey={rowKey} menu={changeOpen(true)}/>
+        <ProductSelect form={form} rowKey={rowKey} menu={menu} open={changeOpen}/>
       )
     },
-    onDropdownVisibleChange: (open: boolean) => {
-      changeOpen(open)
+    onChange: () => {
+      console.log("发生改变了")
+    },
+    open: open,
+    onFocus: () => {
+      console.log("获取焦点")
+      changeOpen(true)
+      console.log(open, "打开")
     },
     onClear:() => {
       form.setFieldsValue({[rowKey]: {unit_price: 0}})
