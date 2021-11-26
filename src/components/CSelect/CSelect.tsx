@@ -48,43 +48,47 @@ const CSelect: React.FC<{value?: {
     })
   }, [])
   return (
-    <ProFormSelect
-      placeholder="请选择"
-      style={{marginBottom: 0}}
-      width="md"
-      fieldProps={{
-        dropdownRender() {
-          return <Table dataSource={data} columns={columns} pagination={false} size="small" loading={loading}
-                        onRow={(record) => {
-                          return {
-                            onClick: () => {
-                              // setColumn(() => {
-                              //   return record
-                              // })
-                              onChange?.(record as DataItem)
-                              setPNumber(record.value)
-                              setOpen(false)
+    <div className={'customProductSelect'}>
+      <ProFormSelect
+        placeholder="请选择"
+        width="md"
+        fieldProps={{
+          dropdownRender() {
+            return <Table dataSource={data} columns={columns} pagination={false} size="small" loading={loading}
+                          onRow={(record) => {
+                            return {
+                              onClick: () => {
+                                // setColumn(() => {
+                                //   return record
+                                // })
+                                onChange?.(record as DataItem)
+                                setPNumber(record.value)
+                                setOpen(false)
+                              }
                             }
-                          }
-                        }}
-          />
-        },
-        optionLabelProp: "value",
-        showArrow: false,
-        showSearch: true,
-        value: number,
-        options:data,
-        open:open,
-        onFocus: () => {
-          setOpen(true)
-        },
-        onChange: () => {},
-        onClear() {setPNumber('')},
-        onSelect() {console.log("onSelect")},
-        onInputKeyDown() {console.log("onInputKeyDown")}
-      }}
-    >
-    </ProFormSelect>
+                          }}
+            />
+          },
+          optionLabelProp: "value",
+          showArrow: false,
+          showSearch: true,
+          value: number,
+          options:data,
+          open:open,
+          onFocus: () => {
+            setOpen(true)
+          },
+          onChange: () => {},
+          onClear:() => {
+            setPNumber('')
+          },
+          onClick: () => {
+            setOpen(!open)
+          },
+          onInputKeyDown() {console.log("onInputKeyDown")}
+        }}
+      />
+    </div>
   )
 }
 
