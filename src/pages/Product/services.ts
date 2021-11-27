@@ -2,7 +2,9 @@ import { request } from 'umi';
 import type { ProductListItem } from '@/pages/Product/data';
 
 export async function getProductSelectList(params?: any) {
-  return request('/api/v1/base/product-select/', params);
+  return request('/api/v1/base/product-select/', {
+    params: { param: params },
+  });
 }
 
 export async function getUnitSelectList(params: any) {

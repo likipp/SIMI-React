@@ -30,29 +30,11 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
     },
     renderFormItem: (_, {recordKey}, form) => <CSelect
       onChange={(value: any) => {
-        console.log(value, "自定义的onChange")
-        // console.log(form)
-        console.log(recordKey, "rowKey")
         if (value) {
-          console.log(form.getFieldsValue(true))
           form.setFieldsValue({ [recordKey as string]: { p_number: value.value } })
           form.setFieldsValue({ [recordKey as string]: { unit_price: value.price } })
           form.setFieldsValue({ [recordKey as string]: { p_name: value.p_name } })
           form.setFieldsValue({ [recordKey as string]: { ware_house: value.ware_house.toString() } })
-          // const col = form.getFieldsValue(true)
-          // if (Object.keys(col).length !== 0) {
-          //   const p_number = col[rowKey as string].p_number
-          //   const ware_house = col[rowKey as string].ware_house
-          //
-          //   getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
-          //     if (Object.keys(res.data).length !== 0) {
-          //       form.setFieldsValue({[rowKey as string]: {stock: res.data[0].qty}})
-          //       console.log(form.getFieldsValue(true))
-          //     } else {
-          //       form.setFieldsValue({[rowKey as string]: {stock: 0}})
-          //     }
-          //   })
-          // }
         }
       }}
     />,

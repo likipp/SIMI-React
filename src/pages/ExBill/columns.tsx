@@ -1,11 +1,11 @@
 import type { ProColumns } from '@ant-design/pro-table';
 import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
-import productColumn from '@/pages/Product/productColumn';
 import { getStockList } from '@/pages/ExistingStock/services';
 import { parseInt } from 'lodash';
 import type { FormInstance } from 'antd';
 import styles from '@/pages/ExBill/exbill.less';
+import CSelect from '@/components/CSelect/CSelect';
 
 const checkStock = (qty: number, stock: number) => {
   return new Promise((resolve) => {
@@ -35,10 +35,34 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
         rules: [{ required: true, message: '产品代码必填' }],
       };
     },
-    fieldProps: productColumn,
+    // fieldProps: productColumn,
     render: (_, record) => {
       return <span>{record.p_number}</span>
     },
+    renderFormItem: (_, {recordKey}, form) => <CSelect
+      onChange={(value: any) => {
+        if (value) {
+          form.setFieldsValue({ [recordKey as string]: { p_number: value.value } })
+          form.setFieldsValue({ [recordKey as string]: { unit_price: value.price } })
+          form.setFieldsValue({ [recordKey as string]: { p_name: value.p_name } })
+          form.setFieldsValue({ [recordKey as string]: { ware_house: value.ware_house.toString() } })
+          const col = form.getFieldsValue(true)
+          if (Object.keys(col).length !== 0) {
+            const p_number = col[recordKey as string].p_number
+            const ware_house = col[recordKey as string].ware_house
+
+            getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
+              if (Object.keys(res.data).length !== 0) {
+                form.setFieldsValue({[recordKey as string]: {stock: res.data[0].qty}})
+                console.log(form.getFieldsValue(true))
+              } else {
+                form.setFieldsValue({[recordKey as string]: {stock: 0}})
+              }
+            })
+          }
+        }
+      }}
+    />,
     request: requestProduct,
   },
   {

@@ -3,6 +3,7 @@ import { Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getProductSelectList } from '@/pages/Product/services';
 import type { DataItem } from '@/pages/Product/productColumn';
+import style from './cselect.less'
 
 const columns = [
   {
@@ -17,14 +18,7 @@ const columns = [
   },
 ];
 
-const CSelect: React.FC<{value?: {
-    key: string;
-    value: string;
-    price: number;
-    p_name: string;
-    ware_house: number;
-    label: string;
-  };
+const CSelect: React.FC<{value?: string;
   onChange?: (
     value: {
       key: string;
@@ -38,17 +32,18 @@ const CSelect: React.FC<{value?: {
 }> = ({onChange}) => {
   const [data, setData] = useState<DataItem[]>()
   const [loading, setLoading] = useState(true)
-  // const [column, setColumn] = useState<DataItem>()
   const [number, setPNumber] = useState('')
   const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+
   useEffect(() => {
-    getProductSelectList().then((res) => {
+    getProductSelectList(search).then((res) => {
       setData(res.data)
       setLoading(false)
     })
-  }, [])
+  }, [search])
   return (
-    <div className={'customProductSelect'}>
+    <div className={style.customProductSelect}>
       <ProFormSelect
         placeholder="请选择"
         width="md"
@@ -58,9 +53,6 @@ const CSelect: React.FC<{value?: {
                           onRow={(record) => {
                             return {
                               onClick: () => {
-                                // setColumn(() => {
-                                //   return record
-                                // })
                                 onChange?.(record as DataItem)
                                 setPNumber(record.value)
                                 setOpen(false)
@@ -69,7 +61,9 @@ const CSelect: React.FC<{value?: {
                           }}
             />
           },
+          dropdownClassName: "select-drop-down",
           optionLabelProp: "value",
+          dropdownMatchSelectWidth: 400,
           showArrow: false,
           showSearch: true,
           value: number,
@@ -78,14 +72,19 @@ const CSelect: React.FC<{value?: {
           onFocus: () => {
             setOpen(true)
           },
-          onChange: () => {},
           onClear:() => {
             setPNumber('')
           },
           onClick: () => {
             setOpen(!open)
           },
-          onInputKeyDown() {console.log("onInputKeyDown")}
+          onInputKeyDown() {},
+          onSearch: (s) => {
+            setSearch(s)
+          },
+          onMouseLeave: () => {
+            console.log("鼠标移除")
+          }
         }}
       />
     </div>

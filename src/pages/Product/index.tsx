@@ -6,7 +6,6 @@ import {
   requestUnitSelectList,
   requestBrandSelectList,
   requestWareHouse,
-  requestProduct,
 } from '@/components/BaseBill/services';
 import type { ProductListItem } from '@/pages/Product/data';
 import CreateProduct from '@/pages/Product/CreateProduct';
@@ -14,8 +13,8 @@ import UpdateProduct from '@/pages/Product/UpdateProduct'
 import { useState, useRef, useEffect } from 'react';
 import { Button } from 'antd';
 import BrandTree from '@/pages/Brand/Tree';
-import productColumn from '@/pages/Product/productColumn';
 import { parseInt } from 'lodash';
+import CSelect from '@/components/CSelect/CSelect';
 
 
 
@@ -37,11 +36,12 @@ export default () => {
       title: '产品代码',
       dataIndex: 'p_number',
       align: 'center',
-      fieldProps: productColumn,
+      // fieldProps: productColumn,
       render: (_, record) => {
         return <span>{record.p_number}</span>
       },
-      request: requestProduct,
+      renderFormItem: () => <CSelect />,
+      // request: requestProduct,
     },
     {
       title: '产品名称',
@@ -143,6 +143,11 @@ export default () => {
         }}
         rowKey="id"
         request={(params, sorter, filter) => {
+          if (params.p_number) {
+            console.log(params, "KeyWords")
+            params.p_number = params.p_number.value
+            console.log(params.p_number)
+          }
           if (brand) {
             params.brand = brand
           }

@@ -18,7 +18,6 @@ import toDecimal2 from '@/utils/toDecimal2';
 import calculateEx from '@/components/BaseBill/calculate';
 import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 import CustomProForm from '@/components/BaseBill/Custom/custom'
-import CSelect from '@/components/CSelect/CSelect';
 
 interface BillProps {
   bill: string;
