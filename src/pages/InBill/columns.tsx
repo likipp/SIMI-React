@@ -35,6 +35,8 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
           form.setFieldsValue({ [recordKey as string]: { unit_price: value.price } })
           form.setFieldsValue({ [recordKey as string]: { p_name: value.p_name } })
           form.setFieldsValue({ [recordKey as string]: { ware_house: value.ware_house.toString() } })
+        } else {
+          form.resetFields([recordKey as string])
         }
       }}
     />,

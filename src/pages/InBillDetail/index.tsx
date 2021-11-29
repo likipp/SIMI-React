@@ -9,15 +9,15 @@ import { getInBillDetail } from '@/pages/InBillDetail/services';
 // import columns from '@/pages/InBill/columns';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
-import productColumn from '@/pages/Product/productColumn';
+// import productColumn from '@/pages/Product/productColumn';
 import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
 import type { ProFormInstance } from '@ant-design/pro-form';
-import type { DataSourceType } from '@/pages/InBillDetail/data';
+import CSelect from '@/components/CSelect/CSelect';
+import { getStockList } from '@/pages/ExistingStock/services';
+import { parseInt } from 'lodash';
+// import type { DataSourceType } from '@/pages/InBillDetail/data';
 
-
-// export const BillContext = createContext(false)
 export default () => {
-
   const number = useParams();
   const [data, setData] = useState<InSourceType>()
   // const change = useContext(BillContext)
@@ -45,11 +45,37 @@ export default () => {
           rules: [{ required: true, message: '产品代码必填' }],
         };
       },
-      fieldProps: productColumn,
+      // fieldProps: productColumn,
       render: (_, record) => {
         return <span>{record.p_number}</span>
       },
       request: requestProduct,
+      renderFormItem: (_, {recordKey}, form) => <CSelect
+        onChange={(value: any) => {
+          if (value) {
+            form.setFieldsValue({ [recordKey as string]: { p_number: value.value } })
+            form.setFieldsValue({ [recordKey as string]: { unit_price: value.price } })
+            form.setFieldsValue({ [recordKey as string]: { p_name: value.p_name } })
+            form.setFieldsValue({ [recordKey as string]: { ware_house: value.ware_house.toString() } })
+            const col = form.getFieldsValue(true)
+            if (Object.keys(col).length !== 0) {
+              const p_number = col[recordKey as string].p_number
+              const ware_house = col[recordKey as string].ware_house
+
+              getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
+                if (Object.keys(res.data).length !== 0) {
+                  form.setFieldsValue({[recordKey as string]: {stock: res.data[0].qty}})
+                  console.log(form.getFieldsValue(true))
+                } else {
+                  form.setFieldsValue({[recordKey as string]: {stock: 0}})
+                }
+              })
+            }
+          }  else {
+            form.resetFields([recordKey as string])
+          }
+        }}
+      />,
     },
     {
       title: '产品名称',
@@ -139,30 +165,15 @@ export default () => {
         <a
           key="delete"
           onClick={() => {
-            console.log(row.id, row.p_number)
-            const tableDataSource = formRef.current?.getFieldsValue(true);
-            console.log(tableDataSource, "总数据")
-            const bodyDataSource = formRef.current?.getFieldValue('body') as DataSourceType[];
+            // const tableDataSource = formRef.current?.getFieldsValue(true);
+            // const bodyDataSource = formRef.current?.getFieldValue('body') as DataSourceType[];
             formRef.current?.setFieldsValue({
               body: data?.body.filter((item: any) => item.id !== row?.id),
             });
-            console.log(bodyDataSource, "body数据")
-
-            // formRef.current?.setFieldsValue({
-            //   table: tableDataSource.filter((item) => item.id !== row?.id),
-            // });
           }}
         >
           移除
         </a>,
-        // <a
-        //   key="edit"
-        //   onClick={() => {
-        //     actionRef.current?.startEditable(row.id);
-        //   }}
-        // >
-        //   编辑
-        // </a>,
       ],
     },
   ];

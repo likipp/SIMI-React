@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import ProForm, { DrawerForm, ProFormMoney, ProFormRadio, ProFormText } from '@ant-design/pro-form';
 import { message, Timeline } from 'antd';
-import type { PayItem } from '@/pages/InList';
 import { getPayList, updatePayDiscount } from '@/pages/InList/services';
 import moment from 'moment';
 import { AlipayCircleOutlined, WechatOutlined } from '@ant-design/icons';
+import type { PayItem } from '@/pages/InList/data';
 
 export type CreateFormProps = {
   drawerVisit: boolean;
   setDrawerVisit: React.Dispatch<React.SetStateAction<boolean>>;
-  defaultPay: PayItem;
+  defaultPay: any;
   reload: any
 };
 

@@ -8,12 +8,13 @@ import React from 'react';
 type customProFormProps = {
   bill: string;
   realDiscount: number | undefined;
-  c_number: string | undefined;
+  c_number?: string;
+  c_name?: string;
   formRef: MutableRefObject<ProFormInstance<any> | undefined>
 }
 
 const customProForm: React.FC<customProFormProps> = (props) => {
-  const {bill, realDiscount, c_number, formRef} = props
+  const {bill, realDiscount, c_number, c_name, formRef} = props
   if (bill === '出库单') {
     return (
       <ProForm.Group>
@@ -55,6 +56,7 @@ const customProForm: React.FC<customProFormProps> = (props) => {
           label="客户名称"
           tooltip="最长为 24 位"
           placeholder="请输入名称"
+          initialValue={c_name ? c_name : ""}
           disabled={true}
         />
         <ProFormText

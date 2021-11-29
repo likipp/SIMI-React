@@ -42,7 +42,8 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
     renderFormItem: (_, {recordKey}, form) => <CSelect
       onChange={(value: any) => {
         if (value) {
-          form.setFieldsValue({ [recordKey as string]: { p_number: value.value } })
+          console.log(value, "产品value")
+          // form.setFieldsValue({ [recordKey as string]: { p_number: value.value } })
           form.setFieldsValue({ [recordKey as string]: { unit_price: value.price } })
           form.setFieldsValue({ [recordKey as string]: { p_name: value.p_name } })
           form.setFieldsValue({ [recordKey as string]: { ware_house: value.ware_house.toString() } })
@@ -50,7 +51,6 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
           if (Object.keys(col).length !== 0) {
             const p_number = col[recordKey as string].p_number
             const ware_house = col[recordKey as string].ware_house
-
             getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
               if (Object.keys(res.data).length !== 0) {
                 form.setFieldsValue({[recordKey as string]: {stock: res.data[0].qty}})
@@ -60,6 +60,8 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
               }
             })
           }
+        }  else {
+          form.resetFields([recordKey as string])
         }
       }}
     />,

@@ -1,24 +1,14 @@
 import { ProFormSelect } from '@ant-design/pro-form';
-import { Table } from 'antd';
+import { Col, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getProductSelectList } from '@/pages/Product/services';
 import type { DataItem } from '@/pages/Product/productColumn';
 import style from './cselect.less'
 
-const columns = [
-  {
-    title: '代码',
-    dataIndex: 'value',
-    key: 'value',
-  },
-  {
-    title: '名称',
-    dataIndex: 'p_name',
-    key: 'label',
-  },
-];
-
-const CSelect: React.FC<{value?: string;
+const CSelect: React.FC<{value?: {
+    key: string;
+    label: string
+  };
   onChange?: (
     value: {
       key: string;
@@ -29,61 +19,57 @@ const CSelect: React.FC<{value?: string;
       label: string;
     },
   ) => void;
-}> = ({onChange}) => {
+}> = ({value, onChange}) => {
   const [data, setData] = useState<DataItem[]>()
   const [loading, setLoading] = useState(true)
-  const [number, setPNumber] = useState('')
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
+  const [, setPNumber] = useState('')
 
   useEffect(() => {
-    getProductSelectList(search).then((res) => {
+    getProductSelectList().then((res) => {
       setData(res.data)
       setLoading(false)
     })
-  }, [search])
+  }, [])
   return (
     <div className={style.customProductSelect}>
       <ProFormSelect
         placeholder="请选择"
         width="md"
         fieldProps={{
-          dropdownRender() {
-            return <Table dataSource={data} columns={columns} pagination={false} size="small" loading={loading}
-                          onRow={(record) => {
-                            return {
-                              onClick: () => {
-                                onChange?.(record as DataItem)
-                                setPNumber(record.value)
-                                setOpen(false)
-                              }
-                            }
-                          }}
-            />
+          optionItemRender(item: DataItem) {
+            return (
+              <>
+                <Row align={'middle'} className={style.selectTDBorder}>
+                  <Col span={12}>{item.value}</Col>
+                  <Col span={12}>{item.p_name}</Col>
+                </Row>
+              </>
+            )
+          },
+          dropdownRender(menu) {
+            return (
+              <>
+                <Row align={'middle'} className={style.selectTH}>
+                  <Col span={12}>产品代码</Col>
+                  <Col span={12}>产品名称</Col>
+                </Row>
+                <div>{menu}</div>
+              </>
+            )
           },
           dropdownClassName: "select-drop-down",
           optionLabelProp: "value",
-          dropdownMatchSelectWidth: 400,
+          dropdownMatchSelectWidth: 500,
           showArrow: false,
           showSearch: true,
-          value: number,
           options:data,
-          open:open,
-          onFocus: () => {
-            setOpen(true)
-          },
+          loading: loading,
           onClear:() => {
             setPNumber('')
           },
-          onClick: () => {
-            setOpen(!open)
-          },
-          onInputKeyDown() {},
-          onSearch: (s) => {
-            setSearch(s)
-          },
-          onMouseLeave: () => {
-            console.log("鼠标移除")
+          onChange: (v: any, item: any) => {
+            onChange?.(item as DataItem)
+            // value = item.p_number
           }
         }}
       />

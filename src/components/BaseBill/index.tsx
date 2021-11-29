@@ -174,7 +174,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
             <></>
           )}
         </ProForm.Group>
-        <CustomProForm bill={bill} realDiscount={realDiscount} c_number={undefined} formRef={formRef} />
+        <CustomProForm bill={bill} realDiscount={realDiscount} formRef={formRef} />
         <ProForm.Item name="body" initialValue={defaultData} trigger="onValuesChange">
           <EditableProTable<ExBodyType | InBodyType>
             rowKey="id"

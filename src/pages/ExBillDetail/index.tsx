@@ -8,12 +8,12 @@ import type { ExBodyType, InBodyType, ExSourceType } from '@/pages/ExBillDetail/
 import BillUpdate from '@/components/BaseBill/Update';
 import type { ProFormInstance } from '@ant-design/pro-form';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
-import productColumn from '@/pages/Product/productColumn';
-import { requestProduct, requestWareHouse } from '@/components/BaseBill/services';
+import { requestWareHouse } from '@/components/BaseBill/services';
 import type { FormInstance } from 'antd';
 import { getStockList } from '@/pages/ExistingStock/services';
 import { parseInt } from 'lodash';
 import styles from '@/pages/ExBill/exbill.less';
+import CSelect from '@/components/CSelect/CSelect';
 
 export default () => {
   const number = useParams();
@@ -50,11 +50,35 @@ export default () => {
           rules: [{ required: true, message: '产品代码必填' }],
         };
       },
-      fieldProps: productColumn,
+      // fieldProps: productColumn,
       render: (_, record) => {
         return <span>{record.p_number}</span>
       },
-      request: requestProduct,
+      // request: requestProduct,
+      renderFormItem: (_, {recordKey}, form) => <CSelect
+        onChange={(value: any) => {
+          if (value) {
+            form.setFieldsValue({ [recordKey as string]: { p_number: value.value } })
+            form.setFieldsValue({ [recordKey as string]: { unit_price: value.price } })
+            form.setFieldsValue({ [recordKey as string]: { p_name: value.p_name } })
+            form.setFieldsValue({ [recordKey as string]: { ware_house: value.ware_house.toString() } })
+            const col = form.getFieldsValue(true)
+            if (Object.keys(col).length !== 0) {
+              const p_number = col[recordKey as string].p_number
+              const ware_house = col[recordKey as string].ware_house
+              getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
+                if (Object.keys(res.data).length !== 0) {
+                  form.setFieldsValue({[recordKey as string]: {stock: res.data[0].qty}})
+                } else {
+                  form.setFieldsValue({[recordKey as string]: {stock: 0}})
+                }
+              })
+            }
+          }  else {
+            form.resetFields([recordKey as string])
+          }
+        }}
+      />,
     },
     {
       title: '产品名称',
@@ -242,6 +266,7 @@ export default () => {
         setData(() => {
           return res.data
         });
+        console.log(data, "detail data")
       })
       .catch((err) => {
         console.log(err);

@@ -27,6 +27,7 @@ interface BillProps {
 const BillUpdate: React.FC<BillProps> = (prop) => {
   const defaultData: (InBodyType | ExBodyType)[] = [];
   const { bill, columns, data, actionRef, formRef} = prop;
+  console.log(data, "data")
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     defaultData.map((item) => item.id),
   );
@@ -90,7 +91,6 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
         onFinish={async (values) => {
           setLoading(true)
           const result: InSourceType | ExSourceType = values;
-          console.log(result, "结果")
           for (const i of result.body) {
             // i.id = 0
             i.ware_house = parseInt(String(i.ware_house));
@@ -104,9 +104,6 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
             } else {
               history.push(`/stock-table/in`)
             }
-            // dispatch(false)
-            //
-            // return true
           }).catch((err) => {
             console.log(err)
           })
@@ -170,7 +167,9 @@ const BillUpdate: React.FC<BillProps> = (prop) => {
             <></>
           )}
         </ProForm.Group>
-        <CustomProForm bill={bill} realDiscount={0} c_number={'c_number' in data ? data.c_number : ""} formRef={formRef} />
+        <CustomProForm bill={bill} realDiscount={0} c_number={'c_number' in data ? data.c_number : ""}
+                       c_name={'c_number' in data ? data.c_name : ""}
+                       formRef={formRef} />
 
         <ProForm.Item name="body" initialValue={defaultData} trigger="onValuesChange">
           <EditableProTable<ExBodyType | InBodyType>
