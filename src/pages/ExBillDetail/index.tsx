@@ -159,19 +159,19 @@ export default () => {
       formItemProps: (form: FormInstance, { rowKey }) => {
         return {
           rules: [{ required: true, message: '数量必填' },
-            {
-              validator: (rule, value, callback) => {
-                const col =  form.getFieldsValue(true)
-                const stock = col[rowKey as string].stock
-                checkStock(value, stock).then((res) => {
-                  if (res) {
-                    callback()
-                  } else {
-                    callback("库存不足")
-                  }
-                })
-              }
-            }
+            // {
+            //   validator: (rule, value, callback) => {
+            //     const col =  form.getFieldsValue(true)
+            //     const stock = col[rowKey as string].stock
+            //     checkStock(value, stock).then((res) => {
+            //       if (res) {
+            //         callback()
+            //       } else {
+            //         callback("库存不足")
+            //       }
+            //     })
+            //   }
+            // }
             ],
         };
       },

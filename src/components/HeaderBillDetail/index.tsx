@@ -19,8 +19,10 @@ const HeaderBillDetail =(props: any) => {
       okType: 'danger',
       cancelText: '否',
       onOk() {
-        deleteBill({number: number}).then(() => {
-          message.success("删除成功")
+        deleteBill({number: number}).then((res) => {
+          if (res && res.sucess) {
+            message.success("删除成功")
+          }
           history.push(`/stock-table/${type}`)
         }).catch(err => {
           console.log(err, "错误消息")
