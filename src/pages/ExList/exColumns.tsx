@@ -6,6 +6,7 @@ import moment from 'moment';
 import locale from 'antd/es/date-picker/locale/zh_CN';
 import { AlipayCircleOutlined, WechatOutlined } from '@ant-design/icons';
 
+
 export const ExListColumns: ProColumns<ExTableListItem>[] = [
   {
     title: '单号',
@@ -44,11 +45,11 @@ export const ExListColumns: ProColumns<ExTableListItem>[] = [
     fieldProps: () => {
       return {
         ranges: {
-          '今天': [moment(), moment()],
-          '本周': [moment().startOf('week'), moment().endOf('week')],
-          '本月': [moment().startOf('month'), moment().endOf('month')],
-          '本季': [moment().startOf('quarter'), moment().endOf('quarter')],
-          '本年': [moment().startOf('year'), moment().endOf('year')]
+          zh_Today: [moment(), moment()],
+          zh_Week: [moment().startOf('week'), moment().endOf('week')],
+          zh_Month: [moment().startOf('month'), moment().endOf('month')],
+          zh_Season: [moment().startOf('quarter'), moment().endOf('quarter')],
+          zh_Year: [moment().startOf('year'), moment().endOf('year')]
         },
         showTime: true,
         local: locale
@@ -99,16 +100,17 @@ export const ExListColumns: ProColumns<ExTableListItem>[] = [
   },
   {
     title: '单价',
-    dataIndex: 'ex_qty',
-    align: 'center',
-    search: false,
-  },
-  {
-    title: '数量',
     dataIndex: 'unit_price',
     align: 'center',
     search: false,
     valueType: 'digit',
+  },
+  {
+    title: '数量',
+    dataIndex: 'ex_qty',
+    align: 'center',
+    search: false,
+
   },
   {
     title: '售出金额',

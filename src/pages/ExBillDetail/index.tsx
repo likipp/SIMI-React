@@ -19,7 +19,7 @@ export default () => {
   const number = useParams();
   const [data, setData] = useState<ExSourceType>();
   const [change, setChange] = useState(false)
-  const formRef = useRef<ProFormInstance<any>>();
+  const formRef = useRef<ProFormInstance>();
   const actionRef = useRef<ActionType>();
 
   const checkStock = (qty: number, stock: number) => {
@@ -159,19 +159,19 @@ export default () => {
       formItemProps: (form: FormInstance, { rowKey }) => {
         return {
           rules: [{ required: true, message: '数量必填' },
-            // {
-            //   validator: (rule, value, callback) => {
-            //     const col =  form.getFieldsValue(true)
-            //     const stock = col[rowKey as string].stock
-            //     checkStock(value, stock).then((res) => {
-            //       if (res) {
-            //         callback()
-            //       } else {
-            //         callback("库存不足")
-            //       }
-            //     })
-            //   }
-            // }
+            {
+              validator: (rule, value, callback) => {
+                const col =  form.getFieldsValue(true)
+                const stock = col[rowKey as string].stock
+                checkStock(value, stock).then((res) => {
+                  if (res) {
+                    callback()
+                  } else {
+                    callback("库存不足")
+                  }
+                })
+              }
+            }
             ],
         };
       },
@@ -266,7 +266,6 @@ export default () => {
         setData(() => {
           return res.data
         });
-        console.log(data, "detail data")
       })
       .catch((err) => {
         console.log(err);

@@ -6,8 +6,7 @@ import type { DataItem } from '@/pages/Product/productColumn';
 import style from './cselect.less'
 
 const CSelect: React.FC<{value?: {
-    key: string;
-    label: string
+    p_number: string;
   };
   onChange?: (
     value: {
@@ -36,6 +35,7 @@ const CSelect: React.FC<{value?: {
         placeholder="请选择"
         width="md"
         fieldProps={{
+          // @ts-ignore
           optionItemRender(item: DataItem) {
             return (
               <>
@@ -64,12 +64,12 @@ const CSelect: React.FC<{value?: {
           showSearch: true,
           options:data,
           loading: loading,
+          value: value,
           onClear:() => {
             setPNumber('')
           },
           onChange: (v: any, item: any) => {
-            onChange?.(item as DataItem)
-            // value = item.p_number
+            onChange?.(item["data-item"] as DataItem)
           }
         }}
       />

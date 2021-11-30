@@ -27,7 +27,6 @@ const summary = (pageData: any, bill: string) => {
       }
     }
   }
-
   return (
     <>
       {bill === '出库单' ? (

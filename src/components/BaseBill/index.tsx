@@ -14,8 +14,7 @@ import moment from 'moment';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import summary from '@/utils/summary';
-import toDecimal2 from '@/utils/toDecimal2';
-import calculateEx from '@/components/BaseBill/calculate';
+import discountChange from '@/components/BaseBill/calculate';
 import type { ExBodyType, InBodyType } from '@/pages/ExBillDetail/data';
 import CustomProForm from '@/components/BaseBill/Custom/custom'
 
@@ -37,52 +36,6 @@ const BaseBill: React.FC<BillProps> = (prop) => {
   const [dataSource, setDataSource] = useState<(InBodyType | ExBodyType)[]>(() => defaultData);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false)
-
-  const discountChange = (record: any, recordList: any, type: string) => {
-    const list = form.getFieldsValue(true);
-    let qty = 0;
-    if (record != undefined) {
-      if (type == '出库单') {
-        for (const listKey in list) {
-          // qty = list[listKey].ex_qty;
-          // const unit_price = list[listKey].unit_price;
-          // let in_discount = list[listKey].in_discount;
-          // let ex_discount = list[listKey].ex_discount;
-          // if (in_discount == undefined) {
-          //   in_discount = 100;
-          // }
-          // if (ex_discount == undefined) {
-          //   ex_discount = 100;
-          // }
-          // console.log(unit_price, "list", qty, ex_discount)
-          // const total: number = toDecimal2((unit_price * qty * ex_discount) / 100);
-          // const cost: number = toDecimal2((unit_price * qty * in_discount) / 100);
-          // const profit = toDecimal2(total - cost);
-          // console.log(total, cost, "金额")
-          const {total, cost, profit} =  calculateEx(qty, list, listKey)
-          record.cost = cost
-          record.profit = profit
-          record.total = total
-          list[listKey].total = total;
-          list[listKey].profit = profit;
-          list[listKey].cost = cost;
-        }
-      } else {
-        for (const listKey in list) {
-          let in_discount = list[listKey].in_discount;
-          if (in_discount == undefined) {
-            in_discount = 100;
-          }
-          qty = list[listKey].in_qty;
-          const unit_price = list[listKey].unit_price;
-          const total: number = toDecimal2((unit_price * qty * in_discount) / 100);
-          list[listKey].total = total;
-          record.total = total
-        }
-      }
-      return;
-    }
-  };
 
   return (
     <div>
@@ -201,7 +154,7 @@ const BaseBill: React.FC<BillProps> = (prop) => {
                 return [dom.delete];
               },
               onValuesChange: (record, recordList) => {
-                discountChange(record, recordList, bill);
+                discountChange(record, recordList, bill, form);
                 setDataSource(() => {
                   return recordList;
                 });
