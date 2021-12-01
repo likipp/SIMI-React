@@ -4,20 +4,21 @@ const Settings: LayoutSettings & {
   pwa?: boolean;
   logo?: string;
 } = {
-  navTheme: 'light',
+  navTheme: 'dark',
   primaryColor: '#F5222D',
-  layout: 'top',
+  layout: 'side',
   contentWidth: 'Fluid',
   fixedHeader: true,
   fixSiderbar: true,
   colorWeak: false,
   title: '',
   pwa: false,
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  // logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   iconfontUrl: '',
   splitMenus: false,
-  menuHeaderRender:false,
-  footerRender:false
+  menuHeaderRender: false,
+  footerRender: false,
+  headerRender: false
 };
 
 export default Settings;

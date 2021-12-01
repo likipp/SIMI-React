@@ -25,6 +25,8 @@ export default () => {
   const [data, setData] = useState<ProductListItem>()
   const [copy, setCopy] = useState("编辑")
   const [brand, setBrand] = useState(0)
+  const [display, setDisplay] = useState('none')
+
   const columns: ProColumns<ProductListItem>[] = [
     {
       title: '排序',
@@ -118,7 +120,6 @@ export default () => {
     },
   ]
 
-
   const handleCancel = () => {
     setCreateModalVisible(false);
   };
@@ -132,6 +133,11 @@ export default () => {
 
   useEffect(() => {
     actionRef.current?.reload()
+    if (brand !== 0) {
+      setDisplay('block')
+    } else {
+      setDisplay('none')
+    }
   }, [brand])
   return (
     <PageContainer>
@@ -144,9 +150,7 @@ export default () => {
         rowKey="id"
         request={(params, sorter, filter) => {
           if (params.p_number) {
-            console.log(params, "KeyWords")
             params.p_number = params.p_number.value
-            console.log(params.p_number)
           }
           if (brand) {
             params.brand = brand
@@ -163,15 +167,17 @@ export default () => {
             })
       }}
         toolBarRender={() => [
-          <Button
-            type="primary"
-            key="primary"
-            onClick={() => {
-              setCreateModalVisible(true);
-            }}
-          >
-            新建
-          </Button>
+          <div style={{display: display}}>
+            <Button
+              type="primary"
+              key="primary"
+              onClick={() => {
+                setCreateModalVisible(true);
+              }}
+            >
+              新建
+            </Button>
+          </div>
         ]}
         tableRender={(_, dom) => (
           <div
@@ -196,7 +202,10 @@ export default () => {
           pageSize: 10,
         }}
       />
-      <CreateProduct createModalVisible={createModalVisible} onCancel={handleCancel} reload={actionRef.current?.reload} />
+      {
+        createModalVisible ? <CreateProduct createModalVisible={createModalVisible} onCancel={handleCancel} reload={actionRef.current?.reload} brand={brand}/>
+          : <></>
+      }
       {
         data ? <UpdateProduct updateModalVisible={updateModalVisible} onCancel={handleUpdateCancel} reload={actionRef.current?.reload} data={data} copy={copy}/>
           : <></>

@@ -9,6 +9,7 @@ import type { RequestConfig } from '@@/plugin-request/request';
 import 'moment/dist/locale/zh-cn'
 import 'moment/locale/zh-cn'
 import moment from 'moment';
+import TagView from '@/components/TagView';
 
 moment.locale('zh-ch')
 
@@ -110,11 +111,22 @@ export const layout: ({ initialState }: { initialState: any }) => { rightContent
         history.push(loginPath);
       }
     },
-    menuHeaderRender: undefined,
+    menuHeaderRender: false,
     locale: {
       enable: true,
       default: 'zh-CN',
       baseNavigator: true
+    },
+    childrenRender: (children: any) => {
+      return (
+        <>
+          {initialState?.currentUser && location.pathname !== loginPath ? (
+            <TagView children={children} home="/welcome" />
+          ) : (
+            children
+          )}
+        </>
+      )
     },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,

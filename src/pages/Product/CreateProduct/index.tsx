@@ -1,26 +1,22 @@
 import React, { useRef } from 'react';
-import ProForm, {
-  ModalForm,
-  ProFormText,
-  ProFormSelect,
-  ProFormMoney,
-  ProFormTextArea,
-  ProFormInstance,
-} from '@ant-design/pro-form';
+import type { ProFormInstance } from '@ant-design/pro-form';
+import ProForm, { ModalForm, ProFormText, ProFormSelect, ProFormMoney, ProFormTextArea } from '@ant-design/pro-form';
 import type { ProductListItem } from '@/pages/Product/data';
 import { requestUnitSelectList, requestBrandSelectList, requestWareHouse } from '@/components/BaseBill/services';
-import { addProduct } from '@/pages/Product/services';
+import { addProduct, generateProductNumber } from '@/pages/Product/services';
 import { message } from 'antd';
 
 export type CreateFormProps = {
   onCancel: (flag?: boolean) => void;
   createModalVisible: boolean;
+  brand: number;
   reload: ((resetPageIndex?: (boolean | undefined)) => Promise<void>) | undefined;
 }
 
 const CreateProduct: React.FC<CreateFormProps> = (props) => {
-  const {onCancel, createModalVisible, reload} = props
+  const {onCancel, createModalVisible, brand, reload} = props
   const formRef = useRef<ProFormInstance>();
+
   return (
     <ModalForm<ProductListItem>
       formRef={formRef}
@@ -48,6 +44,14 @@ const CreateProduct: React.FC<CreateFormProps> = (props) => {
         })
 
       }}
+      // @ts-ignore
+      request={async () => {
+        const res = await generateProductNumber({parent: brand})
+        return {
+          p_number: res.data,
+          brand: brand.toString(),
+        }
+      }}
     >
       <ProForm.Group >
         <ProFormText
@@ -56,6 +60,7 @@ const CreateProduct: React.FC<CreateFormProps> = (props) => {
           label="产品代码"
           // tooltip="最长为 24 位"
           placeholder="请输入编号"
+          disabled={true}
           rules={[{ required: true, message: '请输入产品编号' }]}
         />
         <ProFormText
