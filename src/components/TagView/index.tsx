@@ -46,7 +46,6 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
     if (tagList.length === 0) {
       return initTags(routeContext);
     }
-
     // 判断是否已打开过该页面
     let hasOpen = false;
     const tagsCopy: TagsItemType[] = tagList.map((item) => {
@@ -58,7 +57,6 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
         return { ...item, active: false };
       }
     });
-
     // 没有该tag时追加一个,并打开这个tag页面
     if (!hasOpen) {
       const title = routeContext.title || '';
@@ -72,30 +70,21 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
       });
       dispatch({type: 'add', title, path, children, refresh: 0, active: true})
     }
+    // dispatch({type: 'change', currentMenu: currentMenu, children:children})
     // return setTagList(tagsCopy);
   };
 
   useEffect(() => {
     // 监听路由改变
-
     if (routeContextRef?.current) {
       handleOnChange(routeContextRef.current);
     }
-  }, [handleOnChange]);
+    console.log("是否发生变化")
+  }, [handleOnChange, routeContextRef.current]);
 
   // 关闭标签
   const handleCloseTag = (tag: TagsItemType) => {
-    // const tagsCopy: TagsItemType[] = tagList.map((el) => ({ ...el }));
-    // 判断关闭标签是否处于打开状态
-    tagList.forEach((el, i) => {
-      if (el.path === tag.path && tag.active) {
-        const next = tagList[i - 1];
-        next.active = true;
-        history.push({ pathname: next?.path, query: next?.query });
-      }
-    });
-    dispatch({type: 'closeSelf'})
-    // return setTagList(tagsCopy.filter((el) => el.path !== tag?.path))
+    dispatch({type: 'closeSelf', tag: tag, children: children})
   };
 
   // 关闭所有标签
@@ -103,7 +92,7 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
     const tagsCopy: TagsItemType[] = tagList.filter((el) => el.path === home);
     // console.log(tagsCopy[0].title, "关闭所有")
     history.push(home);
-    dispatch({type: 'closeAll', title:tagsCopy[0].title , path:tagsCopy[0].path,
+    dispatch({type: 'closeAll', title:tagsCopy[0].title, path:tagsCopy[0].path,
       children:tagsCopy[0].children, refresh: 0, active: true})
   };
 

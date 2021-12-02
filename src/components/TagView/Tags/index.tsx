@@ -21,6 +21,8 @@ const Tags: React.FC<IProps> = ({ tagList, closeTag, closeAllTag, closeOtherTag,
   const tagListRef = useRef<any>();
   const contextMenuRef = useRef<any>();
 
+  console.log(tagList, "最底层接受的tagList")
+
   const handleClickOutside = (event: Event) => {
     const isOutside = !(contextMenuRef.current && contextMenuRef.current.contains(event.target));
     if (isOutside && menuVisible) {
