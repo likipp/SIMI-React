@@ -22,6 +22,7 @@ const Tags: React.FC<IProps> = ({ tagList, closeTag, closeAllTag, closeOtherTag,
   const [currentTag, setCurrentTag] = useState<TagsItemType>();
 
   const tagListRef = useRef<any>();
+  const isDown = useRef(false)
   const contextMenuRef = useRef<any>();
 
   const handleClickOutside = (event: Event) => {
@@ -63,6 +64,20 @@ const Tags: React.FC<IProps> = ({ tagList, closeTag, closeAllTag, closeOtherTag,
     setLeft(Left);
   };
 
+  const onMouseDown = (e: any) => {
+    console.log(e, "鼠标按下")
+    e.stopPropagation();
+    isDown.current = true;
+  }
+
+  const onMouseMove = (e: any) => {
+    console.log(e, "鼠标移动")
+  }
+
+  const onMouseUp = (e: any) => {
+    console.log(e, "鼠标抬起")
+  }
+
   return (
     <div className={styles.tags_wrapper} ref={tagListRef}>
       <Scrollbars autoHide autoHideTimeout={1000} autoHideDuration={200}>
@@ -72,6 +87,9 @@ const Tags: React.FC<IProps> = ({ tagList, closeTag, closeAllTag, closeOtherTag,
             className={item.active ? `${styles.item} ${styles.active}` : styles.item}
             onClick={() => history.push({ pathname: item.path, query: item.query })}
             onContextMenu={(e) => openContextMenu(e, item)}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onMouseUp}
           >
             <span>{item.title}</span>
             {i !== 0 && (
