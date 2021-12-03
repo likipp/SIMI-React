@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useReducer } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RouteContext } from '@ant-design/pro-layout';
 import type { RouteContextType } from '@ant-design/pro-layout';
+// @ts-ignore
 import { history } from 'umi';
 import Tags from './Tags';
 import styles from './index.less';
-import tagReducer from '@/components/TagView/reducer';
 
 export type TagsItemType = {
   title?: string;
@@ -23,11 +23,10 @@ interface IProps {
  * @component TagView 标签页组件
  */
 const TagView: React.FC<IProps> = ({ children, home }) => {
-  // const [tagList, setTagList] = useState<TagsItemType[]>([]);
-  const defaultList: TagsItemType[] = []
-  const [tagList, dispatch] = useReducer(tagReducer, defaultList)
+  const [tagList, setTagList] = useState<TagsItemType[]>([]);
 
   const routeContextRef = useRef<RouteContextType>();
+  const [router, setRouter] = useState('')
 
   // 初始化 visitedViews，设置project为首页
   const initTags = (routeContext: RouteContextType) => {
@@ -36,16 +35,27 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
       const title = firstTag.name;
       const path = firstTag.path;
       history.push({ pathname: firstTag.path, query: firstTag.query });
-      dispatch({type: 'init', title, path, children, refresh: 0, active: true})
+      setTagList([
+        {
+          title,
+          path,
+          children,
+          refresh: 0,
+          active: true,
+        },
+      ]);
     }
   };
 
+  // 监听路由改变
   const handleOnChange = (routeContext: RouteContextType) => {
     const { currentMenu } = routeContext;
+
     // tags初始化
     if (tagList.length === 0) {
       return initTags(routeContext);
     }
+
     // 判断是否已打开过该页面
     let hasOpen = false;
     const tagsCopy: TagsItemType[] = tagList.map((item) => {
@@ -57,6 +67,7 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
         return { ...item, active: false };
       }
     });
+
     // 没有该tag时追加一个,并打开这个tag页面
     if (!hasOpen) {
       const title = routeContext.title || '';
@@ -68,32 +79,31 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
         refresh: 0,
         active: true,
       });
-      dispatch({type: 'add', title, path, children, refresh: 0, active: true})
     }
-    // dispatch({type: 'change', currentMenu: currentMenu, children:children})
-    // return setTagList(tagsCopy);
+    return setTagList(tagsCopy);
   };
-
-  useEffect(() => {
-    // 监听路由改变
-    if (routeContextRef?.current) {
-      handleOnChange(routeContextRef.current);
-    }
-    console.log("是否发生变化")
-  }, [handleOnChange, routeContextRef.current]);
 
   // 关闭标签
   const handleCloseTag = (tag: TagsItemType) => {
-    dispatch({type: 'closeSelf', tag: tag, children: children})
+    const tagsCopy: TagsItemType[] = tagList.map((el) => ({ ...el }));
+
+    // 判断关闭标签是否处于打开状态
+    tagList.forEach((el, i) => {
+      if (el.path === tag.path && tag.active) {
+        const next = tagList[i - 1];
+        next.active = true;
+        history.push({ pathname: next?.path, query: next?.query });
+      }
+    });
+
+    setTagList(tagsCopy.filter((el) => el.path !== tag?.path));
   };
 
   // 关闭所有标签
   const handleCloseAll = () => {
     const tagsCopy: TagsItemType[] = tagList.filter((el) => el.path === home);
-    // console.log(tagsCopy[0].title, "关闭所有")
     history.push(home);
-    dispatch({type: 'closeAll', title:tagsCopy[0].title, path:tagsCopy[0].path,
-      children:tagsCopy[0].children, refresh: 0, active: true})
+    setTagList(tagsCopy);
   };
 
   // 关闭其他标签
@@ -102,8 +112,7 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
       (el) => el.path === home || el.path === tag.path,
     );
     history.push({ pathname: tag?.path, query: tag?.query });
-    dispatch({type: 'closeOther', title:tagsCopy[0].title , path:tagsCopy[0].path,
-      children:tagsCopy[0].children, refresh: 0, active: true})
+    setTagList(tagsCopy);
   };
 
   // 刷新选择的标签
@@ -115,8 +124,14 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
       }
       return { ...item, active: false };
     });
-    // setTagList(tagsCopy);
+    setTagList(tagsCopy);
   };
+
+  useEffect(() => {
+    if (routeContextRef?.current) {
+      handleOnChange(routeContextRef.current);
+    }
+  }, [routeContextRef?.current, router]);
 
   return (
     <>
@@ -124,6 +139,7 @@ const TagView: React.FC<IProps> = ({ children, home }) => {
         {(value: RouteContextType) => {
           // console.log(value);
           routeContextRef.current = value;
+          setTimeout(() => setRouter(value.currentMenu?.path as string))
           return null;
         }}
       </RouteContext.Consumer>

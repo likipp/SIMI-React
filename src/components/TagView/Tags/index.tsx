@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+// @ts-ignore
 import { history } from 'umi';
+// @ts-ignore
 import { Scrollbars } from 'react-custom-scrollbars';
 import { CloseOutlined } from '@ant-design/icons';
 import type { TagsItemType } from '../index';
@@ -18,10 +20,9 @@ const Tags: React.FC<IProps> = ({ tagList, closeTag, closeAllTag, closeOtherTag,
   const [top, setTop] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
   const [currentTag, setCurrentTag] = useState<TagsItemType>();
+
   const tagListRef = useRef<any>();
   const contextMenuRef = useRef<any>();
-
-  console.log(tagList, "最底层接受的tagList")
 
   const handleClickOutside = (event: Event) => {
     const isOutside = !(contextMenuRef.current && contextMenuRef.current.contains(event.target));
@@ -94,7 +95,7 @@ const Tags: React.FC<IProps> = ({ tagList, closeTag, closeAllTag, closeOtherTag,
           <li
             onClick={() => {
               setMenuVisible(false);
-              currentTag && refreshTag && refreshTag(currentTag);
+              return currentTag && refreshTag && refreshTag(currentTag);
             }}
           >
             刷新
@@ -102,7 +103,7 @@ const Tags: React.FC<IProps> = ({ tagList, closeTag, closeAllTag, closeOtherTag,
           <li
             onClick={() => {
               setMenuVisible(false);
-              currentTag && closeOtherTag && closeOtherTag(currentTag);
+              return currentTag && closeOtherTag && closeOtherTag(currentTag);
             }}
           >
             关闭其他
@@ -110,7 +111,7 @@ const Tags: React.FC<IProps> = ({ tagList, closeTag, closeAllTag, closeOtherTag,
           <li
             onClick={() => {
               setMenuVisible(false);
-              closeAllTag();
+              return closeAllTag && closeAllTag();
             }}
           >
             关闭所有

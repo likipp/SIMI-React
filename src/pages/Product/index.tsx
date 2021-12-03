@@ -7,19 +7,20 @@ import {
   requestBrandSelectList,
   requestWareHouse,
 } from '@/components/BaseBill/services';
-import type { ProductListItem } from '@/pages/Product/data';
+import type { ProductListItem, ProductQueryParams } from '@/pages/Product/data';
 import CreateProduct from '@/pages/Product/CreateProduct';
 import UpdateProduct from '@/pages/Product/UpdateProduct'
 import { useState, useRef, useEffect } from 'react';
 import { Button } from 'antd';
 import BrandTree from '@/pages/Brand/Tree';
-import { parseInt } from 'lodash';
 import CSelect from '@/components/CSelect/CSelect';
+import type { ProFormInstance } from '@ant-design/pro-form';
 
 
 
 export default () => {
   const actionRef = useRef<ActionType>();
+  const ref = useRef<ProFormInstance>();
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [data, setData] = useState<ProductListItem>()
@@ -134,6 +135,11 @@ export default () => {
   useEffect(() => {
     actionRef.current?.reload()
     if (brand !== 0) {
+      if (ref.current) {
+        ref.current.setFieldsValue({
+          brand: brand.toString(),
+        });
+      }
       setDisplay('block')
     } else {
       setDisplay('none')
@@ -141,31 +147,33 @@ export default () => {
   }, [brand])
   return (
     <PageContainer>
-      <ProTable<ProductListItem>
+      <ProTable<ProductListItem, ProductQueryParams>
         columns={columns}
         actionRef={actionRef}
-        editable={{
-          type: 'multiple'
-        }}
+        // editable={{
+        //   type: 'multiple'
+        // }}
         rowKey="id"
-        request={(params, sorter, filter) => {
-          if (params.p_number) {
-            params.p_number = params.p_number.value
-          }
-          if (brand) {
-            params.brand = brand
-          }
-          if (params.brand) {
-            params.brand = parseInt(params.brand)
-          }
-          return Promise.resolve(getProductList({...params, sorter, filter}))
-            .then((res) => {
-              for (let i = 0; i < res.data.length; i++) {
-                res.data[i].key = res.data[i].p_number
-              }
-              return res
-            })
-      }}
+      //   request={(params, sorter, filter) => {
+      //     if (params.p_number) {
+      //       params.p_number = params.p_number.value
+      //     }
+      //     if (brand) {
+      //       params.brand = brand
+      //     }
+      //     if (params.brand) {
+      //       params.brand = parseInt(params.brand)
+      //     }
+      //     return Promise.resolve(getProductList({...params, sorter, filter}))
+      //       .then((res) => {
+      //         for (let i = 0; i < res.data.length; i++) {
+      //           res.data[i].key = res.data[i].p_number
+      //         }
+      //         return res
+      //       })
+      // }}
+        request={getProductList}
+        formRef={ref}
         toolBarRender={() => [
           <div style={{display: display}}>
             <Button
@@ -187,7 +195,7 @@ export default () => {
               marginRight: '15px'
             }}
           >
-            <BrandTree brand={brand} reload={actionRef.current?.reload} set={setBrand}/>
+            <BrandTree set={setBrand}/>
             <div
               style={{
                 flex: 1,

@@ -51,10 +51,30 @@ export async function updateExBill(params: any) {
   return request(`/api/v1/base/stock/${params.bill_number}`, { method: 'patch', data:params});
 }
 
-export async function getProductList(params: any) {
-  return request('/api/v1/base/product/', {
-    params,
-  });
+// export async function getProductList(params: any) {
+//   return request('/api/v1/base/product/', {
+//     params,
+//   });
+// }
+
+export async function getProductList(
+  params: {
+    current?: number;
+    pageSize?: number;
+  },
+  options?: {[key: string]: any},
+) {
+  return request<{
+    data: ProductListItem[];
+    total?: number;
+    success?: boolean;
+  }>('/api/v1/base/product/', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {})
+  })
 }
 
 export async function getCustomLevelList(params: any) {
