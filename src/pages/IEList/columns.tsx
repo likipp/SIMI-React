@@ -86,7 +86,7 @@ export const InExListColumns: ProColumns<InExTableListItem>[] = [
         search: false,
         render: (value, row) => {
           if (row.ex_qty) {
-            return (<span style={{color: 'green'}}>+{row.ex_qty}</span>)
+            return (<span style={{color: '#73d13d'}}>+{row.ex_qty}</span>)
           } else {
             return <></>
           }

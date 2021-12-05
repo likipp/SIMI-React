@@ -52,7 +52,7 @@ export default [
   {
     path: '/stock-table',
     name: '库存报表',
-    icon: 'setting',
+    icon: 'line-chart',
     routes: [
       {
         path: '/stock-table/exist',
