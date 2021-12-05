@@ -61,13 +61,18 @@ export default [
       },
       {
         path: '/stock-table/ex',
-        name: '出库明细',
+        name: '销售出库明细表',
         component: './ExList',
       },
       {
         path: '/stock-table/in',
-        name: '入库明细',
+        name: '采购入库明细表',
         component: './InList',
+      },
+      {
+        path: '/stock-table/list',
+        name: '出入库明细',
+        component: './IEList',
       },
     ],
   },

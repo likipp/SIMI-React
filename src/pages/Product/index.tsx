@@ -136,9 +136,9 @@ export default () => {
     actionRef.current?.reload()
     if (brand !== 0) {
       if (ref.current) {
-        ref.current.setFieldsValue({
-          brand: brand.toString(),
-        });
+        // ref.current.setFieldsValue({
+        //   brand: brand.toString(),
+        // });
       }
       setDisplay('block')
     } else {
@@ -154,26 +154,32 @@ export default () => {
         //   type: 'multiple'
         // }}
         rowKey="id"
-      //   request={(params, sorter, filter) => {
-      //     if (params.p_number) {
-      //       params.p_number = params.p_number.value
-      //     }
-      //     if (brand) {
-      //       params.brand = brand
-      //     }
-      //     if (params.brand) {
-      //       params.brand = parseInt(params.brand)
-      //     }
-      //     return Promise.resolve(getProductList({...params, sorter, filter}))
-      //       .then((res) => {
-      //         for (let i = 0; i < res.data.length; i++) {
-      //           res.data[i].key = res.data[i].p_number
-      //         }
-      //         return res
-      //       })
-      // }}
-        request={getProductList}
-        formRef={ref}
+        request={(params, sorter, filter) => {
+          // if (params.p_number) {
+          //   params.p_number = params.p_number.value
+          // }
+          if (brand) {
+            params.brand = brand
+          }
+          // if (params.brand) {
+          //   params.brand = parseInt(params.brand)
+          // }
+          // return Promise.resolve(getProductList({...params, sorter, filter}))
+          //   .then((res) => {
+          //     for (let i = 0; i < res.data.length; i++) {
+          //       res.data[i].key = res.data[i].p_number
+          //     }
+          //     return res
+          //   })
+         return getProductList({...params}).then((res) => {
+           for (let i = 0; i < res.data.length; i++) {
+             res.data[i].key = res.data[i].p_number
+           }
+           return res
+         })
+        }}
+      //   request={getProductList}
+      //   formRef={ref}
         toolBarRender={() => [
           <div style={{display: display}}>
             <Button

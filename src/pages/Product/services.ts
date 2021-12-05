@@ -62,7 +62,7 @@ export async function getProductList(
     current?: number;
     pageSize?: number;
   },
-  options?: {[key: string]: any},
+  options?: Record<string, any>,
 ) {
   return request<{
     data: ProductListItem[];
