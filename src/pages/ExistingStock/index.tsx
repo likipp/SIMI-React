@@ -76,7 +76,7 @@ export default () => {
       title: '数量',
       align: 'right',
       dataIndex: 'qty',
-      valueType: 'digit',
+      // valueType: 'digit',
       hideInSearch: true,
       fieldProps: {
         precision: 0,

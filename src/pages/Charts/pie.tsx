@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pie, measureTextWidth } from '@ant-design/charts';
+import { getPayPie } from '@/pages/Charts/services';
 
 const DemoPie: React.FC = () => {
   function renderStatistic(containerWidth, text, style) {
@@ -23,32 +24,41 @@ const DemoPie: React.FC = () => {
       .concat(scale < 1 ? 1 : 'inherit', ';">')
       .concat(text, '</div>');
   }
-  var data = [
-    {
-      type: '分类一',
-      value: 27,
-    },
-    {
-      type: '分类二',
-      value: 25,
-    },
-    {
-      type: '分类三',
-      value: 18,
-    },
-    {
-      type: '分类四',
-      value: 15,
-    },
-    {
-      type: '分类五',
-      value: 10,
-    },
-    {
-      type: '其他',
-      value: 5,
-    },
-  ];
+  // var data = [
+  //   {
+  //     type: '分类一',
+  //     value: 27,
+  //   },
+  //   {
+  //     type: '分类二',
+  //     value: 25,
+  //   },
+  //   {
+  //     type: '分类三',
+  //     value: 18,
+  //   },
+  //   {
+  //     type: '分类四',
+  //     value: 15,
+  //   },
+  //   {
+  //     type: '分类五',
+  //     value: 10,
+  //   },
+  //   {
+  //     type: '其他',
+  //     value: 5,
+  //   },
+  // ];
+
+  const [data, setData] = useState()
+
+  useEffect(() => {
+    getPayPie().then((res) => {
+      console.log(res.data, "res.data")
+      setData(res.data)
+    })
+  }, [])
   var config = {
     appendPadding: 10,
     data: data,
@@ -105,7 +115,10 @@ const DemoPie: React.FC = () => {
       { type: 'pie-statistic-active' },
     ],
   };
-  return <Pie {...config} />;
+  return (
+    data ? <></>
+      : <Pie {...config} />
+  );
 };
 
 export default DemoPie;

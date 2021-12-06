@@ -5,6 +5,8 @@ import moment from 'moment';
 import locale from 'antd/es/date-picker/locale/zh_CN';
 import type { InExTableListItem } from '@/pages/IEList/data';
 import { requestWareHouse } from '@/components/BaseBill/services';
+import CSelect from '@/components/CSelect/CSelect';
+import { getStockList } from '@/pages/ExistingStock/services';
 
 export const InExListColumns: ProColumns<InExTableListItem>[] = [
   {
@@ -53,6 +55,36 @@ export const InExListColumns: ProColumns<InExTableListItem>[] = [
     title: '产品代码',
     dataIndex: 'p_number',
     align: 'center',
+    render: (_, record) => {
+      return <span>{record.p_number}</span>
+    },
+    renderFormItem: (_, {recordKey}, form) => <CSelect
+      onChange={(value: any) => {
+        if (value) {
+          console.log(value, "产品value")
+          form.setFieldsValue({ [recordKey as string]: { p_number: value.value } })
+          form.setFieldsValue({ [recordKey as string]: { unit_price: value.price } })
+          form.setFieldsValue({ [recordKey as string]: { p_name: value.p_name } })
+          form.setFieldsValue({ [recordKey as string]: { ware_house: value.ware_house.toString() } })
+          const col = form.getFieldsValue(true)
+          if (Object.keys(col).length !== 0) {
+            const p_number = col[recordKey as string].p_number
+            const ware_house = col[recordKey as string].ware_house
+            console.log(p_number, ware_house, "数据")
+            getStockList({ p_number: p_number, ware_house: parseInt(ware_house)}).then((res) => {
+              if (Object.keys(res.data).length !== 0) {
+                form.setFieldsValue({[recordKey as string]: {stock: res.data[0].qty}})
+                console.log(form.getFieldsValue(true))
+              } else {
+                form.setFieldsValue({[recordKey as string]: {stock: 0}})
+              }
+            })
+          }
+        } else {
+          form.resetFields([recordKey as string])
+        }
+      }}
+    />,
   },
   {
     title: '产品名称',
@@ -63,11 +95,6 @@ export const InExListColumns: ProColumns<InExTableListItem>[] = [
     title: '仓库',
     dataIndex: 'ware_house',
     valueType: 'select',
-    formItemProps: () => {
-      return {
-        rules: [{ required: true, message: '仓库必填' }],
-      };
-    },
     fieldProps: () => {
       return {
         showArrow: false,
@@ -77,66 +104,8 @@ export const InExListColumns: ProColumns<InExTableListItem>[] = [
     request: requestWareHouse,
   },
   {
-    title: '出库',
-    children: [
-      {
-        title: '数量',
-        dataIndex: 'ex_qty',
-        align: 'center',
-        search: false,
-        render: (value, row) => {
-          if (row.ex_qty) {
-            return (<span style={{color: '#73d13d'}}>+{row.ex_qty}</span>)
-          } else {
-            return <></>
-          }
-        }
-      },
-      {
-        title: '单价',
-        dataIndex: 'unit_price',
-        align: 'center',
-        search: false,
-        valueType: 'digit',
-        render: (value, row) => {
-          if (row.ex_qty) {
-            return (<span>{row.unit_price}</span>)
-          } else {
-            return <></>
-          }
-        }
-      },
-      {
-        title: '折扣',
-        dataIndex: 'ex_discount',
-        align: 'center',
-        search: false,
-        render: (value, row) => {
-          if (row.ex_qty) {
-            return (<span>{row.ex_discount}%</span>)
-          } else {
-            return <></>
-          }
-        }
-      },
-      {
-        title: '金额',
-        dataIndex: 'total',
-        align: 'center',
-        search: false,
-        valueType: 'money',
-        render: (value, row) => {
-          if (row.ex_qty) {
-            return (<span>{row.total}</span>)
-          } else {
-            return <></>
-          }
-        }
-      },
-    ]
-  },
-  {
     title: '入库',
+    hideInSearch: true,
     children: [
       {
         title: '数量',
@@ -145,7 +114,7 @@ export const InExListColumns: ProColumns<InExTableListItem>[] = [
         search: false,
         render: (value, row) => {
           if (row.in_qty) {
-            return (<span style={{color: 'red'}}>-{row.in_qty}</span>)
+            return (<span style={{color: 'red'}}>+{row.in_qty}</span>)
           } else {
             return <></>
           }
@@ -186,6 +155,66 @@ export const InExListColumns: ProColumns<InExTableListItem>[] = [
         valueType: 'money',
         render: (value, row) => {
           if (row.in_qty) {
+            return (<span>{row.total}</span>)
+          } else {
+            return <></>
+          }
+        }
+      },
+    ]
+  },
+  {
+    title: '出库',
+    hideInSearch: true,
+    children: [
+      {
+        title: '数量',
+        dataIndex: 'ex_qty',
+        align: 'center',
+        search: false,
+        render: (value, row) => {
+          if (row.ex_qty) {
+            return (<span style={{color: '#73d13d'}}>-{row.ex_qty}</span>)
+          } else {
+            return <></>
+          }
+        }
+      },
+      {
+        title: '单价',
+        dataIndex: 'unit_price',
+        align: 'center',
+        search: false,
+        valueType: 'digit',
+        render: (value, row) => {
+          if (row.ex_qty) {
+            return (<span>{row.unit_price}</span>)
+          } else {
+            return <></>
+          }
+        }
+      },
+      {
+        title: '折扣',
+        dataIndex: 'ex_discount',
+        align: 'center',
+        search: false,
+        render: (value, row) => {
+          if (row.ex_qty) {
+            return (<span>{row.ex_discount}%</span>)
+          } else {
+            return <></>
+          }
+        }
+      },
+      {
+        title: '金额',
+        dataIndex: 'total',
+        align: 'center',
+        search: false,
+        valueType: 'money',
+        render: (value, row) => {
+          if (row.ex_qty) {
             return (<span>{row.total}</span>)
           } else {
             return <></>

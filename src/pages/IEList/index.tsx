@@ -21,6 +21,7 @@ export default () => {
             console.log(err);
           }
         }}
+        pagination={false}
       />
     </PageContainer>
   </div>
