@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Pie, measureTextWidth } from '@ant-design/charts';
-import { getPayPie } from '@/pages/Charts/services';
 
-const DemoPie: React.FC = () => {
-  function renderStatistic(containerWidth, text, style) {
-    var _measureTextWidth = (0, measureTextWidth)(text, style),
+interface pieProps {
+  pieData: any
+}
+
+const DemoPie: React.FC<pieProps> = (props) => {
+  const {pieData} = props
+  function renderStatistic(containerWidth: any, text: any, style: any) {
+    // @ts-ignore
+    const _measureTextWidth = (0, measureTextWidth)(text, style),
       textWidth = _measureTextWidth.width,
       textHeight = _measureTextWidth.height;
-    var R = containerWidth / 2;
-    var scale = 1;
+    const R = containerWidth / 2;
+    let scale = 1;
     if (containerWidth < textWidth) {
       scale = Math.min(
         Math.sqrt(
@@ -17,11 +22,11 @@ const DemoPie: React.FC = () => {
         1,
       );
     }
-    var textStyleStr = 'width:'.concat(containerWidth, 'px;');
+    const textStyleStr = 'width:'.concat(containerWidth, 'px;');
     return '<div style="'
       .concat(textStyleStr, ';font-size:')
-      .concat(scale, 'em;line-height:')
-      .concat(scale < 1 ? 1 : 'inherit', ';">')
+      .concat(String(scale), 'em;line-height:')
+      .concat(scale < 1 ? '1' : 'inherit', ';">')
       .concat(text, '</div>');
   }
   // var data = [
@@ -51,24 +56,17 @@ const DemoPie: React.FC = () => {
   //   },
   // ];
 
-  const [data, setData] = useState()
 
-  useEffect(() => {
-    getPayPie().then((res) => {
-      console.log(res.data, "res.data")
-      setData(res.data)
-    })
-  }, [])
-  var config = {
+  const config = {
     appendPadding: 10,
-    data: data,
+    data: pieData,
     angleField: 'value',
     colorField: 'type',
     radius: 1,
     innerRadius: 0.64,
     meta: {
       value: {
-        formatter: function formatter(v) {
+        formatter: function formatter(v: string) {
           return ''.concat(v, ' \xA5');
         },
       },
@@ -83,25 +81,25 @@ const DemoPie: React.FC = () => {
     statistic: {
       title: {
         offsetY: -4,
-        customHtml: function customHtml(container, view, datum) {
-          var _container$getBoundin = container.getBoundingClientRect(),
+        customHtml: function customHtml(container: any, view: any, datum: any) {
+          const _container$getBoundin = container.getBoundingClientRect(),
             width = _container$getBoundin.width,
             height = _container$getBoundin.height;
-          var d = Math.sqrt(Math.pow(width / 2, 2) + Math.pow(height / 2, 2));
-          var text = datum ? datum.type : '总计';
+          const d = Math.sqrt(Math.pow(width / 2, 2) + Math.pow(height / 2, 2));
+          const text = datum ? datum.type : '总计';
           return renderStatistic(d, text, { fontSize: 28 });
         },
       },
       content: {
         offsetY: 4,
         style: { fontSize: '32px' },
-        customHtml: function customHtml(container, view, datum, data) {
-          var _container$getBoundin2 = container.getBoundingClientRect(),
+        customHtml: function customHtml(container: any, view: any, datum: any, data: any) {
+          const _container$getBoundin2 = container.getBoundingClientRect(),
             width = _container$getBoundin2.width;
-          var text = datum
+          const text = datum
             ? '\xA5 '.concat(datum.value)
             : '\xA5 '.concat(
-              data.reduce(function (r, d) {
+              data.reduce(function(r: any, d: any) {
                 return r + d.value;
               }, 0),
             );
@@ -116,8 +114,8 @@ const DemoPie: React.FC = () => {
     ],
   };
   return (
-    data ? <></>
-      : <Pie {...config} />
+    pieData ? <Pie {...config} />
+      : <></>
   );
 };
 
