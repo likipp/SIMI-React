@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pie, measureTextWidth } from '@ant-design/charts';
+import { getPayPie } from '@/pages/Charts/services';
+import type { pieData } from '@/pages/Charts/data';
+import { Card } from 'antd';
 
-interface pieProps {
-  pieData: any
-}
+// interface pieProps {
+//   pieData: any
+// }
 
-const DemoPie: React.FC<pieProps> = (props) => {
-  const {pieData} = props
+const DebtsPie: React.FC = () => {
+  const [data, setData] = useState<pieData[]>([{type: '', value: 0}])
+
+  useEffect(() => {
+    getPayPie().then((res) => {
+      setData(() => {
+        return res.data
+      })
+    })
+  }, [])
+  // const {pieData} = props
   function renderStatistic(containerWidth: any, text: any, style: any) {
-    // @ts-ignore
-    const _measureTextWidth = (0, measureTextWidth)(text, style),
+    const _measureTextWidth = (measureTextWidth)(text, style),
       textWidth = _measureTextWidth.width,
       textHeight = _measureTextWidth.height;
     const R = containerWidth / 2;
@@ -59,7 +70,7 @@ const DemoPie: React.FC<pieProps> = (props) => {
 
   const config = {
     appendPadding: 10,
-    data: pieData,
+    data,
     angleField: 'value',
     colorField: 'type',
     radius: 1,
@@ -93,13 +104,13 @@ const DemoPie: React.FC<pieProps> = (props) => {
       content: {
         offsetY: 4,
         style: { fontSize: '32px' },
-        customHtml: function customHtml(container: any, view: any, datum: any, data: any) {
+        customHtml: function customHtml(container: any, view: any, datum: any, datas: any) {
           const _container$getBoundin2 = container.getBoundingClientRect(),
             width = _container$getBoundin2.width;
           const text = datum
             ? '\xA5 '.concat(datum.value)
             : '\xA5 '.concat(
-              data.reduce(function(r: any, d: any) {
+              datas.reduce(function(r: any, d: any) {
                 return r + d.value;
               }, 0),
             );
@@ -114,9 +125,10 @@ const DemoPie: React.FC<pieProps> = (props) => {
     ],
   };
   return (
-    pieData ? <Pie {...config} />
-      : <></>
+    <Card>
+      <Pie {...config} />
+    </Card>
   );
 };
 
-export default DemoPie;
+export default DebtsPie;

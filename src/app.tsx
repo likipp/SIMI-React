@@ -109,6 +109,8 @@ export const layout: ({ initialState }: { initialState: any }) => { rightContent
       // // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
+      } else {
+        history.push(location.pathname)
       }
     },
     menuHeaderRender: false,
