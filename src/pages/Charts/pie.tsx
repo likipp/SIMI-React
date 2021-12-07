@@ -40,32 +40,6 @@ const DebtsPie: React.FC = () => {
       .concat(scale < 1 ? '1' : 'inherit', ';">')
       .concat(text, '</div>');
   }
-  // var data = [
-  //   {
-  //     type: '分类一',
-  //     value: 27,
-  //   },
-  //   {
-  //     type: '分类二',
-  //     value: 25,
-  //   },
-  //   {
-  //     type: '分类三',
-  //     value: 18,
-  //   },
-  //   {
-  //     type: '分类四',
-  //     value: 15,
-  //   },
-  //   {
-  //     type: '分类五',
-  //     value: 10,
-  //   },
-  //   {
-  //     type: '其他',
-  //     value: 5,
-  //   },
-  // ];
 
 
   const config = {
@@ -125,7 +99,7 @@ const DebtsPie: React.FC = () => {
     ],
   };
   return (
-    <Card>
+    <Card title={"欠款总额"}>
       <Pie {...config} />
     </Card>
   );

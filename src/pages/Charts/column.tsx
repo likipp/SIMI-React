@@ -22,15 +22,13 @@ const DemoColumn = () => {
     xField: 'month',
     yField: 'value',
     seriesField: 'brand',
-    isGroup: 'true',
+    isGroup: true,
     columnStyle: {
       radius: [20, 20, 0, 0],
     },
   };
-
   return (
-    <Card>
-      // @ts-ignore
+    <Card title={"月销售表"}>
       <Column {...config} />
     </Card>
   );

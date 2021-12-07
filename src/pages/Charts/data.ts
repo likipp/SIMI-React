@@ -7,3 +7,9 @@ export type productSale = {
   product: string;
   value: number
 }
+
+export type profitCompare = {
+  this_month: number;
+  pre_month: number;
+  up: boolean
+}

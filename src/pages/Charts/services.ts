@@ -17,3 +17,21 @@ export async function getProductSale(params?: any) {
     params,
   });
 }
+
+export async function getProfitCompare(params?: any) {
+  return request('/api/v1/base/profit-compare/', {
+    params,
+  });
+}
+
+export async function getSumTotal(params?: any) {
+  return request('/api/v1/base/sum-total/', {
+    params,
+  });
+}
+
+export async function getSumCost(params?: any) {
+  return request('/api/v1/base/sum-cost/', {
+    params,
+  });
+}

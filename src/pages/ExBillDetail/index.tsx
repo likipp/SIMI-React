@@ -22,15 +22,15 @@ export default () => {
   const formRef = useRef<ProFormInstance>();
   const actionRef = useRef<ActionType>();
 
-  const checkStock = (qty: number, stock: number) => {
-    return new Promise((resolve) => {
-      if (qty <= stock) {
-        resolve(true)
-      } else {
-        resolve(false)
-      }
-    })
-  }
+  // const checkStock = (qty: number, stock: number) => {
+  //   return new Promise((resolve) => {
+  //     if (qty <= stock) {
+  //       resolve(true)
+  //     } else {
+  //       resolve(false)
+  //     }
+  //   })
+  // }
 
   const columns: ProColumns<ExBodyType | InBodyType>[] = [
     {
