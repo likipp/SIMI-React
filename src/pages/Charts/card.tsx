@@ -14,15 +14,15 @@ const ProfitCard: React.FC = () => {
   const [responsive, setResponsive] = useState(false);
   useEffect(() => {
     getProfitCompare().then((res) => {
-      setData(res.data)
+      setData(res?.data)
     })
 
     getSumTotal().then((res) => {
-      setTotal(res.data)
+      setTotal(res?.data)
     })
 
     getSumCost().then((res) => {
-      setCost(res.data)
+      setCost(res?.data)
     })
   }, [])
 
@@ -51,13 +51,13 @@ const ProfitCard: React.FC = () => {
         <StatisticCard
           statistic={{
             title: '销售总额',
-            value: total,
+            value: total ? `¥${total}` : 0,
           }}
         />
         <StatisticCard
           statistic={{
             title: '采购总额',
-            value: cost,
+            value: cost ? `¥${cost}` : 0,
           }}
         />
       </StatisticCard.Group>

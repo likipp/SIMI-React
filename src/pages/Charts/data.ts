@@ -13,3 +13,8 @@ export type profitCompare = {
   pre_month: number;
   up: boolean
 }
+
+export type columnData = {
+  month: number;
+  value: string;
+}

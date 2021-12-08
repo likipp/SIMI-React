@@ -2,18 +2,21 @@ import { useEffect, useState } from 'react';
 import { Column } from '@ant-design/charts';
 import { getExColumn } from '@/pages/Charts/services';
 import { Card } from 'antd';
+import type { columnData } from '@/pages/Charts/data';
 
 const DemoColumn = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<columnData[]>();
   useEffect(() => {
     getExColumn().then((res) => {
       const temp = res.data
-      temp.map((item: any) => {
-        item.month = item.month + "月"
-      })
-      setData(() => {
-        return temp
-      })
+      if (temp != undefined) {
+        temp.map((item: any) => {
+          item.month = item.month + "月"
+        })
+        setData(() => {
+          return temp
+        })
+      }
     })
   }, []);
 
@@ -28,9 +31,14 @@ const DemoColumn = () => {
     },
   };
   return (
-    <Card title={"月销售表"}>
-      <Column {...config} />
-    </Card>
+    <div>
+      {
+        data != undefined ? <Card title={"月销售表"}>
+            <Column {...config} />
+          </Card>
+          : <></>
+      }
+    </div>
   );
 };
 

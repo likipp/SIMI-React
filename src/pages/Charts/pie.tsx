@@ -99,9 +99,14 @@ const DebtsPie: React.FC = () => {
     ],
   };
   return (
-    <Card title={"欠款总额"}>
-      <Pie {...config} />
-    </Card>
+    <div>
+      {
+        data ? <Card title={"欠款总额"}>
+            <Pie {...config} />
+          </Card>
+          : <></>
+      }
+    </div>
   );
 };
 

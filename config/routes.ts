@@ -26,11 +26,17 @@ export default [
   },
   {
     path: '/exbilldetail/:number',
-    component: '@/pages/ExBillDetail',
+    component: '@/pages/ExBillDetail/[number]',
+    name: '销售出库详情',
+    exact: true,
+    hide: true
   },
   {
     path: '/inbilldetail/:number',
-    component: '@/pages/InBillDetail',
+    name: '采购入库详情',
+    component: '@/pages/InBillDetail/[number]',
+    exact: true,
+    hide: true
   },
   {
     path: 'manager',

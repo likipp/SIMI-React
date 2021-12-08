@@ -12,7 +12,7 @@ export default (): React.ReactNode => {
   const [productSale, setProductSale] = useState<productSale[]>()
   useEffect(() => {
     getProductSale().then((res) => {
-      setProductSale(res.data)
+      setProductSale(res?.data)
     })
   }, [])
 
@@ -32,29 +32,32 @@ export default (): React.ReactNode => {
         </Col>
         <Col xl={12} lg={12} md={12} sm={24} xs={24}>
           <Suspense fallback={null}>
-            <Card>
-              <div className={styles.salesRank}>
-                <h4 className={styles.rankingTitle}>产品销售额排名</h4>
-                {
-                  productSale ? <ul className={styles.rankingList}>
-                      {productSale.map((item, i) => (
-                        <li key={item.product}>
+            {
+              productSale != undefined ? <Card>
+                <div className={styles.salesRank}>
+                  <h4 className={styles.rankingTitle}>产品销售额排名</h4>
+                  {
+                    productSale ? <ul className={styles.rankingList}>
+                        {productSale.map((item, i) => (
+                          <li key={item.product}>
                       <span className={`${styles.rankingItemNumber} ${i < 3 ? styles.active : ''}`}>
                         {i + 1}
                       </span>
-                          <span title={item.product} className={styles.rankingItemTitle}>
+                            <span title={item.product} className={styles.rankingItemTitle}>
                         {item.product}
                       </span>
-                          <span className={styles.rankingItemValue}>
+                            <span className={styles.rankingItemValue}>
                         {item.value}
                       </span>
-                        </li>
-                      ))}
-                    </ul>
-                    : <></>
-                }
-              </div>
-            </Card>
+                          </li>
+                        ))}
+                      </ul>
+                      : <></>
+                  }
+                </div>
+              </Card>
+                : <></>
+            }
           </Suspense>
         </Col>
       </Row>
