@@ -29,14 +29,14 @@ export default [
     component: '@/pages/ExBillDetail/[number]',
     name: '销售出库详情',
     exact: true,
-    hide: true
+    hideInMenu: true,
   },
   {
     path: '/inbilldetail/:number',
     name: '采购入库详情',
     component: '@/pages/InBillDetail/[number]',
     exact: true,
-    hide: true
+    hideInMenu: true,
   },
   {
     path: 'manager',
@@ -80,6 +80,7 @@ export default [
         name: '出入库明细',
         component: './IEList',
       },
+
     ],
   },
   {
@@ -115,5 +116,6 @@ export default [
   },
   {
     component: './404',
+    name: '404'
   },
 ];
