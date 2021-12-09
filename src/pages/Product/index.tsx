@@ -36,6 +36,12 @@ export default () => {
       width: 48,
     },
     {
+      title: '图片',
+      dataIndex: 'image',
+      key: 'image',
+      valueType: 'image',
+    },
+    {
       title: '产品代码',
       dataIndex: 'p_number',
       align: 'center',
