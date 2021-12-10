@@ -7,6 +7,7 @@ import { getProductSale } from '@/pages/Charts/services';
 import styles from '@/pages/Charts/styles.less';
 import type { productSale } from '@/pages/Charts/data';
 import ProfitCard from '@/pages/Charts/card';
+import UploadPic from '@/pages/uploadPic';
 
 export default (): React.ReactNode => {
   const [productSale, setProductSale] = useState<productSale[]>()
@@ -18,6 +19,7 @@ export default (): React.ReactNode => {
 
   return (
     <GridContent >
+      <UploadPic />
       <Suspense fallback={null} />
       <Row
         gutter={24}
