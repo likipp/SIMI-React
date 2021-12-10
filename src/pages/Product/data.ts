@@ -7,7 +7,9 @@ export type ProductListItem = {
   brand: number;
   mark: string;
   p_spec: string
-  p_price: number;
+  purchase_price: number;
+  sale_price: number;
+  picture: any;
   unit: number;
   ware_house: number;
 };

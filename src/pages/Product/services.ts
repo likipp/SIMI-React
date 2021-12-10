@@ -111,3 +111,18 @@ export async function updatesProduct(params: ProductListItem) {
 export async function getBrandTree() {
   return request('/api/v1/base/brand-tree/');
 }
+
+export async function uploadPic(params: any) {
+  console.log(params[0], "参数")
+  const formData = new FormData()
+  formData.append('file', params[0])
+  console.log(formData, "formData")
+  return request('/api/v1/base/image/', {
+    method: 'POST',
+    // 看Fetch官网资料里需要怎么转化下。
+    body: formData,
+    headers: {
+      'content-type': 'multipart/form-data',
+    },
+  });
+}

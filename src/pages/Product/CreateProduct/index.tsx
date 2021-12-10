@@ -1,10 +1,18 @@
 import React, { useRef } from 'react';
 import type { ProFormInstance } from '@ant-design/pro-form';
-import ProForm, { ModalForm, ProFormText, ProFormSelect, ProFormMoney, ProFormTextArea } from '@ant-design/pro-form';
+import ProForm, {
+  ModalForm,
+  ProFormText,
+  ProFormSelect,
+  ProFormMoney,
+  ProFormTextArea,
+  ProFormUploadButton
+} from '@ant-design/pro-form';
 import type { ProductListItem } from '@/pages/Product/data';
 import { requestUnitSelectList, requestBrandSelectList, requestWareHouse } from '@/components/BaseBill/services';
-import { addProduct, generateProductNumber } from '@/pages/Product/services';
+import { addProduct, generateProductNumber, uploadPic } from '@/pages/Product/services';
 import { message } from 'antd';
+// import {uploadPic} from "@/pages/uploadPic/services";
 
 export type CreateFormProps = {
   onCancel: (flag?: boolean) => void;
@@ -29,19 +37,30 @@ const CreateProduct: React.FC<CreateFormProps> = (props) => {
       }}
       onFinish={async (values) => {
         const result = values
-        result.unit = parseInt(String(result.unit))
-        result.brand = parseInt(String(result.brand))
-        result.ware_house = parseInt(String(result.ware_house))
-        addProduct(result).then((res) => {
-          console.log(res.success, "成功与否")
-          onCancel()
-          reload?.()
-          message.success('提交成功');
-          return true;
-        }).catch((err) => {
-          console.log(err, "err")
-          return false
-        })
+        console.log(result.picture, "图片信息")
+        if (result.picture) {
+          uploadPic(result.picture).then((res) => {
+            // console.log(res, "res信息", result.picture)
+            result.unit = parseInt(String(result.unit))
+            result.brand = parseInt(String(result.brand))
+            result.ware_house = parseInt(String(result.ware_house))
+            // result.picture = res.data.image_url
+            // console.log(res.data.image_url, "res")
+            // addProduct(result).then((res) => {
+            //   console.log(res.success, "成功与否")
+            //   onCancel()
+            //   reload?.()
+            //   message.success('提交成功');
+            // }).catch((err) => {
+            //   console.log(err, "err")
+            // }) 椰子油高蛋白奶茶
+            // return true
+          }).catch((error) => {
+            console.log(error, "错误消息")
+            return false
+          })
+        }
+
 
       }}
       // @ts-ignore
@@ -110,6 +129,20 @@ const CreateProduct: React.FC<CreateFormProps> = (props) => {
             allowClear: true,
             showCount: true
           }}
+        />
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormUploadButton
+          name="picture"
+          label="图片"
+          // action={(file) => {
+          //   uploadPic(file).then((res) => {
+          //     console.log(res, "res")
+          //   }).catch((error) => {
+          //     console.log(error, "错误消息")
+          //   })
+          // }}
+          listType='picture'
         />
       </ProForm.Group>
     </ModalForm>

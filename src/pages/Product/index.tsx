@@ -37,8 +37,8 @@ export default () => {
     },
     {
       title: '图片',
-      dataIndex: 'image',
-      key: 'image',
+      dataIndex: 'picture',
+      key: 'picture',
       valueType: 'image',
     },
     {
