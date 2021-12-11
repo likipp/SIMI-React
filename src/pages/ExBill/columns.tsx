@@ -44,7 +44,7 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
         if (value) {
           console.log(value, "产品value")
           form.setFieldsValue({ [recordKey as string]: { p_number: value.value } })
-          form.setFieldsValue({ [recordKey as string]: { unit_price: value.price } })
+          form.setFieldsValue({ [recordKey as string]: { unit_price: value.sale_price } })
           form.setFieldsValue({ [recordKey as string]: { p_name: value.p_name } })
           form.setFieldsValue({ [recordKey as string]: { ware_house: value.ware_house.toString() } })
           const col = form.getFieldsValue(true)

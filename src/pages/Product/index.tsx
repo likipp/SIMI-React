@@ -92,8 +92,14 @@ export default () => {
       request: requestUnitSelectList
     },
     {
-      title: '价格',
-      dataIndex: 'p_price',
+      title: '采购价格',
+      dataIndex: 'purchase_price',
+      align: 'center',
+      valueType: 'money'
+    },
+    {
+      title: '销售价格',
+      dataIndex: 'sale_price',
       align: 'center',
       valueType: 'money'
     },

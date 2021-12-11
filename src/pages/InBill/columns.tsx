@@ -4,7 +4,6 @@ import { requestProduct, requestWareHouse } from '@/components/BaseBill/services
 import productColumn from '@/pages/Product/productColumn';
 import type { ExBodyType } from '@/pages/ExBillDetail/data';
 import CSelect from '@/components/CSelect/CSelect';
-// import React from 'react';
 
 const columns: ProColumns<ExBodyType | InBodyType>[] = [
   {
@@ -32,7 +31,7 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
       onChange={(value: any) => {
         if (value) {
           form.setFieldsValue({ [recordKey as string]: { p_number: value.value } })
-          form.setFieldsValue({ [recordKey as string]: { unit_price: value.price } })
+          form.setFieldsValue({ [recordKey as string]: { unit_price: value.purchase_price } })
           form.setFieldsValue({ [recordKey as string]: { p_name: value.p_name } })
           form.setFieldsValue({ [recordKey as string]: { ware_house: value.ware_house.toString() } })
         } else {

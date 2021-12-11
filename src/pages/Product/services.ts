@@ -113,10 +113,10 @@ export async function getBrandTree() {
 }
 
 export async function uploadPic(params: any) {
-  console.log(params[0], "参数")
+  console.log(params, "参数们")
   const formData = new FormData()
-  formData.append('file', params[0])
-  console.log(formData, "formData")
+  formData.append('file', params.file)
+  formData.append('brand', params.brand)
   return request('/api/v1/base/image/', {
     method: 'POST',
     // 看Fetch官网资料里需要怎么转化下。
