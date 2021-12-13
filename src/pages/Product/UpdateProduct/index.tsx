@@ -1,18 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type {
-  ProFormInstance} from '@ant-design/pro-form';
-import ProForm, {
-  ModalForm,
-  ProFormText,
-  ProFormSelect,
-  ProFormMoney,
-  ProFormTextArea, ProFormUploadButton,
+import type { ProFormInstance} from '@ant-design/pro-form';
+import ProForm, { ModalForm, ProFormText, ProFormSelect, ProFormMoney, ProFormTextArea, ProFormUploadButton,
 } from '@ant-design/pro-form';
 import type { ProductListItem } from '@/pages/Product/data';
 import { requestUnitSelectList, requestBrandSelectList, requestWareHouse } from '@/components/BaseBill/services';
 import { addProduct, generateProductNumber, updatesProduct, uploadPic } from '@/pages/Product/services';
 import { message } from 'antd';
-import { RcFile } from 'antd/es/upload';
+import type { RcFile } from 'antd/es/upload';
 
 export type updateFormProps = {
   data: ProductListItem;
@@ -177,9 +171,11 @@ const UpdateProduct: React.FC<updateFormProps> = (props) => {
           label="图片"
           listType='picture'
           fieldProps={{
+            defaultFileList: [data.picture],
+            action: data.picture,
             beforeUpload: (file) => {
               setFileList(file)
-            }
+            },
           }}
         />
       </ProForm.Group>

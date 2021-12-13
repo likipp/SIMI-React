@@ -15,8 +15,7 @@ import { Button } from 'antd';
 import BrandTree from '@/pages/Brand/Tree';
 import CSelect from '@/components/CSelect/CSelect';
 import type { ProFormInstance } from '@ant-design/pro-form';
-
-
+import styles from '@/pages/Product/styles.less'
 
 export default () => {
   const actionRef = useRef<ActionType>();
@@ -37,9 +36,15 @@ export default () => {
     },
     {
       title: '图片',
+      align: 'center',
       dataIndex: 'picture',
       key: 'picture',
       valueType: 'image',
+      onCell: () => {
+        return {
+          className: styles.cellPicture,
+        }
+      }
     },
     {
       title: '产品代码',
@@ -106,6 +111,7 @@ export default () => {
     {
       title: '操作',
       valueType: 'option',
+      align: 'center',
       render: (text, record) => [
         <a
           key="editable"
@@ -113,7 +119,13 @@ export default () => {
             // action?.startEditable?.(record.id);
             setUpdateModalVisible(true)
             setCopy("编辑")
-            setData(record)
+            const temp = JSON.parse(JSON.stringify(record))
+            temp.picture = {
+              name: temp.picture.split("/")[temp.picture.split("/").length - 1],
+              status: 'done',
+              url: temp.picture
+            }
+            setData(temp)
           }}
         >
           编辑
@@ -123,7 +135,13 @@ export default () => {
           onClick={() => {
             setUpdateModalVisible(true)
             setCopy("新建")
-            setData(record)
+            const temp = JSON.parse(JSON.stringify(record))
+            temp.picture = {
+              name: temp.picture.split("/")[temp.picture.split("/").length - 1],
+              status: 'done',
+              url: temp.picture
+            }
+            setData(temp)
           }}
         >
           复制

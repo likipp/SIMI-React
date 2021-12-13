@@ -28,7 +28,7 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
     title: '产品代码',
     dataIndex: 'p_number',
     key: 'p_number',
-    width: '15%',
+    width: '10%',
     valueType: 'select',
     formItemProps: () => {
       return {
@@ -82,6 +82,7 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
     title: '仓库',
     dataIndex: 'ware_house',
     valueType: 'select',
+    width: '10%',
     formItemProps: () => {
       return {
         rules: [{ required: true, message: '仓库必填' }],
@@ -111,6 +112,7 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
   {
     title: '即时库存',
     dataIndex: 'stock',
+    width: '5%',
     renderFormItem: (_, { recordKey }, form) => {
       const col = form.getFieldsValue(true)
       if (Object.keys(col).length !== 0 && col[recordKey as string] != undefined) {

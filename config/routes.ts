@@ -20,8 +20,8 @@ export default [
   },
   {
     path: '/welcome',
-    name: '欢迎',
-    icon: 'smile',
+    name: '分析页',
+    icon: 'dashboard',
     component: './Welcome',
   },
   {

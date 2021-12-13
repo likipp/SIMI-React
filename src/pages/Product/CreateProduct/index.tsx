@@ -40,6 +40,7 @@ const CreateProduct: React.FC<CreateFormProps> = (props) => {
       onFinish={async (values) => {
         const result = values
         if (result.picture) {
+          console.log(result.picture, "创建")
           uploadPic({file: fileList as RcFile, brand: result.brand}).then((res) => {
             result.unit = parseInt(String(result.unit))
             result.brand = parseInt(String(result.brand))
@@ -155,6 +156,7 @@ const CreateProduct: React.FC<CreateFormProps> = (props) => {
           fieldProps={{
             beforeUpload: (file) => {
               // console.log(file,"文件上传")
+              console.log(file, "file")
               setFileList(file)
             }
           }}
