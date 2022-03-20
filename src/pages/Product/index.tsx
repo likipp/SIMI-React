@@ -243,7 +243,7 @@ export default () => {
           </div>
         )}
         pagination={{
-          pageSize: 10,
+          pageSize: 5,
         }}
       />
       {

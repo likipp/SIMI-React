@@ -3,7 +3,10 @@ export type InTableListItem = {
   number: string;
   created_at: number;
   pay_method: string;
-  p_number: string;
+  child: {
+    p_number: string;
+
+  },
   p_name: string;
   in_qty: number;
   unit_price: number;

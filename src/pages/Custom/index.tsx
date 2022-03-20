@@ -94,9 +94,9 @@ export default () => {
       // width: 140,
       align: 'center',
       key: 'since',
-      dataIndex: 'boughtAt',
+      dataIndex: 'lastBuyTime',
       valueType: 'date',
-      sorter: (a, b) => a.createdAt - b.createdAt,
+      // sorter: (a, b) => a.lastBuyTime - b.lastBuyTime,
     },
     {
       title: '备注',

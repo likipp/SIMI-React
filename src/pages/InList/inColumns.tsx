@@ -4,36 +4,38 @@ import type { MomentInput } from 'moment';
 import moment from 'moment';
 import { Tag } from 'antd';
 import type { InTableListItem } from '@/pages/InList/data';
+import CusTable from "@/pages/InList/table";
 
 export const InListColumns: ProColumns<InTableListItem>[] = [
   {
     title: '单号',
     dataIndex: 'number',
-    align: 'center',
+    // align: 'center',
     sorter: true,
-    width: '15px',
-    render: (value, row) => {
-      return {
-        children: <Link to={`/inbilldetail/${value}`}>{value}</Link>,
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
+    width: 140,
+    render: (value) => {
+      // return {
+      //   children: <Link to={`/inbilldetail/${value}`} style={{position: "absolute", top: "26px"}}>{value}</Link>,
+      //   props: {
+      //     rowSpan: row.rowSpan,
+      //   },
+      // };
+      return (
+        <Link to={`/inbilldetail/${value}`} style={{position: "absolute", top: "26px"}}>{value}</Link>
+      )
     }
   },
   {
     title: '创建时间',
     sorter: true,
     dataIndex: 'created_at',
-    align: 'center',
+    // align: 'center',
+    width: 140,
     valueType: 'dateRange',
     render: (value, row) => {
-      return {
-        children: moment(row.created_at as MomentInput).format('YYYY-MM-DD HH:mm'),
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
+      return (
+        <span style={{position: "absolute", top: "26px"}}>{moment(row.created_at as MomentInput).format('YYYY-MM-DD')}</span>
+      )
     },
     fieldProps: () => {
       return {
@@ -50,54 +52,56 @@ export const InListColumns: ProColumns<InTableListItem>[] = [
   {
     title: '产品代码',
     dataIndex: 'p_number',
-    align: 'center',
+    // align: 'center',
+    render: (_, record) => {
+      return <CusTable list={record.child} type={"p_number"}/>
+    },
   },
   {
     title: '产品名称',
     dataIndex: 'p_name',
-    align: 'center',
+    // align: 'center',
+    render: (_, record) => {
+      return <CusTable list={record.child} type={"p_name"}/>
+    },
   },
   {
     title: '单价',
     dataIndex: 'unit_price',
-    align: 'center',
+    // align: 'center',
     search: false,
+    render: (_, record) => {
+      return <CusTable list={record.child} type={"unit_price"}/>
+    },
   },
   {
     title: '数量',
     dataIndex: 'in_qty',
-    align: 'center',
+    // align: 'center',
     search: false,
     valueType: 'digit',
+    render: (_, record) => {
+      return <CusTable list={record.child} type={"in_qty"}/>
+    },
   },
   {
     title: '订单金额',
     dataIndex: 'bill_amount',
-    align: 'center',
+    // align: 'center',
     search: false,
     valueType: 'money',
-    render: (value, row) => {
-      return {
-        children: <span>{row.bill_amount}</span>,
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
+    render: (value) => {
+      return <span style={{position: "absolute", top: "26px"}}>{value}</span>
     },
   },
   {
     title: '已付金额',
     dataIndex: 'remain_amount',
-    align: 'center',
+    // align: 'center',
     search: false,
     valueType: 'money',
-    render: (value, row) => {
-      return {
-        children: <span>{row.remain_amount}</span>,
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
+    render: (value) => {
+      return <span style={{position: "absolute", top: "26px"}}>{value}</span>
     },
   },
   {
@@ -105,19 +109,21 @@ export const InListColumns: ProColumns<InTableListItem>[] = [
     dataIndex: 'status',
     filters: true,
     onFilter: true,
-    align: 'center',
+    // align: 'center',
     valueType: 'radio',
     valueEnum: {
       0: { text: '欠款中', status: 'Processing' },
       1: { text: '结清', status: 'Success' },
     },
     render: (value, row) => {
-      return {
-        children: row.status == 1 ? <Tag color="green">已结清</Tag> : <Tag color="red">欠款中</Tag>,
-        props: {
-          rowSpan: row.rowSpan,
-        },
-      };
+      return (
+        <span style={{position: "absolute", top: "26px"}}>
+          {
+            row.status == 1 ? <Tag color="green">已结清</Tag> : <Tag color="red">欠款中</Tag>
+          }
+        </span>
+
+      )
     },
   },
 ];

@@ -1,3 +1,4 @@
+// @ts-ignore
 import { request } from 'umi';
 import type { ProductListItem } from '@/pages/Product/data';
 

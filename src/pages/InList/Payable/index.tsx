@@ -166,7 +166,6 @@ const CreatePayable: React.FC<CreateFormProps> = (props) => {
           <Timeline mode={'left'} style={{ fontSize: '100px' }}>
             {renderTime(timeLine)}
           </Timeline>
-          ,
         </div>
       </DrawerForm>
     </div>

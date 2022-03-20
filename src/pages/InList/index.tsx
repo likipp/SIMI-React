@@ -1,11 +1,15 @@
+import { useRef, useState } from 'react';
+
 import type { ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { PageContainer } from '@ant-design/pro-layout';
+
 import { getInStockList } from '@/pages/InList/services';
-import { useRef, useState } from 'react';
+
+
 import Payable from './Payable';
 import type { PayItem, InTableListItem } from '@/pages/InList/data';
-import { transKey } from '@/utils/transKey';
+// import { transKey } from '@/utils/transKey';
 import { InListColumns } from '@/pages/InList/inColumns';
 
 export default () => {
@@ -17,15 +21,28 @@ export default () => {
     <PageContainer>
       <ProTable<InTableListItem>
         columns={InListColumns}
-        request={(params, sorter, filter) => {
-          // 表单搜索项会从 params 传入，传递给后端接口。
-          return Promise.resolve(getInStockList({ ...params, sorter, filter }))
-            .then((res) => {
-              return transKey(res)
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+        // request={(params, sorter, filter) => {
+        //   // 表单搜索项会从 params 传入，传递给后端接口。
+        //   return Promise.resolve(getInStockList({ ...params, sorter, filter }))
+        //     .then((res) => {
+        //       return res
+        //     })
+        //     .catch((err) => {
+        //       console.log(err);
+        //     });
+        // }}
+        request={async (params = {}) => {
+          // params.pageSize = 9999
+          // params.current = 1
+          const msg = await getInStockList({current: 1, pageSize: 10, ...params});
+          return {
+            data: msg.data,
+            // success 请返回 true，
+            // 不然 table 会停止解析数据，即使有数据
+            success: msg.success,
+            // 不传会使用 data 的长度，如果是分页一定要传
+            total: msg.total,
+          };
         }}
         rowKey="key"
         actionRef={ref}

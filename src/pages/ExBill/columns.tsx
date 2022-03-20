@@ -96,13 +96,16 @@ const columns: ProColumns<ExBodyType | InBodyType>[] = [
               if (value) {
                 const col =  form.getFieldsValue(true)
                 const p_number = col[rowKey as string].p_number
-                getStockList({p_number: p_number, ware_house: parseInt(value)}).then((res) => {
-                  if (Object.keys(res.data).length !== 0) {
-                    form.setFieldsValue({[rowKey as string]: {stock: res.data[0].qty}})
-                  } else {
-                    form.setFieldsValue({[rowKey as string]: {stock: 0}})
-                  }
-                })
+                if (p_number !== undefined && parseInt(value)) {
+                  getStockList({p_number: p_number, ware_house: parseInt(value)}).then((res) => {
+                    if (Object.keys(res.data).length !== 0) {
+                      form.setFieldsValue({[rowKey as string]: {stock: res.data[0].qty}})
+                    } else {
+                      form.setFieldsValue({[rowKey as string]: {stock: 0}})
+                    }
+                  })
+                }
+
               }
           }
         }

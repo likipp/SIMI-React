@@ -20,7 +20,7 @@ export default [
   },
   {
     path: '/welcome',
-    name: '分析页',
+    name: '经营分析',
     icon: 'dashboard',
     component: './Welcome',
   },
